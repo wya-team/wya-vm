@@ -11,9 +11,6 @@ import { uglify } from 'rollup-plugin-uglify';
 import postcss from 'rollup-plugin-postcss';
 import vue from 'rollup-plugin-vue';
 
-// dev server
-import serve from 'rollup-plugin-serve';
-
 // PostCSS plugins
 import simplevars from 'postcss-simple-vars';
 import nested from 'postcss-nested';
@@ -82,37 +79,4 @@ const mainConfig = {
 		(!ENV_IS_DEV && uglify())
 	]
 };
-
-const localIp = (() => {
-	let ips = [];
-	let os = require('os');
-	let ntwk = os.networkInterfaces();
-	for (let k in ntwk) {
-		for (let i = 0; i < ntwk[k].length; i++) {
-			let _add = ntwk[k][i].address;
-			if (_add && _add.split('.').length == 4 && !ntwk[k][i].internal && ntwk[k][i].family == 'IPv4') {
-				ips.push(ntwk[k][i].address);
-			}
-		}
-	}
-	return ips[0] || 'localhost';
-})();
-
-const devServer = serve({
-	// 自动打开浏览器
-	open: false,
-	// 终端中打印server地址
-	verbose: true,
-	// 路径
-	contentBase: ['example', 'build'],
-	historyApiFallback: true,
-	host: localIp,
-	port: 10001,
-	https: false,
-	// set headers
-	headers: {
-		foo: 'bar'
-	}
-});
-ENV_IS_DEV && mainConfig.plugins.push(devServer);
 export default [mainConfig];
