@@ -1,0 +1,66 @@
+@import "color.scss";
+
+/**
+ * tabs
+ */
+.ivu-tabs-nav-container {
+	margin-bottom: 0;
+}
+.ivu-tabs-tab-active, .ivu-tabs-tab-focused {
+	color: $main !important;
+	border-color: $main !important;
+	border-bottom: 1px solid $main !important;
+	z-index: 2;
+}
+.ivu-tabs-tab {
+	background-color: #fff !important;
+	transition: none !important;
+	-webkit-transition: none !important;
+	margin-right: -1px !important;
+	&:hover {
+		color: $main !important;
+	}
+	&:active {
+		color: $main !important;
+	}
+	&:focus {
+		color: $main !important;
+	}
+}
+.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+	border-radius: 0 0 0 0 !important;
+	&:last-child {
+		border-radius: 0 4px 0 0 !important;
+	}
+	&:nth-child(2) {
+		border-radius: 4px 0 0 0 !important;
+	}
+}
+.ivu-tabs-bar .ivu-tabs-nav-container .ivu-tabs-nav .ivu-tabs-tab-focused {
+	border-color: $main !important;
+}
+
+/**
+ * button
+ */
+.ivu-btn-primary {
+	color: #fff;
+	background-color: $main !important;
+	border-color: $main !important;
+}
+.ivu-btn-primary:focus, .ivu-btn:focus {
+	-webkit-box-shadow: 0 0 0 2px rgba(232, 72, 84, 0.2) !important;
+	box-shadow: 0 0 0 2px rgba(232, 72, 84, 0.2) !important;
+}
+
+/**
+ * drawer
+ */
+.ivu-drawer-mask {
+	background: transparent !important;
+}
+
+.ivu-drawer-content {
+	box-shadow: 0 7px 100px rgba(0, 0, 0, 0.15) !important;
+
+}
