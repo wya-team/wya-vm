@@ -12,11 +12,12 @@
     "start": "npm run dev",
     "dev": "npm run all",
     "serve": "rm -rf build/ && cross-env NODE_ENV=development rollup --config rollup.config.js --watch",
+    "demo": "cd examples/ && npm run dev",
     "build": "rm -rf dist/ && cross-env NODE_ENV=production rollup --config rollup.config.js && npm publish",
     "lint": "esw ./src  --ext .vue,.js",
     "lint:fix": "npm run lint -- --fix",
     "lint:watch": "npm run lint -- --fix --watch",
-    "all": "npm-run-all --parallel --race --continue-on-error lint:watch serve",
+    "all": "npm-run-all --parallel --race --continue-on-error lint:watch serve demo",
     "lint-staged": "lint-staged",
     "pre-commit:install": "cp .hooks/* .git/hooks/",
     "test": "jest --config ./tests/config/jest.config.js"
@@ -75,6 +76,7 @@
     "rollup-plugin-vue": "^4.3.2",
     "rollup-watch": "^4.3.1",
     "vue": "^2.5.17",
+    "vue-loader": "^15.4.2",
     "vue-template-compiler": "^2.5.17"
   },
   "lint-staged": {
