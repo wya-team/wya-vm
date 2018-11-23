@@ -1,5 +1,7 @@
 import { homeMain } from './main';
+import { homeBasic } from './basic';
 
 export default {
-	homeMain
+	homeMain,
+	homeBasic
 };

@@ -10,7 +10,8 @@ const isLoggedIn = (nextState) => {
 	if (user) {
 		state = true;
 	}
-	return state;
+	return true;
+	// return state;
 };
 
 export const beforeEach = ((to, from, next) => {

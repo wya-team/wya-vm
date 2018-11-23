@@ -13,7 +13,7 @@ export const routeConfig = {
 				{
 					path: '',
 					redirect: (to) => {
-						return '/home/main';
+						return '/home/basic';
 					}
 				},
 				...homeConfig
