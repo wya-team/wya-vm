@@ -6,7 +6,8 @@
 		tabindex="0"
 		@mousedown.stop="handleContainerDown"
 	>
-		<template v-for="item in transform">
+		<div v-if="active" class="border" />
+		<template v-for="item in handles">
 			<div
 				v-if="resizable && !disable"
 				:key="item"
@@ -20,6 +21,8 @@
 </template>
 
 <script>
+import { isPassiveSupported } from '../utils/helper';
+
 const doc = document.documentElement;
 
 export default {
@@ -36,7 +39,7 @@ export default {
 			type: Boolean,
 			default: true
 		},
-		transform: {
+		handles: {
 			type: Array,
 			default: () => (['top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-right', 'bottom-left', 'rotate'])
 		},
@@ -124,21 +127,7 @@ export default {
 			resizing: false,
 			dragging: false,
 			active: false,
-			handle: null,
-			parentX: 0,
-			parentY: 0,
-			parentW: 9999,
-			parentH: 9999,
-			mouseX: 0,
-			mouseY: 0,
-			lastMouseX: 0,
-			lastMouseY: 0,
-			mouseOffX: 0,
-			mouseOffY: 0,
-			elmX: 0,
-			elmY: 0,
-			elmW: 0,
-			elmH: 0
+			handle: null
 		};
 	},
 	computed: {
@@ -156,6 +145,21 @@ export default {
 		}
 	},
 	watch: {},
+	beforeCreate() {
+		this.parentX = 0;
+		this.parentY = 0;
+		this.parentW = 9999;
+		this.parentH = 9999;
+		this.mouseX = 0;
+		this.mouseY = 0;
+		this.lastMouseX = 0;
+		this.lastMouseY = 0;
+		this.mouseOffX = 0;
+		this.mouseOffY = 0;
+
+		// 组件捕获阶段执行
+		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };
+	},
 	mounted() {
 		// 初始化控件宽高
 		if (this.minw > this.w) {
@@ -170,18 +174,6 @@ export default {
 
 		// 判断是否只能在父级元素中拖动
 		this.parent && this.calculation();
-
-		// 判断浏览器是否支持passive
-		try {
-			Object.defineProperty({}, "passive", {
-				get() {
-					this.passiveSupported = true;
-					return;
-				}
-			});
-		} catch (err) {
-			console.log(err);
-		}
 		this.$emit('resizing');
 	},
 	methods: {
@@ -215,7 +207,6 @@ export default {
 		handleContainerDown(e) {
 			// 阻止默认事件
 			e.preventDefault();
-			const passiveSupported = this.passiveSupported;
 			// 判断是否支持拖动
 			if (this.disable || !this.draggable) return;
 			const target = e.target || e.srcElement;
@@ -224,16 +215,12 @@ export default {
 				if (!this.active) {
 					this.lastMouseX = e.pageX || e.clientX + doc.scrollLeft;
 					this.lastMouseY = e.pageY || e.clientY + doc.scrollTop;
-					doc.addEventListener('mousemove', this.handleMove, passiveSupported ? { passive: true } : true);
-					doc.addEventListener('mousedown', this.handleDeselect, passiveSupported ? { passive: true } : true);
-					doc.addEventListener('mouseup', this.handleUp, passiveSupported ? { passive: true } : true);
+					doc.addEventListener('mousedown', this.handleDeselect, this.eventOpts);
+					doc.addEventListener('mousemove', this.handleMove, this.eventOpts);
+					doc.addEventListener('mouseup', this.handleUp, this.eventOpts);
 					this.active = true;
 					this.$emit('activated');
 				}
-				this.elmX = parseInt(this.x, 10);
-				this.elmY = parseInt(this.y, 10);
-				this.elmW = this.$el.offsetWidth || this.$el.clientWidth;
-				this.elmH = this.$el.offsetHeight || this.$el.clientHeight;
 				this.dragging = true;
 			}
 		},
@@ -249,9 +236,9 @@ export default {
 			const regex = new RegExp('handle-([(top|right|-|bottom|left)]{2})', '');
 			if (!this.$el.contains(target) && !regex.test(target.className)) {
 				if (this.active) {
-					doc.removeEventListener('mousemove', this.handleMove, true);
-					doc.removeEventListener('mousedown', this.deselect, true);
-					doc.removeEventListener('mouseup', this.handleUp, true);
+					doc.removeEventListener('mousedown', this.handleDeselect, this.eventOpts);
+					doc.removeEventListener('mousemove', this.handleMove, this.eventOpts);
+					doc.removeEventListener('mouseup', this.handleUp, this.eventOpts);
 					this.active = false;
 					this.$emit('deactivated');
 				}
@@ -275,6 +262,12 @@ export default {
 			this.mouseX = e.pageX || e.clientX + doc.scrollLeft;
 			this.mouseY = e.pageY || e.clientY + doc.scrollTop;
 
+			// x, y, w, h
+			let elmX = parseInt(this.x, 10);
+			let elmY = parseInt(this.y, 10);
+			let elmW = parseInt(this.w, 10);
+			let elmH = parseInt(this.h, 10);
+
 			// diffX =  当前鼠标位置 - 上次鼠标位置 + ？？
 			let diffX = (this.mouseX - this.lastMouseX + this.mouseOffX) / this.zoom;
 			let diffY = (this.mouseY - this.lastMouseY + this.mouseOffY) / this.zoom;
@@ -283,73 +276,72 @@ export default {
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
 			if (this.resizing) {
-				if (this.handle.indexOf('top') >= 0) {
-
-					if (this.elmH - diffY < this.minh) { // 向下移动
+				if (this.handle.includes('top')) {
+					if (elmH - diffY < this.minh) { // 向下移动
 						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
-						this.mouseOffY = (diffY - (diffY = this.elmH - this.minh));
-					} else if (this.parent && this.elmY + diffY < 0) { // 向上移动 
+						this.mouseOffY = (diffY - (diffY = elmH - this.minh));
+					} else if (this.parent && elmY + diffY < 0) { // 向上移动 
 						// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
-						this.mouseOffY = (diffY - (diffY = -this.elmY));
+						this.mouseOffY = (diffY - (diffY = -elmY));
 					}
-					this.elmY += diffY;
-					this.elmH -= diffY;
+					elmY += diffY;
+					elmH -= diffY;
 				}
-				if (this.handle.indexOf('bottom') >= 0) {
-					if (this.elmH + diffY < this.minh) { // 向上移动
-						this.mouseOffY = (diffY - (diffY = this.minh - this.elmH));
-					} else if (this.elmY + this.elmH + diffY > this.parentH) { // 向下移动
-						this.mouseOffY = (diffY - (diffY = this.parentH - this.elmY - this.elmH));
+				if (this.handle.includes('bottom')) {
+					if (elmH + diffY < this.minh) { // 向上移动
+						this.mouseOffY = (diffY - (diffY = this.minh - elmH));
+					} else if (elmY + elmH + diffY > this.parentH) { // 向下移动
+						this.mouseOffY = (diffY - (diffY = this.parentH - elmY - elmH));
 					}
-					this.elmH += diffY;
+					elmH += diffY;
 				}
-				if (this.handle.indexOf('left') >= 0) {
-					if (this.elmW - diffX < this.minw) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = this.elmW - this.minw));
-					} else if (this.parent && this.elmX + diffX < 0) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = -this.elmX));
+				if (this.handle.includes('left')) {
+					if (elmW - diffX < this.minw) { // 向右移动
+						this.mouseOffX = (diffX - (diffX = elmW - this.minw));
+					} else if (this.parent && elmX + diffX < 0) { // 向左移动
+						this.mouseOffX = (diffX - (diffX = -elmX));
 					}
-					this.elmX += diffX;
-					this.elmW -= diffX;
+					elmX += diffX;
+					elmW -= diffX;
 				}
-				if (this.handle.indexOf('right') >= 0) {
-					if (this.elmW + diffX < this.minw) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = this.minw - this.elmW));
-					} else if (this.elmX + this.elmW + diffX > this.parentW) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = this.parentW - this.elmX - this.elmW));
+				if (this.handle.includes('right')) {
+					if (elmW + diffX < this.minw) { // 向左移动
+						this.mouseOffX = (diffX - (diffX = this.minw - elmW));
+					} else if (elmX + elmW + diffX > this.parentW) { // 向右移动
+						this.mouseOffX = (diffX - (diffX = this.parentW - elmX - elmW));
 					}
-					this.elmW += diffX;
+					elmW += diffX;
 				}
 				if (this.handle === 'rotate') {
-					
 					// this.sync({ r: this.r + 10 });
 				}
 				this.sync({
-					x: (Math.round(this.elmX / this.grid[0]) * this.grid[0]),
-					y: (Math.round(this.elmY / this.grid[1]) * this.grid[1]),
-					w: (Math.round(this.elmW / this.grid[0]) * this.grid[0]),
-					h: (Math.round(this.elmH / this.grid[1]) * this.grid[1]),
+					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
+					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
+					w: (Math.round(elmW / this.grid[0]) * this.grid[0]),
+					h: (Math.round(elmH / this.grid[1]) * this.grid[1]),
 				});
 				this.$emit('resizing');
 			} else if (this.dragging) {
 				if (this.parent) {
-					if (this.elmX + diffX < 0) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = -this.elmX));
-					} else if (this.elmX + this.elmW + diffX > this.parentW) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = this.parentW - this.elmX - this.elmW));
+					if (elmX + diffX < 0) {
+						this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
+					} else if (elmX + elmW + diffX > this.parentW) {
+						this.mouseOffX = (diffX * this.zoom - (diffX = this.parentW - elmX - elmW));
 					}
-					if (this.elmY + diffY < 0) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = -this.elmY));
-					} else if (this.elmY + this.elmH + diffY > this.parentH) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = this.parentH - this.elmY - this.elmH));
+					if (elmY + diffY < 0) {
+						this.mouseOffY = (diffY * this.zoom - (diffY = -elmY));
+					} else if (elmY + elmH + diffY > this.parentH) {
+						this.mouseOffY = (diffY * this.zoom - (diffY = this.parentH - elmY - elmH));
 					}
 				}
-				this.elmX += diffX;
-				this.elmY += diffY;
+
+				elmX += diffX;
+				elmY += diffY;
 
 				this.draggable && this.sync({
-					x: (Math.round(this.elmX / this.grid[0]) * this.grid[0]),
-					y: (Math.round(this.elmY / this.grid[1]) * this.grid[1]),
+					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
+					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 				});
 					
 				this.$emit('dragging');
@@ -379,8 +371,6 @@ export default {
 				this.dragging = false;
 				this.$emit('dragstop');
 			}
-			this.elmX = this.x;
-			this.elmY = this.y;
 		}
 	},
 };
@@ -390,17 +380,21 @@ export default {
 .vm-draggable {
 	padding: 0;
 	position: absolute;
+	box-sizing: border-box;
 	user-select: none;
-	border-color: #45DBF7;
-	// overflow: hidden;
 	&.draggable:hover {
 		cursor: move;
 	}
 	&.active {
 		padding: 0;
-		border: 1px solid rgba(255, 255, 255, 0);
-		background-color: rgba(150, 150, 150, 0.3);
-		border-color: #45DBF7;
+		.border {
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			position: absolute;
+			border: 1px solid #108ee9;
+		}
 		.handle {
 			display: block;
 		}
@@ -410,47 +404,8 @@ export default {
 .handle {
 	display: none;
 	position: absolute;
+	box-sizing: border-box;
 	z-index: 999;
-}
-.handle-top-left {
-	top: 0;
-	left: 0;
-	cursor: nwse-resize;
-	width: 25px;
-	height: 25px;
-	padding: 5px;
-	// border-bottom: 2px solid #45DBF7;
-	// border-right: 2px solid #45DBF7;
-}
-.handle-bottom-left {
-	bottom: 0;
-	left: 0;
-	cursor: nesw-resize;
-	width: 25px;
-	height: 25px;
-	padding: 5px;
-	// border-top: 2px solid #45DBF7;
-	// border-right: 2px solid #45DBF7;
-}
-.handle-top-right {
-	top: 0;
-	right: 0;
-	cursor: nesw-resize;
-	width: 25px;
-	height: 25px;
-	padding: 5px;
-	// border-bottom: 2px solid #45DBF7;
-	// border-left: 2px solid #45DBF7;
-}
-.handle-bottom-right {
-	bottom: 0;
-	right: 0;
-	cursor: nwse-resize;
-	width: 25px;
-	height: 25px;
-	padding: 5px;
-	// border-top: 2px solid #45DBF7;
-	// border-left: 2px solid #45DBF7;
 }
 .handle-left {
 	top: 0;
@@ -497,17 +452,39 @@ export default {
 		background: linear-gradient(to top, rgba(255, 255, 255, 0), #3F51B5);
 	}
 }
+.handle-top-left {
+	top: 0;
+	left: 0;
+	cursor: nwse-resize;
+	padding: 5px;
+}
+.handle-bottom-left {
+	bottom: 0;
+	left: 0;
+	cursor: nesw-resize;
+	padding: 5px;
+}
+.handle-top-right {
+	top: 0;
+	right: 0;
+	cursor: nesw-resize;
+	padding: 5px;
+}
+.handle-bottom-right {
+	bottom: 0;
+	right: 0;
+	cursor: nwse-resize;
+	padding: 5px;
+}
 .handle-rotate {
-	top: -25px;
+	top: -10px;
 	left: 50%;
 	transform: translateX(-50%);
 	/* eslint-disable max-len */
 	cursor: url('data:image/vnd.microsoft.icon;base64,AAABAAEAFBQAAAEAIAC4BgAAFgAAACgAAAAUAAAAKAAAAAEAIAAAAAAAQAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZgRmZmYmZmZmdGZmZqlmZmbJZmZmzWZmZrFmZmZ+ZmZmLGZmZgYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmZmYcaWlp/319ff+srKz/y8vL/97e3v/h4eH/0NDQ/7Kysv+BgYH/ampq/2ZmZioAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmWHd3d/+1tbX/9vb2//////////////////////////////////r6+v++vr7/fHx8/2ZmZmwAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZmKBgYH/2tra////////////7Ozs/9PT0/++vr7/u7u7/8fHx//i4uL////////////m5ub/jY2N/2ZmZnwAAAAAAAAAAAAAAABmZmY6eXl5/+Dg4P///////////8rKyv+IiIj/ZmZmtWZmZpNmZmaNZmZmo3V1df+vr6//8fHx///////v7+//iIiI/2ZmZmgAAAAAZmZmBGlpaf/IyMj///////39/f+2trb/a2tr/2ZmZjwAAAAAAAAAAAAAAAAAAAAAZmZmGGZmZn6Ojo7/7u7u///////k5OT/cnJy/wAAAABmZmY8i4uL///////9/f3/zMzM/2lpaf9mZmYcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZnqgoKD/+fn5/9ra2v9tbW3/AAAAAGZmZpnCwsL///////Hx8f+CgoL/ZmZmQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmBGhoaP/BwcH/dHR0/7Kysp8AAAAAZmZm1ebm5v//////1tbW/2ZmZrsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG1tbf+/v7+dAAAAAAAAAABmZmbl7+/v//39/f++vr7/ZmZmkwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmCGZmZuPu7u7//f39/7u7u/9mZmaPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZm0+Xl5f//////0NDQ/2ZmZrEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmZmabwsLC///////r6+v/dXV1/2ZmZiYAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZiJ7e3v/aGho/2hoaP9oaGj/aGho/2hoaP9oaGj/AAAAAGZmZjyKior//v7+//v7+/+8vLz/ZmZmkQAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmJHx8fP///////////////////////////2ZmZv8AAAAAZmZmBGhoaP/Jycn///////j4+P+jo6P/ZmZmi2ZmZh4AAAAAAAAAAAAAAAAAAAAAAAAAAHR0dP/j4+P/////////////////ZmZm/wAAAAAAAAAAZmZmPHp6ev/i4uL///////j4+P+4uLj/dXV1/2ZmZptmZmZ6ZmZmeGZmZpdxcXH/qamp//z8/P////////////////9mZmb/AAAAAAAAAAAAAAAAZmZmZoKCgv/e3t7////////////h4eH/w8PD/7CwsP+vr6//wMDA/97e3v/+/v7///////7+/v///////////2ZmZv8AAAAAAAAAAAAAAAAAAAAAZmZmXnl5ef+2trb/9fX1/////////////v7+//39/f/////////////////a2tr/k5OT/3V1df/T09P/ZmZmtwAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmHmlpaf98fHz/r6+v/9TU1P/k5OT/5ubm/9zc3P/BwcH/jo6O/25ubv8AAAAAAAAAAG1tbf9mZmZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmBGZmZiRmZmZ6ZmZmuWZmZtNmZmbVZmZmxWZmZpdmZmZCZmZmDAAAAAAAAAAAZmZmDAAAAAAAAAAA/w/wAPgB8ADwAPAA4ABwAMAAMACB/BAAg/4QAAf+EAAH/zAAB//wAAf/8AAH//AAB/AQAIPwEACB+BAAwGAQAOAAEADwABAA+AGwAP8H8AA=') 10 10,default;
-	width: 25px;
-	height: 25px;
 	padding: 5px;
-	border-top: 2px solid #45DBF7;
-	border-left: 2px solid #45DBF7;
-	border-right: 2px solid #45DBF7;
+	border-top: 1px solid #108ee9;
+	border-left: 1px solid #108ee9;
+	border-right: 1px solid #108ee9;
 }
 </style>
