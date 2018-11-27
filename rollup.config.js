@@ -34,7 +34,7 @@ const mainConfig = {
 	output: {
 		file: `${ENV_IS_DEV ? `build` : `dist`}/vm.min.js`,
 		format: 'cjs',
-		sourcemap: ENV_IS_DEV ? undefined : `inline`,
+		sourcemap: ENV_IS_DEV ? `inline` : undefined,
 		globals: {
 			vue: 'Vue'
 		}

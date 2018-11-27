@@ -126,8 +126,7 @@ export default {
 		return {
 			resizing: false,
 			dragging: false,
-			active: false,
-			handle: null
+			active: false
 		};
 	},
 	computed: {
@@ -156,6 +155,8 @@ export default {
 		this.lastMouseY = 0;
 		this.mouseOffX = 0;
 		this.mouseOffY = 0;
+
+		this.handle = null;
 
 		// 组件捕获阶段执行
 		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };

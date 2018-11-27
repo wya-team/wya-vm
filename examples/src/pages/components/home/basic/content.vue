@@ -1,31 +1,19 @@
 <template>
-	<vm-frame :height="500" :width="500" style="border: 1px solid red; margin: 100px">
-		<vm-draggable
-			v-for="(it) in list"
-			:key="it.id"
-			:x.sync="it.x"
-			:y.sync="it.y"
-			:w.sync="it.w"
-			:h.sync="it.h"
-			:r.sync="it.r"
-			:parent="true"
-			@dragging="handleDrag"
-			@resizing="handleResize"
-		>
-			<div :style="[it.style, { height: `${it.h}px`, width: `${it.w}px` }]">
-				X: {{ it.x }} <br>
-				Y: {{ it.y }} <br>
-				Width: {{ it.w }} <br>
-				Height: {{ it.h }} <br>
-				Rotate: {{ it.r }} <br>
-			</div>
-		</vm-draggable>
-	</vm-frame>
+	<div>
+		<vm-frame 
+			:height="500" 
+			:width="500"
+			:data-source="list"
+			style="border: 1px solid red; margin: 100px"
+		/>
+		<vm-tools :height="200" :width="200" :data-source="tools"/>
+	</div>
 </template>
 
 <script>
-import { Draggable, Frame } from 'wya-vm';
+import { vmRegister } from 'wya-vm';
 
+let { Draggable, Frame, Tools } = vmRegister();
 let count = 0;
 const getId = () => count++;
 export default {
@@ -33,13 +21,18 @@ export default {
 	components: {
 		'vm-draggable': Draggable,
 		'vm-frame': Frame,
+		'vm-tools': Tools,
 	},
 	data() {
 		return {
+			tools: ['tpl'],
 			list: [
 				{
 					id: getId(),
-					style: {
+					// module
+					module: "tpl",
+					// 数据
+					content: {
 						backgroundColor: 'red',
 						color: 'white'
 					},
@@ -53,7 +46,10 @@ export default {
 				},
 				{
 					id: getId(),
-					style: {
+					// module
+					module: "tpl",
+					// 数据
+					content: {
 						backgroundColor: 'blue',
 						color: 'white'
 					},
@@ -63,7 +59,7 @@ export default {
 					r: 0,
 					x: 100,
 					y: 100,
-					z: getId()
+					z: count
 				}
 			]
 		};
