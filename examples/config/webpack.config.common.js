@@ -83,7 +83,7 @@ const webpackConfig = {
 		 * html引用路径
 		 * publicPath: ENV_IS_DEV ? './' : 'https://cdn.example.com/'
 		 */
-		publicPath: '/'
+		publicPath: ENV_IS_DEV ? '/' : '/wya-vm/examples/dist/'
 	},
 	module: {
 		rules: [
