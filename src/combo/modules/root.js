@@ -1,8 +1,8 @@
 /**
  * roots
  */
-import { Tpl } from './__tpl__/root';
+import { tpl } from './__tpl__/root';
 
 export const defaultModules = {
-	Tpl
+	tpl
 };

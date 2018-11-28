@@ -1,13 +1,17 @@
 <template>
 	<div>
-		tpl
+		<!-- <component 
+			:is="`vm-${dataSource.module}-editor`" 
+			:data-source="dataSource" 
+		/> -->
+		暂未开发
 	</div>
 </template>
 
 <script>
 
 export default {
-	name: 'vm-tpl-editor',
+	name: 'vm-editor',
 	components: {
 	},
 	props: {

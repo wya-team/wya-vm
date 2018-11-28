@@ -38,3 +38,11 @@ let baseClone = (target, source) => {
 	return target;
 };
 export const cloneDeep = (source) => baseClone({}, source);
+
+
+/**
+ * getUid
+ */
+const now = +(new Date());
+let index = 0;
+export const getUid = () => `vm-${now}-${++index}`;

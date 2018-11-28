@@ -2,7 +2,7 @@
 import Viewer from './viewer.vue';
 import Editor from './editor.vue';
 
-export const Tpl = {
+export const tpl = {
 	module: "tpl",
 	type: '基础组件',
 	name: "模版",
@@ -10,7 +10,16 @@ export const Tpl = {
 	Editor, 
 	// 初始数据
 	data: {
-		"name": "输入框内容",
+		// for draggable
+		w: 100,
+		h: 100,
+		r: 0,
+		x: 0, // 动态分配
+		y: 0, // 动态分配
+		z: 1,
+		parent: true,
+		// for content
+		name: '名称'
 	},
 	dataValidity: (res = {}) => {
 		if (!res.name) {

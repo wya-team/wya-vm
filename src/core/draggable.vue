@@ -7,6 +7,7 @@
 		@mousedown.stop="handleContainerDown"
 	>
 		<div v-if="active" class="border" />
+		<!-- <div v-if="active" class="delete" @click="handleDel">&#10005;</div> -->
 		<template v-for="item in handles">
 			<div
 				v-if="resizable && !disable"
@@ -344,7 +345,6 @@ export default {
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 				});
-					
 				this.$emit('dragging');
 			}
 		},
@@ -398,6 +398,15 @@ export default {
 		}
 		.handle {
 			display: block;
+		}
+		.delete {
+			background: #108ee9;
+			position: absolute;
+			right: 0;
+			width: 20px;
+			color: white;
+			text-align: center;
+			z-index: 300
 		}
 	}
 }
