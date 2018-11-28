@@ -1,10 +1,9 @@
 <template>
 	<div>
-		<!-- <component 
+		<component 
 			:is="`vm-${dataSource.module}-editor`" 
-			:data-source="dataSource" 
-		/> -->
-		暂未开发
+			v-bind.sync="dataSource" 
+		/>
 	</div>
 </template>
 

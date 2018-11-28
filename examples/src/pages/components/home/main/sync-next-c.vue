@@ -7,7 +7,7 @@
 <script>
 
 export default {
-	name: 'vm-tpl-editor',
+	name: '',
 	components: {
 	},
 	props: {

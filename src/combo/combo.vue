@@ -5,6 +5,7 @@
 			v-bind="toolsOpts"
 			class="__tools"
 		/>
+		<!-- vue.sync遇到引用类型可跨层级修改，Object/Array 下面是指data-scource -->
 		<vm-frame 
 			:style="frameStyle" 
 			:width="frameW" 
@@ -15,7 +16,8 @@
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 		/>
-		<vm-editor v-if="editor" :data-source.sync="editor"/>
+		<!-- vue.sync遇到引用类型可跨层级修改，Object/Array 下面是指data-scource -->
+		<vm-editor v-if="editor" :data-source="editor"/>
 	</div>
 </template>
 
@@ -74,7 +76,6 @@ export default {
 	},
 	methods: {
 		handleActivated(it) {
-			console.log(it, this.dataSource);
 			this.editor = it;
 		},
 		handleDeactivated(it) {

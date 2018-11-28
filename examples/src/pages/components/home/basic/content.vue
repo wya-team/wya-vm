@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<vm-combo 
-			:data-source.sync="list"
+			:data-source="list"
 			:frame-style="{ border: '1px solid red', margin: 100 }"
 			:frame-w="500"
 			:frame-h="500"

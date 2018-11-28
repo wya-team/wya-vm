@@ -7,7 +7,7 @@
 export default {
 	name: 'tpl-links',
 	props: {
-		dataSource: Array
+		dataSource: [Array, Number, Object]
 	},
 	data() {
 		return {
@@ -18,7 +18,7 @@ export default {
 	methods: {
 		handleClick() {
 			// 操作了源数组
-			this.dataSource.push(2);
+			this.$emit('update:dataSource', { a: 2 });
 			// this.$emit('update:count', '');
 			this.$emit('change');
 		}

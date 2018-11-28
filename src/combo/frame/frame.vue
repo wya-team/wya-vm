@@ -89,16 +89,14 @@ export default {
 			let mouseX = e.pageX || e.clientX + doc.scrollLeft;
 			let mouseY = e.pageY || e.clientY + doc.scrollTop;
 
-			const { dataSource } = this;
-
-			dataSource.push({
+			// 会同步到上级 这里不用this.$emit("update:sync")
+			this.dataSource.push({
 				...result.data,
 				module: mod,
 				id: getUid(),
 				x: mouseX - x,
 				y: mouseY - y
 			});
-			// this.$emit('update:dataSource', dataSource);
 		}
 	},
 };
