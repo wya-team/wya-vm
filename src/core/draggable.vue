@@ -48,41 +48,30 @@ export default {
 		w: {
 			type: Number,
 			default: 200,
-			validator: (val) => {
-				return (typeof val === 'number' && val > 0);
-			}
+			validator: val => val > 0
 		},
 		// 高度
 		h: {
 			type: Number,
 			default: 200,
-			validator: (val) => {
-				return (typeof val === 'number' && val > 0);
-			}
+			validator: val => val > 0
 		},
 		// 选择角度
 		r: {
 			type: Number,
-			default: 0,
-			validator: (val) => {
-				return (typeof val === 'number');
-			}
+			default: 0
 		},
 		// 最小宽度
 		minw: {
 			type: Number,
 			default: 50,
-			validator(val) {
-				return val > 0;
-			}
+			validator: val => val > 0
 		},
 		// 最小高度
 		minh: {
 			type: Number,
 			default: 50,
-			validator(val) {
-				return val > 0;
-			}
+			validator: val => val > 0
 		},
 		// 距父元素左上角X轴偏移量
 		x: { 
