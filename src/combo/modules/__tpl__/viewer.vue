@@ -1,5 +1,5 @@
 <template>
-	<div :style="[{ height: `${h}px`, width: `${w}px` }]">
+	<div :style="[{ height: `${h}px`, width: `${w}px`, backgroundColor: `rgb(255, 51, ${z}${z})`, color: 'white' }]">
 		X: {{ x }} <br>
 		Y: {{ y }} <br>
 		Z: {{ z }} <br>

@@ -1,6 +1,11 @@
 <template>
-	<div>
-		<div @click="handleClick">{{ x }}</div>
+	<div style="display: flex; flex-direction: column;">
+		<div>w: <input :value="w" @input="handleChange($event, 'w')"></div>
+		<div>h: <input :value="h" @input="handleChange($event, 'h')"></div>
+		<div>x: <input :value="x" @input="handleChange($event, 'x')"></div>
+		<div>y: <input :value="y" @input="handleChange($event, 'y')"></div>
+		<div>z: <input :value="z" @input="handleChange($event, 'z')"></div>
+		<div>r: <input :value="r" @input="handleChange($event, 'r')"></div>
 	</div>
 </template>
 
@@ -11,7 +16,12 @@ export default {
 	components: {
 	},
 	props: {
-		x: Number
+		w: Number,
+		h: Number,
+		r: Number,
+		x: Number,
+		y: Number,
+		z: Number
 	},
 	data() {
 		return {
@@ -22,12 +32,20 @@ export default {
 	created() {
 	},
 	methods: {
+		handleChange(e, key) {
+			this.$emit('change', { [key]: e.target.value });
+		},
 		handleClick() {
-			this.$emit('update:x', this.x + 1);
+			// this.$emit('update:x', this.x + 1);
+			this.$emit('change', { x: this.x + 1 });
 		}
 	},
 };
 </script>
 
 <style lang="scss" scoped>
+input {
+	border: 1px solid #000;
+	margin: 10px;
+}
 </style>

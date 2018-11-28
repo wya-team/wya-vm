@@ -1,13 +1,14 @@
 <template>
-	<div>
-		<component 
-			:is="`vm-${dataSource.module}-editor`" 
-			v-bind.sync="dataSource" 
-		/>
-	</div>
+	<component
+		ref="target" 
+		:is="`vm-${dataSource.module}-editor`" 
+		v-bind.sync="dataSource" 
+		@change="handleChange"
+	/>
 </template>
 
 <script>
+import { valueIsNaN } from "../../utils/helper";
 
 export default {
 	name: 'vm-editor',
@@ -25,7 +26,22 @@ export default {
 	created() {
 	},
 	methods: {
-		
+		/**
+		 * hack操作
+		 * 业务上避免使用该操作
+		 */
+		handleChange(opts = {}) {
+			if (typeof opts !== 'object') return;
+			for (let key in opts) {
+				let val = opts[key];
+				
+				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
+				
+				Object.hasOwnProperty.call(opts, key) 
+					&& !valueIsNaN(val)
+					&& this.$refs.target.$emit(`update:${key}`, val);
+			}
+		}
 	},
 };
 </script>

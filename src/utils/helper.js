@@ -46,3 +46,9 @@ export const cloneDeep = (source) => baseClone({}, source);
 const now = +(new Date());
 let index = 0;
 export const getUid = () => `vm-${now}-${++index}`;
+
+/**
+ * 判断是否是NaN
+ */
+/* eslint-disable no-self-compare */
+export const valueIsNaN = v => v !== v; 

@@ -5,7 +5,6 @@
 			v-bind="toolsOpts"
 			class="__tools"
 		/>
-		<!-- vue.sync遇到引用类型可跨层级修改，Object/Array 下面是指data-scource -->
 		<vm-frame 
 			:style="frameStyle" 
 			:width="frameW" 
@@ -16,7 +15,10 @@
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 		/>
-		<!-- vue.sync遇到引用类型可跨层级修改，Object/Array 下面是指data-scource -->
+		<!-- 
+			vue.sync遇到引用类型可跨层级修改，Object/Array. 
+			如Object, 不要操作对象，把每个值解构出来v-bind.sync.
+		-->
 		<vm-editor v-if="editor" :data-source="editor"/>
 	</div>
 </template>
