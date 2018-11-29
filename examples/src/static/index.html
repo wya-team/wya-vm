@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
     <script src="//as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
     <link rel="stylesheet" href="//at.alicdn.com/t/font_867549_w9hglzh2jv.css">
     <script>
@@ -24,7 +24,7 @@
         if (/test.com|\/\/wya-team.github.io/.test(window.location.origin)) {
             // 微信中浏览器会生产好html, 如?admin_id=1, 相关资源会被缓存,  ?admin_id=1&多带个参数可解决
             document.write('<script src="/wya-vm/examples/dist/eruda.min.js"><\/script>');
-            document.write('<script>eruda.init();<\/script>');
+            document.write('<script>typeof eruda === "object" && eruda.init();<\/script>');
         };
 
         function loadCss(url) {
