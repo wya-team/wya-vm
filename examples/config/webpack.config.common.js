@@ -37,7 +37,6 @@ const postcssLoader = {
 	}
 };
 const loaderPath = [
-	path.resolve(APP_ROOT, '../src/main.js'),
 	path.resolve(APP_ROOT, "node_modules/wya-vc"),
 	path.resolve(APP_ROOT, "node_modules/iview"),
 	path.resolve(APP_ROOT, "src")
@@ -158,11 +157,10 @@ const webpackConfig = {
 				commons: {
 					test: (chunk) => {
 						const modules = [
-							'babel-polyfill',
+							'@babel/polyfill',
 							'vue',
 							'vue-router',
 							'vuex',
-							'babel-polyfill',
 							'core-js',
 							'lodash' // 这个用的地方偏多
 						];

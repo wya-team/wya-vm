@@ -1,7 +1,7 @@
 /**
  * dev 开发时使用
  */
-import 'babel-polyfill';
+import '@babel/polyfill';
 
 /**
  * Vue

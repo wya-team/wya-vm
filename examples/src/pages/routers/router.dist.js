@@ -1,7 +1,7 @@
 /**
  * dist 未来用于服务端渲染
  */
-import 'babel-polyfill';
+import '@babel/polyfill';
 
 /**
  * Vue
