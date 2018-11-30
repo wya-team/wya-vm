@@ -2,14 +2,14 @@ import { defaultModules } from './modules/root';
 import { cloneDeep } from '../utils/helper';
 import Combo from './combo.vue';
 import Frame from './frame/frame.vue';
-import Tools from './tools/tools.vue';
+import ToolsWidget from './tools/widget.vue';
 import Editor from './editor/editor.vue';
 
 export default (modules = defaultModules, opts = {}) => {
 	try {
 		let newCombo = cloneDeep(opts.Combo || Combo);
 		let newFrame = cloneDeep(opts.Frame || Frame);
-		let newTools = cloneDeep(opts.Tools || Tools);
+		let newToolsWidget = cloneDeep(opts.ToolsWidget || ToolsWidget);
 		let newEditor = cloneDeep(opts.Editor || Editor);
 
 		let viewers = {};
@@ -21,7 +21,7 @@ export default (modules = defaultModules, opts = {}) => {
 		});
 		// $options
 		newFrame.modules = modules;
-		newTools.modules = modules;
+		newToolsWidget.modules = modules;
 
 		// components
 		newFrame.components = {
@@ -29,14 +29,14 @@ export default (modules = defaultModules, opts = {}) => {
 			...viewers
 		};
 		newEditor.components = {
-			...newTools.components,
+			...newToolsWidget.components,
 			...editors
 		};
 		newCombo.components = {
 			...newCombo.components,
 			'vm-frame': newFrame,
-			'vm-tools': newTools,
-			'vm-editor': newEditor
+			'vm-editor': newEditor,
+			'vm-tools-widget': newToolsWidget,
 		};
 		return {
 			Combo: newCombo,

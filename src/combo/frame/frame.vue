@@ -7,7 +7,7 @@
 		@drop="handleDrop"
 	>
 		<vm-draggable
-			v-for="(it) in dataSource"
+			v-for="(it, index) in dataSource"
 			:key="it.id"
 			:x.sync="it.x"
 			:y.sync="it.y"
@@ -29,8 +29,9 @@
 			@deactivated="$emit('deactivated', it)"
 			@dragging="$emit('dragging', it)"
 			@resizing="$emit('resizing', it)"
-			@resizestop="$emit('resizestop', it)"
-			@dragstop="$emit('dragstop', it)"
+			@resize-end="$emit('resize-end', it)"
+			@drag-end="$emit('drag-end', it)"
+			@end="handleEnd(arguments[0], it.id, index)"
 		>
 			<component :is="`vm-${it.module}-viewer`" v-bind="it" />
 		</vm-draggable>
@@ -39,7 +40,7 @@
 
 <script>
 import Draggable from '../../core/draggable.vue';
-import { getUid } from '../../utils/helper';
+import { getUid, cloneDeep } from '../../utils/helper';
 
 export default {
 	name: 'vm-frame',
@@ -89,13 +90,28 @@ export default {
 			let mouseX = e.pageX || e.clientX + doc.scrollLeft;
 			let mouseY = e.pageY || e.clientY + doc.scrollTop;
 
+			let id = getUid();
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push({
 				...result.data,
 				module: mod,
-				id: getUid(),
+				id,
 				x: mouseX - x,
 				y: mouseY - y
+			});
+
+			this.$emit('change', { 
+				type: 'create', 
+				index: this.dataSource.length - 1,
+				id
+			});
+		},
+		handleEnd(old, id, index) {
+			this.$emit('change', { 
+				type: 'update', 
+				id, 
+				index,
+				old
 			});
 		}
 	},

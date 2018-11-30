@@ -150,6 +150,9 @@ export default {
 
 		// 组件捕获阶段执行
 		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };
+
+		// 是否改变了
+		this.startTag = null;
 	},
 	mounted() {
 		// 初始化控件宽高
@@ -185,9 +188,16 @@ export default {
 				this.sync({ y: this.parentH - this.h });
 			}
 		},
-		sync(opts) {
+		sync(opts) {			
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
+					!this.startTag && (this.startTag = {
+						x: this.x,
+						y: this.y,
+						z: this.z,
+						w: this.w,
+						r: this.r
+					});
 					this.$emit(`update:${key}`, opts[key]);
 				}
 			}
@@ -355,11 +365,15 @@ export default {
 			}
 			if (this.resizing) {
 				this.resizing = false;
-				this.$emit('resizestop');
+				this.$emit('resize-end');
 			}
 			if (this.dragging) {
 				this.dragging = false;
-				this.$emit('dragstop');
+				this.$emit('drag-end');
+			}
+			if (this.startTag) {
+				this.$emit('end', this.startTag);
+				this.startTag = null;
 			}
 		}
 	},

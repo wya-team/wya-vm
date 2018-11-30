@@ -1,7 +1,7 @@
 <template>
-	<div :style="style" class="vm-tools">
+	<div :style="style" class="vm-tools-widget">
 		<div v-for="(item, key) in toolsList" :key="key">
-			<div class="__title">
+			<div v-if="key !== 'undefined'" class="__title">
 				{{ key }}		
 			</div>
 			<div 
@@ -20,7 +20,7 @@
 <script>
 
 export default {
-	name: 'vm-tools',
+	name: 'vm-tools-widget',
 	components: {
 	},
 	props: {
@@ -38,7 +38,7 @@ export default {
 		for (let key in modules) {
 			if (Object.hasOwnProperty.call(modules, key)) {
 				let item = modules[key];
-				let type = item.type;
+				let type = item.type || 'undefined';
 				if (!toolsList[type]) {
 					toolsList[type] = [];
 				}
@@ -72,7 +72,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.vm-tools {
+.vm-tools-widget {
 	width: 400px;
 	.__title {
 		padding: 15px;
