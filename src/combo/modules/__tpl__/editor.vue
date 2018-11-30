@@ -6,6 +6,7 @@
 		<div>y: <input :value="y" @input="handleChange($event, 'y')"></div>
 		<div>z: <input :value="z" @input="handleChange($event, 'z')"></div>
 		<div>r: <input :value="r" @input="handleChange($event, 'r')"></div>
+		<div>name: <input :value="name" @input="handleChange($event, 'name')"></div>
 	</div>
 </template>
 
@@ -21,7 +22,8 @@ export default {
 		r: Number,
 		x: Number,
 		y: Number,
-		z: Number
+		z: Number,
+		name: [Number, String],
 	},
 	data() {
 		return {

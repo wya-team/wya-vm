@@ -8,6 +8,7 @@
 	>
 		<vm-draggable
 			v-for="(it, index) in dataSource"
+			ref="draggable"
 			:key="it.id"
 			:x.sync="it.x"
 			:y.sync="it.y"
@@ -81,7 +82,7 @@ export default {
 		},
 		handleDrop(e) {
 			let mod = e.dataTransfer.getData('vm-modules');
-			let result = this.$options.modules[mod];
+			let result = this.$parent.$options.modules[mod];
 			// 不存在的模块
 			if (!result) return;
 
@@ -91,6 +92,7 @@ export default {
 			let mouseY = e.pageY || e.clientY + doc.scrollTop;
 
 			let id = getUid();
+			let index = this.dataSource.length;
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push({
 				...result.data,
@@ -102,9 +104,12 @@ export default {
 
 			this.$emit('change', { 
 				type: 'create', 
-				index: this.dataSource.length - 1,
+				index,
 				id
 			});
+
+			// 新元素处于激活状态
+			this.setActived(index);
 		},
 		handleEnd(old, id, index) {
 			this.$emit('change', { 
@@ -112,6 +117,15 @@ export default {
 				id, 
 				index,
 				old
+			});
+		},
+		setActived(index) {
+			this.$nextTick(() => {
+				try {
+					this.$refs.draggable[index].setActived();
+				} catch (e) {
+					console.error(e);
+				}
 			});
 		}
 	},

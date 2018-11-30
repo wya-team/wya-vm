@@ -20,8 +20,7 @@ export default (modules = defaultModules, opts = {}) => {
 			editors[`vm-${item}-editor`] = _Editor;
 		});
 		// $options
-		newFrame.modules = modules;
-		newToolsWidget.modules = modules;
+		newCombo.modules = modules;
 
 		// components
 		newFrame.components = {
@@ -29,7 +28,7 @@ export default (modules = defaultModules, opts = {}) => {
 			...viewers
 		};
 		newEditor.components = {
-			...newToolsWidget.components,
+			...newEditor.components,
 			...editors
 		};
 		newCombo.components = {

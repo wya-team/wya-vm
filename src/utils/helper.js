@@ -18,12 +18,17 @@ export const isPassiveSupported = (() => {
 })();
 
 /**
+ * 判断是否存在
+ */
+export const hasOwn = (target, key) => Object.prototype.hasOwnProperty.call(target, key);
+
+/**
  * 深拷贝
  */
 let baseClone = (target, source) => {
 	for (let k in source) {
 		// 只拷贝实例属性，不进行原型的拷贝
-		if (Object.hasOwnProperty.call(source, k)) {
+		if (hasOwn(source, k)) {
 			// 引用类型的数据单独处理
 			if (typeof source[k] == 'object') {
 				target[k] = Array.isArray(source[k]) ? [] : {};
@@ -37,7 +42,7 @@ let baseClone = (target, source) => {
 	}
 	return target;
 };
-export const cloneDeep = (source) => baseClone({}, source);
+export const cloneDeep = (source) => baseClone(Array.isArray(source) ? [] : {}, source);
 
 
 /**

@@ -110,6 +110,10 @@ export default {
 		disable: {
 			type: Boolean, 
 			default: false
+		},
+		editEle: {
+			type: Array, 
+			default: () => (["#vm-editor", "#vm-tools-operation"])
 		}
 	},
 	data() {
@@ -151,8 +155,8 @@ export default {
 		// 组件捕获阶段执行
 		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };
 
-		// 是否改变了
-		this.startTag = null;
+		// 改变前状态
+		this.beforeStatus = null;
 	},
 	mounted() {
 		// 初始化控件宽高
@@ -169,6 +173,9 @@ export default {
 		// 判断是否只能在父级元素中拖动
 		this.parent && this.calculation();
 		this.$emit('resizing');
+	},
+	destroyed() {
+		this.operateDOMEvents('remove');
 	},
 	methods: {
 		calculation() {
@@ -191,7 +198,7 @@ export default {
 		sync(opts) {			
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
-					!this.startTag && (this.startTag = {
+					!this.beforeStatus && (this.beforeStatus = {
 						x: this.x,
 						y: this.y,
 						z: this.z,
@@ -202,23 +209,38 @@ export default {
 				}
 			}
 		},
+		operateDOMEvents(type) {
+			let fn = type === 'add' ? doc.addEventListener : doc.removeEventListener;
+
+			fn('mousedown', this.handleDeselect, this.eventOpts);
+			fn('mousemove', this.handleMove, this.eventOpts);
+			fn('mouseup', this.handleUp, this.eventOpts);
+		},
+		/**
+		 * 模拟设置active状态
+		 */
+		setActived() {
+			this.handleContainerDown();
+			this.handleUp();
+		},
 		/**
 		 * 组件被按下事件
 		 */
-		handleContainerDown(e) {
+		handleContainerDown(e = {}) {
 			// 阻止默认事件
-			e.preventDefault();
+			e.preventDefault && e.preventDefault();
 			// 判断是否支持拖动
 			if (this.disable || !this.draggable) return;
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
-			if (this.$el.contains(target)) {
+			if (!target || this.$el.contains(target)) {
 				if (!this.active) {
 					this.lastMouseX = e.pageX || e.clientX + doc.scrollLeft;
 					this.lastMouseY = e.pageY || e.clientY + doc.scrollTop;
-					doc.addEventListener('mousedown', this.handleDeselect, this.eventOpts);
-					doc.addEventListener('mousemove', this.handleMove, this.eventOpts);
-					doc.addEventListener('mouseup', this.handleUp, this.eventOpts);
+
+					// 绑定事件
+					this.operateDOMEvents('add');
+
 					this.active = true;
 					this.$emit('activated');
 				}
@@ -235,11 +257,16 @@ export default {
 			this.lastMouseY = this.mouseY;
 			const target = e.target || e.srcElement;
 			const regex = new RegExp('handle-([(top|right|-|bottom|left)]{2})', '');
-			if (!this.$el.contains(target) && !regex.test(target.className)) {
+			const eles = this.editEle.filter(item => document.querySelector(item));
+			if (
+				!this.$el.contains(target) 
+				&& !regex.test(target.className)
+				&& (eles.length === 0 || !eles.some(item => document.querySelector(item).contains(target)))
+			) {
 				if (this.active) {
-					doc.removeEventListener('mousedown', this.handleDeselect, this.eventOpts);
-					doc.removeEventListener('mousemove', this.handleMove, this.eventOpts);
-					doc.removeEventListener('mouseup', this.handleUp, this.eventOpts);
+					// 解绑
+					this.operateDOMEvents('remove');
+
 					this.active = false;
 					this.$emit('deactivated');
 				}
@@ -371,9 +398,9 @@ export default {
 				this.dragging = false;
 				this.$emit('drag-end');
 			}
-			if (this.startTag) {
-				this.$emit('end', this.startTag);
-				this.startTag = null;
+			if (this.beforeStatus) {
+				this.$emit('end', this.beforeStatus);
+				this.beforeStatus = null;
 			}
 		}
 	},
@@ -493,8 +520,9 @@ export default {
 	top: -10px;
 	left: 50%;
 	transform: translateX(-50%);
-	/* eslint-disable max-len */
-	cursor: url('data:image/vnd.microsoft.icon;base64,AAABAAEAFBQAAAEAIAC4BgAAFgAAACgAAAAUAAAAKAAAAAEAIAAAAAAAQAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZgRmZmYmZmZmdGZmZqlmZmbJZmZmzWZmZrFmZmZ+ZmZmLGZmZgYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmZmYcaWlp/319ff+srKz/y8vL/97e3v/h4eH/0NDQ/7Kysv+BgYH/ampq/2ZmZioAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmWHd3d/+1tbX/9vb2//////////////////////////////////r6+v++vr7/fHx8/2ZmZmwAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZmKBgYH/2tra////////////7Ozs/9PT0/++vr7/u7u7/8fHx//i4uL////////////m5ub/jY2N/2ZmZnwAAAAAAAAAAAAAAABmZmY6eXl5/+Dg4P///////////8rKyv+IiIj/ZmZmtWZmZpNmZmaNZmZmo3V1df+vr6//8fHx///////v7+//iIiI/2ZmZmgAAAAAZmZmBGlpaf/IyMj///////39/f+2trb/a2tr/2ZmZjwAAAAAAAAAAAAAAAAAAAAAZmZmGGZmZn6Ojo7/7u7u///////k5OT/cnJy/wAAAABmZmY8i4uL///////9/f3/zMzM/2lpaf9mZmYcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZnqgoKD/+fn5/9ra2v9tbW3/AAAAAGZmZpnCwsL///////Hx8f+CgoL/ZmZmQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmBGhoaP/BwcH/dHR0/7Kysp8AAAAAZmZm1ebm5v//////1tbW/2ZmZrsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG1tbf+/v7+dAAAAAAAAAABmZmbl7+/v//39/f++vr7/ZmZmkwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmCGZmZuPu7u7//f39/7u7u/9mZmaPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZm0+Xl5f//////0NDQ/2ZmZrEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmZmabwsLC///////r6+v/dXV1/2ZmZiYAAAAAAAAAAAAAAAAAAAAAAAAAAGZmZiJ7e3v/aGho/2hoaP9oaGj/aGho/2hoaP9oaGj/AAAAAGZmZjyKior//v7+//v7+/+8vLz/ZmZmkQAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmJHx8fP///////////////////////////2ZmZv8AAAAAZmZmBGhoaP/Jycn///////j4+P+jo6P/ZmZmi2ZmZh4AAAAAAAAAAAAAAAAAAAAAAAAAAHR0dP/j4+P/////////////////ZmZm/wAAAAAAAAAAZmZmPHp6ev/i4uL///////j4+P+4uLj/dXV1/2ZmZptmZmZ6ZmZmeGZmZpdxcXH/qamp//z8/P////////////////9mZmb/AAAAAAAAAAAAAAAAZmZmZoKCgv/e3t7////////////h4eH/w8PD/7CwsP+vr6//wMDA/97e3v/+/v7///////7+/v///////////2ZmZv8AAAAAAAAAAAAAAAAAAAAAZmZmXnl5ef+2trb/9fX1/////////////v7+//39/f/////////////////a2tr/k5OT/3V1df/T09P/ZmZmtwAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmHmlpaf98fHz/r6+v/9TU1P/k5OT/5ubm/9zc3P/BwcH/jo6O/25ubv8AAAAAAAAAAG1tbf9mZmZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmZmBGZmZiRmZmZ6ZmZmuWZmZtNmZmbVZmZmxWZmZpdmZmZCZmZmDAAAAAAAAAAAZmZmDAAAAAAAAAAA/w/wAPgB8ADwAPAA4ABwAMAAMACB/BAAg/4QAAf+EAAH/zAAB//wAAf/8AAH//AAB/AQAIPwEACB+BAAwGAQAOAAEADwABAA+AGwAP8H8AA=') 10 10,default;
+	cursor: url(
+		'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="font-size: 20px;"><text y="15">↻</text></svg>'
+	) 10 10,default;
 	padding: 5px;
 	border-top: 1px solid #108ee9;
 	border-left: 1px solid #108ee9;

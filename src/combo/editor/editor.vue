@@ -1,6 +1,7 @@
 <template>
 	<component
-		ref="target" 
+		id="vm-editor"
+		ref="target"
 		:is="`vm-${dataSource.module}-editor`" 
 		v-bind.sync="dataSource" 
 		@change="handleChange"
@@ -8,7 +9,7 @@
 </template>
 
 <script>
-import { valueIsNaN } from "../../utils/helper";
+import { valueIsNaN, hasOwn } from "../../utils/helper";
 
 export default {
 	name: 'vm-editor',
@@ -37,10 +38,19 @@ export default {
 				
 				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 				
-				Object.hasOwnProperty.call(opts, key) 
-					&& !valueIsNaN(val)
-					&& this.$refs.target.$emit(`update:${key}`, val);
+				if (hasOwn(opts, key) && !valueIsNaN(val)) {
+
+					this.$emit('change', { 
+						type: 'update', 
+						id: this.dataSource.id, 
+						old: { 
+							[key]: val 
+						} 
+					});
+					this.$refs.target.$emit(`update:${key}`, val);
+				}
 			}
+
 		}
 	},
 };

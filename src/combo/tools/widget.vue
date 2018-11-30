@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { hasOwn } from '../../utils/helper';
 
 export default {
 	name: 'vm-tools-widget',
@@ -33,10 +34,10 @@ export default {
 		dataSource: Array
 	},
 	data() {
-		const { modules } = this.$options;
+		const { modules } = this.$parent.$options;
 		let toolsList = {};
 		for (let key in modules) {
-			if (Object.hasOwnProperty.call(modules, key)) {
+			if (hasOwn(modules, key)) {
 				let item = modules[key];
 				let type = item.type || 'undefined';
 				if (!toolsList[type]) {

@@ -6,6 +6,7 @@
 		Width: {{ w }} <br>
 		Height: {{ h }} <br>
 		Rotate: {{ r }} <br>
+		Name: {{ name }} <br>
 	</div>
 </template>
 
@@ -22,6 +23,7 @@ export default {
 		w: Number,
 		h: Number,
 		r: Number,
+		name: [Number, String],
 	},
 	data() {
 		return {
