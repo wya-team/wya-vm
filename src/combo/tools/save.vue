@@ -1,12 +1,13 @@
 <template>
 	<div id="vm-tools-save">
 		<div @click="handleSave">保存</div>
-		<div>预览</div>
+		<div @click="handlePreview">预览</div>
 	</div>
 </template>
 
 <script>
 import { cloneDeep } from '../../utils/helper';
+import { Preview } from './preview.vue';
 
 export default {
 	name: 'vm-tools-save',
@@ -25,6 +26,9 @@ export default {
 		
 	},
 	created() {
+	},
+	destroyed() {
+		Preview.hide();
 	},
 	methods: {
 		handleSave() {
@@ -49,6 +53,9 @@ export default {
 			 * 数据验证
 			 */
 			this.$emit('save', data);
+		},
+		handlePreview() {
+			Preview.show({});
 		}
 	},
 };
