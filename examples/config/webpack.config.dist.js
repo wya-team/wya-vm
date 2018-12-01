@@ -19,7 +19,11 @@ const webpackConfig = {
 		new AssetsPlugin({
 			path: path.resolve(APP_ROOT, 'dist/js/'),
 			filename: 'webpack-assets.js',
-			processOutput: assets => `window.WEBPACK_ASSETS=${JSON.stringify(assets)}`
+			includeAllFileTypes: false,
+			processOutput: assets => {
+				delete assets[''];
+				return `window.WEBPACK_ASSETS=${JSON.stringify(assets)}`;
+			}
 		}),
 		/**
 		 * 压缩同时转移静态文件
