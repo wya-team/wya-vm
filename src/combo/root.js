@@ -3,6 +3,7 @@ import { cloneDeep } from '../utils/helper';
 import Combo from './combo.vue';
 import Frame from './frame/frame.vue';
 import ToolsWidget from './tools/widget.vue';
+import ToolsPreview from './tools/preview.vue';
 import Editor from './editor/editor.vue';
 
 export default (modules = defaultModules, opts = {}) => {
@@ -10,6 +11,7 @@ export default (modules = defaultModules, opts = {}) => {
 		let newCombo = cloneDeep(opts.Combo || Combo);
 		let newFrame = cloneDeep(opts.Frame || Frame);
 		let newToolsWidget = cloneDeep(opts.ToolsWidget || ToolsWidget);
+		let newToolsPreview = cloneDeep(opts.ToolsPreview || ToolsPreview);
 		let newEditor = cloneDeep(opts.Editor || Editor);
 
 		let viewers = {};
@@ -21,6 +23,8 @@ export default (modules = defaultModules, opts = {}) => {
 		});
 		// $options
 		newCombo.modules = modules;
+		newCombo.viewers = viewers;
+		newCombo.editors = editors;
 
 		// components
 		newFrame.components = {
@@ -37,8 +41,15 @@ export default (modules = defaultModules, opts = {}) => {
 			'vm-editor': newEditor,
 			'vm-tools-widget': newToolsWidget,
 		};
+
+		newToolsPreview.components = {
+			...newToolsPreview.components,
+			...viewers
+		};
+		
 		return {
 			Combo: newCombo,
+			Preview: newToolsPreview
 		};
 	} catch (e) {
 		console.error(`[wya-vm/register]`, e);

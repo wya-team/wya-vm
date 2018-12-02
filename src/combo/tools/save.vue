@@ -55,7 +55,17 @@ export default {
 			this.$emit('save', data);
 		},
 		handlePreview() {
-			Preview.show({});
+			if ( this.$parent.dataSource.length === 0 ) return;
+			Preview.show({
+				components: this.$parent.$options.viewers,
+				dataSource: cloneDeep(this.$parent.dataSource),
+				css: {
+					style: {
+						width: '500px',
+						height: '500px'
+					}
+				}
+			});
 		}
 	},
 };

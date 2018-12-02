@@ -1,6 +1,20 @@
 <template>
-	<div>
-		test
+	<div class="vm-tools-preview">
+		<div class="__mask" @click="handleClose"/>
+		<div class="__content">
+			<div style="position: relative;" :style="css.style" :class="css.className">
+				<div 
+					v-for="(it) in dataSource" 
+					:key="it.id" 
+					:style="{ position: 'absolute', width: `${it.w}px`, height: `${it.h}px`, left: `${it.x}px`, top: `${it.y}px`, transform: `rotate(${it.r}deg)`}"
+				>
+					<component
+						:is="`vm-${it.module}-viewer`" 
+						v-bind="it" 
+					/>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -13,7 +27,11 @@ const wrapper = {
 
 	},
 	props: {
-
+		dataSource: Array,
+		css: {
+			type: Object,
+			default: () => ({ style: {}, className: "" })
+		}
 	},
 	data() {
 		return {
@@ -26,10 +44,11 @@ const wrapper = {
 		
 	},
 	created() {
-		
 	},
 	methods: {
-
+		handleClose() {
+			this.$emit('close');
+		}
 	},
 };
 export default wrapper;
@@ -57,10 +76,9 @@ export const Preview = {
 		this.vm.$on('close', () => {
 			this.vm.$destroy();
 			// 主动卸载节点
-			Dom.removeChild(this.vm.$el);
+			document.body.removeChild(this.vm.$el);
 		});
 		document.body.appendChild(this.vm.$el);
-
 		return this.vm;
 	},
 	hide() {
@@ -70,4 +88,33 @@ export const Preview = {
 </script>
 
 <style lang="scss" scoped>
+.vm-tools-preview {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	z-index: 999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.__mask {
+		position: absolute;
+		z-index: 997;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(#000, 0.5);
+		// opacity: 0;
+		transition: opacity 0.2s;
+	}
+	.__content {
+		z-index: 1000;
+		overflow: auto;
+		max-height: 100vh; 
+		max-width: 100vw; 
+	}
+}
+
 </style>
