@@ -11,8 +11,8 @@ export const tpl = {
 	// 初始数据
 	data: {
 		// for draggable
-		w: 100,
-		h: 100,
+		w: 200,
+		h: 150,
 		r: 0,
 		x: 0, // 动态分配
 		y: 0, // 动态分配

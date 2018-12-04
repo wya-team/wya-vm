@@ -19,7 +19,7 @@
 						}"
 					>
 						<component
-							:is="`vm-tpl-viewer`" 
+							:is="`vm-${it.module}-viewer`" 
 							v-bind="it" 
 						/>
 					</div>

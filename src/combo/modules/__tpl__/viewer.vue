@@ -1,5 +1,6 @@
 <template>
-	<div :style="[{ height: `${h}px`, width: `${w}px`, backgroundColor: `rgb(255, 51, ${z}${z})`, color: 'white' }]">
+	<div :style="[{ height: `${h}px`, width: `${w}px`, color: 'black' }]">
+		id: {{ id }} <br>
 		X: {{ x }} <br>
 		Y: {{ y }} <br>
 		Z: {{ z }} <br>
@@ -17,6 +18,7 @@ export default {
 	components: {
 	},
 	props: {
+		id: String,
 		x: Number,
 		y: Number,
 		z: Number,
