@@ -1,1 +1,1 @@
-window.WEBPACK_ASSETS={"common":{"js":"/wya-vm/examples/dist/js/common.32e98f03.chunk.js"},"main":{"js":"/wya-vm/examples/dist/js/main.32e98f03.bundle.js","css":"/wya-vm/examples/dist/css/initial.main.32e98f03.css"}}
+window.WEBPACK_ASSETS={"common":{"js":"/wya-vm/examples/dist/js/common.9b3f9c3c.chunk.js"},"main":{"js":"/wya-vm/examples/dist/js/main.9b3f9c3c.bundle.js","css":"/wya-vm/examples/dist/css/initial.main.9b3f9c3c.css"}}
