@@ -38,7 +38,6 @@ export default {
 	computed: {
 		xArr() {
 			let length = Math.floor(this.width / this.grid[0]);
-			console.log(length);
 			return Array.from({ length }, (v, i) => i * this.grid[0]);
 		},
 		yArr() {
