@@ -341,7 +341,12 @@ export default {
 					elmW += diffX;
 				}
 				if (this.handle === 'rotate') {
-					// this.sync({ r: this.r + 10 });
+					this.sync({ 
+						r: this.getAngle(
+							[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
+							[this.lastMouseX, -this.lastMouseY],
+						) 
+					});
 				}
 				this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
@@ -373,6 +378,19 @@ export default {
 				});
 				this.$emit('dragging');
 			}
+		},
+		getAngle(center, last) {
+			let diffX = last[0] - center[0];
+			let diffY = last[1] - center[1];
+			/**
+			 * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math/atan2
+			 * -180 <= c < 180
+			 */
+			let c = 360 * Math.atan2(diffY, diffX) / (2 * Math.PI);
+			c = c > 90 
+				? (450 - c) // 第4
+				: 90 - c; // 第1，2，3象限
+			return Math.floor(c);
 		},
 		getRestrain(num) {
 			const restrain = this.restrain;
