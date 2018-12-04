@@ -23,6 +23,7 @@
 			:width="frameW" 
 			:height="frameH" 
 			:data-source="dataSource" 
+			:editor="editor" 
 			v-bind="frameOpts"
 			class="__frame"
 			@activated="handleActivated"

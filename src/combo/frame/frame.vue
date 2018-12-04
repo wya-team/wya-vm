@@ -6,6 +6,8 @@
 		@dragend="handleDragEnd"
 		@drop="handleDrop"
 	>
+		<vm-grid-lines :width="width" :height="height" :grid="[10, 10]" />
+		<vm-align-lines :data-source="dataSource" :editor="editor"/>
 		<vm-draggable
 			v-for="(it, index) in dataSource"
 			ref="draggable"
@@ -43,12 +45,16 @@
 
 <script>
 import Draggable from '../../core/draggable.vue';
+import GridLines from './grid-lines.vue';
+import AlignLines from './align-lines.vue';
 import { getUid, cloneDeep } from '../../utils/helper';
 
 export default {
 	name: 'vm-frame',
 	components: {
-		'vm-draggable': Draggable
+		'vm-draggable': Draggable,
+		'vm-grid-lines': GridLines,
+		'vm-align-lines': AlignLines,
 	},
 	props: {
 		width: Number,
@@ -57,7 +63,8 @@ export default {
 			type: String,
 			default: 'free' // sort-list
 		},
-		dataSource: Array
+		dataSource: Array,
+		editor: Object
 	},
 	data() {
 		return {
@@ -67,7 +74,6 @@ export default {
 		style() {
 			const w = this.width === 0 ? 'auto' : `${this.width}px`;
 			const h = this.height === 0 ? 'auto' : `${this.height}px`;
-
 			return {
 				width: w,
 				height: h
