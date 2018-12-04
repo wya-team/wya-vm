@@ -6,16 +6,16 @@
 			class="__tools"
 		/>
 		<vm-tools-save
-			@save="handleSave"
-			@save-error="handleSaveError"
+			@save="handleOperate('save')"
+			@preview="handleOperate('preview')"
 		/>
 		<vm-tools-operation
-			:current-step="currentStep"
-			:last-step="lastStep"
+			:current="current"
+			:total="total"
 			:is-edit="!!editor"
-			@undo="handleUndo"
-			@redo="handleRedo"
-			@delete="handleDelete"
+			@undo="handleOperate('undo')"
+			@redo="handleOperate('redo')"
+			@delete="handleOperate('delete')"
 		/>
 		<vm-frame 
 			ref="frame"
@@ -40,6 +40,7 @@
 <script>
 import ToolsOperation from './tools/operation.vue';
 import ToolsSave from './tools/save.vue';
+import { Preview } from './tools/preview.vue';
 import { cloneDeep } from '../utils/helper';
 
 export default {
@@ -83,8 +84,8 @@ export default {
 			/**
 			 * vm-tools-operation
 			 */
-			currentStep: 0,
-			lastStep: 0,
+			current: 0,
+			total: 0,
 		};
 	},
 	computed: {
@@ -101,7 +102,21 @@ export default {
 	created() {
 		this.historyData = [];
 	},
+	destroyed() {
+		Preview.hide();
+	},
 	methods: {
+		/**
+		 * 目前只支持以下几种数据
+		 * current, total
+		 */
+		sync(opts) {	
+			for (let key in opts) {
+				if (this[key] != opts[key]) {
+					this.$emit(`update:${key}`, opts[key]);
+				}
+			}
+		},
 		/**
 		 * draggable
 		 */
@@ -118,7 +133,7 @@ export default {
 			if (!type || !id) {
 				console.error('[wya-vm/combo]: id, type is required');
 			}
-			const { currentStep, lastStep } = this;
+			const { current, total } = this;
 			const target = {
 				type,
 				id,
@@ -127,26 +142,45 @@ export default {
 				data: cloneDeep(this.dataSource.find(item => item.id === id)),
 			};
 
-			currentStep === lastStep 
+			current === total 
 				? this.historyData.push(target)
-				: this.historyData.splice(currentStep, lastStep - currentStep, target);
+				: this.historyData.splice(current, total - current, target);
 
 			let { length } = this.historyData;
-			this.currentStep = length;
-			this.lastStep = length;
+			this.current = length;
+			this.total = length;
 			
 			type === 'delete' && (this.dataSource.splice(target.index, 1), this.editor = null);
 		},
 		/**
 		 * tools-operation
 		 */
-		handleDelete() {
+		handleOperate(type) {
+			this[type] && this[type]();
+		},
+		delete() {
 			const { id } = this.editor || {};
+			if (!id) {
+				this.$emit('error', { 
+					type: 'id', 
+					msg: "请先选择操作对象" 
+				});
+			}
 			this.handleChange({ type: 'delete', id });
 		},
-		handleUndo() {
-			this.currentStep -= 1;
-			let { type, id, data, index, old } = this.historyData[this.currentStep] || {};
+		undo() {
+			let current = this.current - 1;
+			if (current < 0) {
+				this.$emit('error', { 
+					type: 'undo', 
+					msg: "目前已经是初始状态" 
+				});
+				return;
+			}
+
+			this.current = current;
+
+			let { type, id, data, index, old } = this.historyData[this.current] || {};
 			// splice 操作了props的数据，待优化
 			switch (type) {
 				case 'create':
@@ -165,10 +199,19 @@ export default {
 				this.editor = this.dataSource[index];
 			}
 		},
-		handleRedo() {
-			this.currentStep += 1;
+		redo() {
+			let current = this.current + 1;
+			if (current > this.total) {
+				this.$emit('error', { 
+					type: 'undo', 
+					msg: "目前已经是最终状态" 
+				});
+				return;
+			}
 
-			let { type, id, data, index } = this.historyData[this.currentStep - 1];
+			this.current = current;
+
+			let { type, id, data, index } = this.historyData[this.current - 1];
 			// splice 操作了props的数据，待优化
 			switch (type) {
 				case 'create':
@@ -190,21 +233,65 @@ export default {
 		/**
 		 * tools-save
 		 */
-		handleSave(data) {
-			this.$emit('save', data);
-			// 其他操作
-			// ...
-		},
-		handleSaveError(error, index) {
-			this.$emit('save', error);
+		save() {
+			const data = cloneDeep(this.dataSource) || [];
 
-			// 错误元素激活
-			typeof index === 'number' && this.$refs.frame.setActived(index);
+			if (data.length === 0) {
+				this.$emit('error', { 
+					type: 'save', 
+					msg: `保存对象不能为空` 
+				});
+				return;
+			}
+			const { modules } = this.$options;
+			for (let i = 0; i < data.length; i++) {
+				let { module: mod } = data[i];
+				if (modules[mod].dataValidity) {
+					let error = modules[mod].dataValidity(data[i]);
+					if (error) {
+						this.$emit('error', { 
+							type: 'save', 
+							msg: `第${i + 1}个 - ${error.error}`, 
+							index: i 
+						});
+						// 错误元素激活
+						this.$refs.frame.setActived(i);
+						return;
+					}
+				}
+			}
+			/**
+			 * 数据验证
+			 */
+			this.$emit('save', data);
+		},
+		preview() {
+			if (this.dataSource.length === 0) {
+				this.$emit('error', { 
+					type: 'preview', 
+					msg: `预览数据对象不能为空` 
+				});
+				return;
+			}
+			Preview.show({
+				components: this.$options.viewers,
+				dataSource: cloneDeep(this.dataSource),
+				css: {
+					style: {
+						...this.frameStyle,
+						width: this.frameW === 0 ? 'auto' : `${this.frameW}px`,
+						height: this.frameH === 0 ? 'auto' : `${this.frameH}px`
+					},
+					className: '__frame'
+				}
+			});
 		}
 	},
 };
 </script>
 
 <style lang="scss" scoped>
-
+.vm-combo {
+	// display: flex
+}
 </style>

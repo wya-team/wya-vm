@@ -17,7 +17,7 @@ export const tpl = {
 		x: 0, // 动态分配
 		y: 0, // 动态分配
 		z: 1,
-		parent: true,
+		parent: false,
 		// for content
 		name: '名称'
 	},

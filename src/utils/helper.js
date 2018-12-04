@@ -57,3 +57,16 @@ export const getUid = () => `vm-${now}-${++index}`;
  */
 /* eslint-disable no-self-compare */
 export const valueIsNaN = v => v !== v; 
+
+/**
+ * 清楚vue对组件的缓存
+ */
+export const clearCtor = (obj) => {
+	let target = cloneDeep(obj);
+	for (let key in target) {
+		if (target[key]._Ctor) {
+			target[key]._Ctor = null;
+		}
+	}
+	return target;
+};

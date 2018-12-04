@@ -46,10 +46,10 @@ export default (modules = defaultModules, opts = {}) => {
 			...newToolsPreview.components,
 			...viewers
 		};
-		
+		// cloneDeep 避免相互干扰，vue内部会改变_Ctor缓存
 		return {
-			Combo: newCombo,
-			Preview: newToolsPreview
+			Combo: cloneDeep(newCombo),
+			Preview: cloneDeep(newToolsPreview)
 		};
 	} catch (e) {
 		console.error(`[wya-vm/register]`, e);

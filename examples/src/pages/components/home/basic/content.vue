@@ -7,6 +7,7 @@
 			:frame-h="500"
 			style="height: 1000px; width: 1000px;"
 			@save="handleSave"
+			@error="handleError"
 		/>
 	</div>
 </template>
@@ -30,11 +31,10 @@ export default {
 	},
 	methods: {
 		handleSave(response) {
-			if (typeof response === 'string') {
-				Message.error(response);
-				return;
-			}
 			console.log(response, this.list);
+		},
+		handleError({ type, msg }) {
+			Message.error(msg);
 		}
 	},
 };

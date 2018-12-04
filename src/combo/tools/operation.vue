@@ -1,11 +1,11 @@
 <template>
 	<div id="vm-tools-operation">
 		<div 
-			:class="{ disabled: currentStep === 0 }" 
+			:class="{ disabled: current === 0 }" 
 			@click="handleUndo"
 		>←</div>
 		<div 
-			:class="{ disabled: currentStep === lastStep }" 
+			:class="{ disabled: current === total }" 
 			@click="handleRedo"
 		>→</div>
 		<div 
@@ -13,8 +13,8 @@
 			@click="handleDelete"
 		>✕</div>
 		<span>
-			cur: {{ currentStep }}
-			last: {{ lastStep }}
+			cur: {{ current }}
+			last: {{ total }}
 		</span>
 	</div>
 </template>
@@ -26,8 +26,8 @@ export default {
 	components: {
 	},
 	props: {
-		lastStep: Number,
-		currentStep: Number,
+		total: Number,
+		current: Number,
 		isEdit: Boolean
 	},
 	data() {
