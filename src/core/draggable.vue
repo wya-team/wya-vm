@@ -4,10 +4,10 @@
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
-		<div :class="{ disable, active, dragging, resizing, rotating}" :style="style">
+		<div v-if="active" :class="{ disable, active, dragging, resizing, rotating}" :style="style">
 			<template v-for="item in handles">
 				<div
-					v-if="!disable && active"
+					v-if="!disable"
 					:key="item"
 					:class="`handle-${item}`"
 					class="handle"
