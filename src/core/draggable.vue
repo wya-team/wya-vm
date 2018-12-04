@@ -1,23 +1,38 @@
 <template>
-	<div
-		:class="{ draggable: draggable && !disable, resizable: resizable && !disable, active , dragging, resizing}"
-		:style="style"
-		class="vm-draggable"
-		tabindex="0"
-		@mousedown.stop="handleContainerDown"
-	>
-		<div v-if="active" class="border" />
-		<!-- <div v-if="active" class="delete" @click="handleDel">&#10005;</div> -->
-		<template v-for="item in handles">
-			<div
-				v-if="resizable && !disable"
-				:key="item"
-				:class="`handle-${item}`"
-				class="handle"
-				@mousedown.left.stop.prevent="handleDown($event, item)"
-			/>
-		</template>
-		<slot/>
+	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
+		<div :style="style">
+			<slot/>
+		</div>
+		<!-- handle -->
+		<div 
+			:class="{ 
+				draggable: draggable && !disable, 
+				resizable: resizable && !disable, 
+				rotatable: rotatable && !disable, 
+				active, 
+				dragging, 
+				resizing,
+				rotating,
+			}"
+			:style="style"
+		>
+			<template v-for="item in handles">
+				<div
+					v-show="!disable && (item != 'rotate' && resizable || item == 'rotate' && rotatable)"
+					:key="item"
+					:class="`handle-${item}`"
+					class="handle"
+					@mousedown.left.stop.prevent="handleDown($event, item)"
+				/>
+			</template>
+			<div v-show="rotating" :class="{ 'rotate-base-line': rotating}" :style="{ width }" />
+		</div>
+		<!-- grid for rotate -->
+		<div v-show="rotating" :class="{ 'rotate-deg-0': rotating}" :style="{ width }" />
+		<div v-show="rotating" :class="{ 'rotate-deg-45': rotating}" :style="{ width }" />
+		<div v-show="rotating" :class="{ 'rotate-deg-90': rotating}" :style="{ width }" />
+		<div v-show="rotating" :class="{ 'rotate-deg-135': rotating}" :style="{ width }" />
+		<div v-show="rotating" :class="{ 'rotate-tip': rotating}">{{ r }} °</div>
 	</div>
 </template>
 
@@ -25,6 +40,7 @@
 import { isPassiveSupported } from '../utils/helper';
 
 const doc = document.documentElement;
+const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
 
 export default {
 	replace: true,
@@ -37,6 +53,10 @@ export default {
 		},
 		// 是否可改变大小
 		resizable: {
+			type: Boolean,
+			default: true
+		},
+		rotatable: {
 			type: Boolean,
 			default: true
 		},
@@ -120,21 +140,32 @@ export default {
 		return {
 			resizing: false,
 			dragging: false,
+			rotating: false,
 			active: false
 		};
 	},
 	computed: {
+		coord() {
+			return {
+				left: this.x + 'px',
+				top: this.y + 'px',
+				zIndex: this.z
+			};
+		},
 		style() {
 			const w = this.w === 0 ? 'auto' : `${this.w}px`;
 			const h = this.h === 0 ? 'auto' : `${this.h}px`;
 			return {
-				left: this.x + 'px',
-				top: this.y + 'px',
 				width: w,
 				height: h,
-				transform: `rotate(${this.r}deg)`,
-				zIndex: this.z
+				transform: `rotate(${this.r}deg)`
 			};
+		},
+		width() {
+			let num = Math.floor(
+				Math.sqrt(this.w * this.w + this.h * this.h) * 1.15
+			);
+			return `${num}px`;
 		}
 	},
 	watch: {},
@@ -278,7 +309,11 @@ export default {
 		handleDown(e, handle) {
 			// 将handle设置为当前元素
 			this.handle = handle;
-			this.resizing = true;
+			if (handle === 'rotate') {
+				this.rotating = true;
+			} else {
+				this.resizing = true;
+			}
 
 			this.preMouseX = e.pageX || e.clientX + doc.scrollLeft;
 			this.preMouseY = e.pageY || e.clientY + doc.scrollTop;
@@ -340,14 +375,6 @@ export default {
 					}
 					elmW += diffX;
 				}
-				if (this.handle === 'rotate') {
-					this.sync({ 
-						r: this.getAngle(
-							[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
-							[this.lastMouseX, -this.lastMouseY],
-						) 
-					});
-				}
 				this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
@@ -355,6 +382,19 @@ export default {
 					h: (Math.round(elmH / this.grid[1]) * this.grid[1]),
 				});
 				this.$emit('resizing');
+			} else if (this.rotating) {
+				let angle = this.getAngle(
+					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
+					[this.lastMouseX, -this.lastMouseY],
+				);
+				
+				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
+				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
+
+				this.sync({ 
+					r: angle === 360 ? 0 : angle
+				});
+				this.$emit('rotating');
 			} else if (this.dragging) {
 				if (this.parent) {
 					if (elmX + diffX < 0) {
@@ -408,6 +448,10 @@ export default {
 					h: this.getRestrain(this.h),
 				});
 			}
+			if (this.rotating) {
+				this.rotating = false;
+				this.$emit('rotate-end');
+			}
 			if (this.resizing) {
 				this.resizing = false;
 				this.$emit('resize-end');
@@ -431,19 +475,19 @@ export default {
 	position: absolute;
 	box-sizing: border-box;
 	user-select: none;
-	&.draggable:hover {
+	.draggable:hover {
 		cursor: move;
 	}
-	&.active {
+	.active {
 		padding: 0;
-		.border {
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			position: absolute;
-			border: 1px solid #108ee9;
-		}
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		position: absolute;
+		z-index: 2;
+		border: 1px solid #108ee9;
+		position: absolute;
 		.handle {
 			display: block;
 		}
@@ -545,5 +589,52 @@ export default {
 	border-top: 1px solid #108ee9;
 	border-left: 1px solid #108ee9;
 	border-right: 1px solid #108ee9;
+}
+/**
+ * rotate
+ */
+.rotate-base-line {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 2;
+	width: 500px;
+	border: 1px solid #1fb6ff;
+	background-color: #1fb6ff;
+	transform: translate(-50%, -50%) rotate(90deg);
+}
+div[class^=rotate-deg-] {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 2;
+	width: 500px;
+	border-top: 1px dashed #fff;
+	border-bottom: 1px dashed #262626;
+	opacity: .4;
+}
+.rotate-deg-0 {
+	transform: translate(-50%, -50%);
+}
+.rotate-deg-45 {
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+.rotate-deg-90 {
+	transform: translate(-50%, -50%) rotate(90deg);
+}
+.rotate-deg-135 {
+	transform: translate(-50%, -50%) rotate(135deg);
+}
+.rotate-tip {
+	position: absolute;
+	top: -50px;
+	left: 60%;
+	width: 40px;
+	height: 16px;
+	line-height: 16px;
+	text-align: center;
+	border: 1px solid #262626;
+	border-radius: 8px;
+	background-color: #fff;
 }
 </style>
