@@ -1,38 +1,27 @@
 <template>
 	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
 		<div :style="style">
-			<slot/>
+			<slot :style="style"/>
 		</div>
 		<!-- handle -->
-		<div 
-			:class="{ 
-				draggable: draggable && !disable, 
-				resizable: resizable && !disable, 
-				rotatable: rotatable && !disable, 
-				active, 
-				dragging, 
-				resizing,
-				rotating,
-			}"
-			:style="style"
-		>
+		<div :class="{ disable, active, dragging, resizing, rotating}" :style="style">
 			<template v-for="item in handles">
 				<div
-					v-show="!disable && (item != 'rotate' && resizable || item == 'rotate' && rotatable)"
+					v-if="!disable && active"
 					:key="item"
 					:class="`handle-${item}`"
 					class="handle"
 					@mousedown.left.stop.prevent="handleDown($event, item)"
 				/>
 			</template>
-			<div v-show="rotating" :class="{ 'rotate-base-line': rotating}" :style="{ width }" />
+			<div v-if="rotating" :class="{ 'rotate-base-line': rotating }" :style="{ width }" />
 		</div>
 		<!-- grid for rotate -->
-		<div v-show="rotating" :class="{ 'rotate-deg-0': rotating}" :style="{ width }" />
-		<div v-show="rotating" :class="{ 'rotate-deg-45': rotating}" :style="{ width }" />
-		<div v-show="rotating" :class="{ 'rotate-deg-90': rotating}" :style="{ width }" />
-		<div v-show="rotating" :class="{ 'rotate-deg-135': rotating}" :style="{ width }" />
-		<div v-show="rotating" :class="{ 'rotate-tip': rotating}">{{ r }} °</div>
+		<div v-if="rotating" :class="{ 'rotate-deg-0': rotating }" :style="{ width }" />
+		<div v-if="rotating" :class="{ 'rotate-deg-45': rotating }" :style="{ width }" />
+		<div v-if="rotating" :class="{ 'rotate-deg-90': rotating }" :style="{ width }" />
+		<div v-if="rotating" :class="{ 'rotate-deg-135': rotating }" :style="{ width }" />
+		<div v-if="rotating" :class="{ 'rotate-tip': rotating }">{{ r }} °</div>
 	</div>
 </template>
 
@@ -387,7 +376,7 @@ export default {
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
 					[this.lastMouseX, -this.lastMouseY],
 				);
-				
+
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
 				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
 
@@ -486,20 +475,31 @@ export default {
 		bottom: 0;
 		position: absolute;
 		z-index: 2;
-		border: 1px solid #108ee9;
+		border: 1px dotted #108ee9;
 		position: absolute;
 		.handle {
 			display: block;
 		}
-		.delete {
-			background: #108ee9;
-			position: absolute;
-			right: 0;
-			width: 20px;
-			color: white;
-			text-align: center;
-			z-index: 300
+	}
+	.disable {
+		border: 1px dotted #e96101;
+		.handle-rotate {
+			&:after {
+				background: #e96101;
+			}
+			&:before {
+				color: #e96101;
+			}
 		}
+	}
+	.delete {
+		background: #108ee9;
+		position: absolute;
+		right: 0;
+		width: 20px;
+		color: white;
+		text-align: center;
+		z-index: 300
 	}
 }
 
@@ -579,16 +579,27 @@ export default {
 	padding: 5px;
 }
 .handle-rotate {
-	top: -10px;
+	top: 0;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate(-50%, -100%);
 	cursor: url(
 		'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="font-size: 20px;"><text y="15">↻</text></svg>'
 	) 10 10,default;
-	padding: 5px;
-	border-top: 1px solid #108ee9;
-	border-left: 1px solid #108ee9;
-	border-right: 1px solid #108ee9;
+	display: flex !important;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	&:after {
+		content: ' ';
+		height: 10px;
+		width: 1px;
+		background: #108ee9;
+	}
+	&:before {
+		content: '☐';
+		transform: translateY(26%);
+		color: #108ee9;
+	}
 }
 /**
  * rotate
