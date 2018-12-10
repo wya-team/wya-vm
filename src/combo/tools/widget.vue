@@ -5,13 +5,14 @@
 				{{ key }}		
 			</div>
 			<div 
-				v-for="i in item" 
-				:key="i" 
+				v-for="(it) in item" 
+				:key="it.module" 
 				class="__item" 
 				draggable 
-				@dragstart="handleStart($event, i)"
+				@dragstart="handleStart($event, it.module)"
 			>
-				{{ i }}
+				<span v-if="typeof it.component === 'string'">{{ it.component }}</span>
+				<component v-else :is="`v-${it.module}-widget`"/>
 			</div>
 		</div>
 	</div>
@@ -43,7 +44,10 @@ export default {
 				if (!toolsList[type]) {
 					toolsList[type] = [];
 				}
-				toolsList[type].push(item.module);
+				toolsList[type].push({
+					module: item.module,
+					component: item.Widget || item.name
+				});
 			}
 		}
 		return {

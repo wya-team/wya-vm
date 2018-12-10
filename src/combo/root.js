@@ -16,10 +16,12 @@ export default (modules = defaultModules, opts = {}) => {
 
 		let viewers = {};
 		let editors = {};
+		let widgets = {};
 		Object.keys(modules).forEach((item, index) => {
-			let { Viewer: _Vditor, Editor: _Editor } = modules[item]; 
+			let { Viewer: _Vditor, Editor: _Editor, Widget: _Widget } = modules[item]; 
 			viewers[`vm-${item}-viewer`] = _Vditor;
 			editors[`vm-${item}-editor`] = _Editor;
+			widgets[`vm-${item}-widget`] = _Widget;
 		});
 		// $options
 		newCombo.modules = modules;
@@ -35,6 +37,12 @@ export default (modules = defaultModules, opts = {}) => {
 			...newEditor.components,
 			...editors
 		};
+
+		newToolsWidget.components = {
+			...newToolsWidget.components,
+			...widgets
+		};
+
 		newCombo.components = {
 			...newCombo.components,
 			'vm-frame': newFrame,
