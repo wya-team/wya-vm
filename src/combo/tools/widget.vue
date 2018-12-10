@@ -12,7 +12,7 @@
 				@dragstart="handleStart($event, it.module)"
 			>
 				<span v-if="typeof it.component === 'string'">{{ it.component }}</span>
-				<component v-else :is="`v-${it.module}-widget`"/>
+				<component v-else :is="`vm-${it.module}-widget`"/>
 			</div>
 		</div>
 	</div>
