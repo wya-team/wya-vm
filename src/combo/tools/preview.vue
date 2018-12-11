@@ -1,9 +1,12 @@
 <template>
 	<div class="vm-tools-preview">
-		<transition name="fade">
+		<transition v-if="mask" :name="animation" >
 			<div v-show="visible" class="__mask" @click="handleClose" />
 		</transition>
-		<transition name="fade">
+		<transition v-if="mask" :name="animation" >
+			<div v-show="visible" class="__close" @click="handleClose">&#10005;</div>
+		</transition>
+		<transition :name="animation">
 			<div v-show="visible" class="__content">
 				<div :style="css.style" :class="css.className" style="position: relative;">
 					<div 
@@ -43,7 +46,15 @@ const wrapper = {
 		css: {
 			type: Object,
 			default: () => ({ style: {}, className: "" })
-		}
+		},
+		animation: {
+			type: String,
+			default: 'fade'
+		},
+		mask: {
+			type: Boolean,
+			default: true
+		},
 	},
 	data() {
 		return {
@@ -65,7 +76,6 @@ const wrapper = {
 	methods: {
 		handleClose() {
 			this.visible = false;
-			this.transform = `translate(-100px, -100px)`;
 			setTimeout(() => {
 				this.$emit('close');
 			}, 300); // 动画时间
@@ -136,11 +146,19 @@ export const Preview = {
 		transition: opacity 0.2s;
 	}
 	.__content {
-		z-index: 1000;
-		overflow: auto;
+		position: relative;
+		z-index: 998;
+		overflow: auto; // 区域之外不形式
 		max-height: 100vh; 
 		max-width: 100vw; 
 		transition: transform 0.2s, opacity 0.2s;
+	}
+	.__close {
+		position: absolute;
+		right: 30px; 
+		top: 30px;
+		font-size: 24px;
+		z-index: 999;
 	}
 }
 .fade-enter, .fade-leave-active {

@@ -22,7 +22,7 @@ export default {
 <style lang="scss" scoped>
 .c-layout{
 	position: relative;
-	height: 100%;
-	overflow: hidden;
+	// height: 100%;
+	// overflow: hidden;
 }
 </style>
