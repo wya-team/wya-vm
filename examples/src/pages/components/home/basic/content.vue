@@ -24,8 +24,12 @@ export default {
 	},
 	data() {
 		return {
-			list: []
 		};
+	},
+	computed: {
+		list() {
+			return this.$store.state.homeBasic.list;
+		}
 	},
 	created() {
 	},

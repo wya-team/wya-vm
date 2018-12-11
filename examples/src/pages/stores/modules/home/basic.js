@@ -1,7 +1,8 @@
 // import * as types from '@mutations/home';
 
 const initialState = {
-	data: ''
+	list: [],
+	value: 2
 };
 
 const mutations = {
