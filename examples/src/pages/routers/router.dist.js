@@ -24,6 +24,7 @@ import SetTitle from '@common/set-title/set-title';
 import emitter from '@extends/mixins/emitter';
 import request from '@extends/plugins/request';
 import VcConfig from './vc.config';
+import { PRE_ROUTER_URL } from '../constants/constants';
 
 /**
  * 全局变量 _global
