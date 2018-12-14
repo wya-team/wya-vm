@@ -131,14 +131,14 @@ export default {
 		/**
 		 * 是否屏蔽默认事件
 		 */
-		preventDefault: {
+		prevent: {
 			type: Boolean, 
 			default: true
 		},
-		preventDefaultException: {
+		preventRegExp: {
 			type: Object, 
 			default: () => ({
-				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/
+				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/
 			})
 		},
 	},
@@ -265,9 +265,9 @@ export default {
 		 */
 		handleContainerDown(e = {}) {
 			// 去除默认事件 todo: 匹配输入框
-			this.preventDefault 
+			this.prevent
 				&& e.preventDefault 
-				&& !eleInRegExp(e.target, this.preventDefaultException)
+				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
 			// 判断是否支持拖动
@@ -321,9 +321,9 @@ export default {
 		 */
 		handleDown(e, handle) {
 			// 去除默认事件 todo: 匹配输入框
-			this.preventDefault 
+			this.prevent
 				&& e.preventDefault 
-				&& !eleInRegExp(e.target, this.preventDefaultException)
+				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
 			// 将handle设置为当前元素
