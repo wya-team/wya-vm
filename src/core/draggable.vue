@@ -1,12 +1,12 @@
 <template>
 	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
-		<div :style="style">
+		<div :style="style" :class="{ 'events-none': changing }" >
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
 		<div 
 			v-if="active && handles && handles.length !== 0" 
-			:class="{ disable, active, dragging, resizing, rotating }" 
+			:class="{ disable, active }" 
 			:style="style"
 		>
 			<template v-for="item in handles">
@@ -18,14 +18,16 @@
 					@mousedown.left.stop="handleDown($event, item)"
 				/>
 			</template>
-			<div v-if="rotating" :class="{ 'rotate-base-line': rotating }" :style="{ width }" />
+			<div v-if="rotatable" :class="{ 'rotate-base-line': rotatable }" :style="{ width }" />
 		</div>
 		<!-- grid for rotate -->
-		<div v-if="rotating" :class="{ 'rotate-deg-0': rotating }" :style="{ width }" />
-		<div v-if="rotating" :class="{ 'rotate-deg-45': rotating }" :style="{ width }" />
-		<div v-if="rotating" :class="{ 'rotate-deg-90': rotating }" :style="{ width }" />
-		<div v-if="rotating" :class="{ 'rotate-deg-135': rotating }" :style="{ width }" />
-		<div v-if="rotating" :class="{ 'rotate-tip': rotating }">{{ r }} °</div>
+		<template v-if="rotatable">
+			<div :class="{ 'rotate-deg-0': rotatable }" :style="{ width }" />
+			<div :class="{ 'rotate-deg-45': rotatable }" :style="{ width }" />
+			<div :class="{ 'rotate-deg-90': rotatable }" :style="{ width }" />
+			<div :class="{ 'rotate-deg-135': rotatable }" :style="{ width }" />
+			<div :class="{ 'rotate-tip': rotatable }">{{ r }} °</div>
+		</template>
 	</div>
 </template>
 
@@ -39,19 +41,9 @@ export default {
 	replace: true,
 	name: 'vm-draggable',
 	props: {
-		// 是否可被拖动
-		draggable: { 
-			type: Boolean,
-			default: true
-		},
-		// 是否可改变大小
-		resizable: {
-			type: Boolean,
-			default: true
-		},
-		rotatable: {
-			type: Boolean,
-			default: true
+		disable: {
+			type: Boolean, 
+			default: false
 		},
 		handles: {
 			type: Array,
@@ -61,13 +53,13 @@ export default {
 		w: {
 			type: Number,
 			default: 200,
-			validator: val => val > 0
+			validator: val => val >= 0
 		},
 		// 高度
 		h: {
 			type: Number,
 			default: 200,
-			validator: val => val > 0
+			validator: val => val >= 0
 		},
 		// 选择角度
 		r: {
@@ -77,13 +69,13 @@ export default {
 		// 最小宽度
 		minw: {
 			type: Number,
-			default: 50,
+			default: 36,
 			validator: val => val > 0
 		},
 		// 最小高度
 		minh: {
 			type: Number,
-			default: 50,
+			default: 36,
 			validator: val => val > 0
 		},
 		// 距父元素左上角X轴偏移量
@@ -120,10 +112,6 @@ export default {
 			type: Boolean, 
 			default: false
 		},
-		disable: {
-			type: Boolean, 
-			default: false
-		},
 		editable: {
 			type: Array, 
 			default: () => (["#vm-editor", "#vm-tools-operation"])
@@ -143,10 +131,12 @@ export default {
 		},
 	},
 	data() {
+
 		return {
-			resizing: false,
-			dragging: false,
-			rotating: false,
+			resizable: false,
+			draggable: false,
+			rotatable: false,
+			changing: false,
 			active: false
 		};
 	},
@@ -196,11 +186,11 @@ export default {
 		this.beforeStatus = null;
 	},
 	mounted() {
-		// 初始化控件宽高
-		if (this.minw > this.w) {
+		// 初始化控件宽高, todo: 宽高未零时，是否需要计算
+		if (this.w && this.minw > this.w) {
 			this.sync({ w: this.minw });
 		}
-		if (this.minh > this.h) {
+		if (this.h && this.minh > this.h) {
 			this.sync({ h: this.minh });
 		}
 		const { x, y } = this.$el.parentNode.getBoundingClientRect();
@@ -271,7 +261,7 @@ export default {
 				&& e.preventDefault();
 
 			// 判断是否支持拖动
-			if (this.disable || !this.draggable) return;
+			if (this.disable) return;
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
@@ -285,7 +275,7 @@ export default {
 					this.active = true;
 					this.$emit('activated');
 				}
-				this.dragging = true;
+				this.draggable = true;
 			}
 		},
 		/**
@@ -329,9 +319,9 @@ export default {
 			// 将handle设置为当前元素
 			this.handle = handle;
 			if (handle === 'rotate') {
-				this.rotating = true;
+				this.rotatable = true;
 			} else {
-				this.resizing = true;
+				this.resizable = true;
 			}
 
 			this.preMouseX = e.pageX || e.clientX + doc.scrollLeft;
@@ -357,7 +347,7 @@ export default {
 			this.mouseOffY = 0;
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
-			if (this.resizing) {
+			if (this.resizable) {
 				if (this.handle.includes('top')) {
 					if (elmH - diffY < this.minh) { // 向下移动
 						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
@@ -394,14 +384,14 @@ export default {
 					}
 					elmW += diffX;
 				}
-				this.sync({
+				!this.disable && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 					w: (Math.round(elmW / this.grid[0]) * this.grid[0]),
 					h: (Math.round(elmH / this.grid[1]) * this.grid[1]),
 				});
 				this.$emit('resizing');
-			} else if (this.rotating) {
+			} else if (this.rotatable) {
 				let angle = this.getAngle(
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
 					[this.lastMouseX, -this.lastMouseY],
@@ -410,11 +400,11 @@ export default {
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
 				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
 
-				this.sync({ 
+				!this.disable && this.sync({ 
 					r: angle === 360 ? 0 : angle
 				});
 				this.$emit('rotating');
-			} else if (this.dragging) {
+			} else if (this.draggable) {
 				if (this.parent) {
 					if (elmX + diffX < 0) {
 						this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
@@ -431,12 +421,18 @@ export default {
 				elmX += diffX;
 				elmY += diffY;
 
-				this.draggable && this.sync({
+				!this.disable && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 				});
 				this.$emit('dragging');
 			}
+
+			// 正在改变
+			!this.changing 
+				&& (this.rotatable || this.draggable || this.resizable)
+				&& (this.changing = true);
+				
 		},
 		getAngle(center, last) {
 			let diffX = last[0] - center[0];
@@ -456,6 +452,7 @@ export default {
 			return (num / restrain).toFixed(0) * restrain;
 		},
 		handleUp(e) {
+			this.changing = false;
 			this.handle = null;
 			// 约束
 			const restrain = this.restrain;
@@ -467,16 +464,16 @@ export default {
 					h: this.getRestrain(this.h),
 				});
 			}
-			if (this.rotating) {
-				this.rotating = false;
+			if (this.rotatable) {
+				this.rotatable = false;
 				this.$emit('rotate-end');
 			}
-			if (this.resizing) {
-				this.resizing = false;
+			if (this.resizable) {
+				this.resizable = false;
 				this.$emit('resize-end');
 			}
-			if (this.dragging) {
-				this.dragging = false;
+			if (this.draggable) {
+				this.draggable = false;
 				this.$emit('drag-end');
 			}
 			if (this.beforeStatus) {
@@ -494,8 +491,11 @@ export default {
 	position: absolute;
 	box-sizing: border-box;
 	user-select: none;
-	.draggable:hover {
+	&:hover {
 		cursor: move;
+	}
+	.events-none {
+		pointer-events: none;
 	}
 	.active {
 		padding: 0;
@@ -506,7 +506,7 @@ export default {
 		position: absolute;
 		z-index: 2;
 		border: 1px dotted #108ee9;
-		cursor: move;
+		// cursor: move;
 		.handle {
 			display: block;
 		}
