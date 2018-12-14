@@ -22,7 +22,7 @@
 			:style="frameStyle" 
 			:width="frameW" 
 			:height="frameH" 
-			:data-source="dataSource" 
+			:data-source="rebuildData" 
 			:editor="editor" 
 			v-bind="frameOpts"
 			class="__frame"
@@ -87,6 +87,8 @@ export default {
 			 */
 			current: 0,
 			total: 0,
+
+			rebuildData: []
 		};
 	},
 	computed: {
@@ -100,8 +102,19 @@ export default {
 			};
 		}
 	},
+	watch: {
+		dataSource: {
+			deep: true,
+			handler() {
+				// todo, 是否重写
+				this.rebuildData = cloneDeep(this.dataSource);
+			}
+		}
+	},
 	created() {
 		this.historyData = [];
+
+		this.rebuildData = cloneDeep(this.dataSource);
 	},
 	destroyed() {
 		Preview.hide();
@@ -139,8 +152,8 @@ export default {
 				type,
 				id,
 				old,
-				index: typeof index === 'undefined' ? this.dataSource.findIndex(item => item.id === id) : index,
-				data: cloneDeep(this.dataSource.find(item => item.id === id)),
+				index: typeof index === 'undefined' ? this.rebuildData.findIndex(item => item.id === id) : index,
+				data: cloneDeep(this.rebuildData.find(item => item.id === id)),
 			};
 
 			current === total 
@@ -151,7 +164,7 @@ export default {
 			this.current = length;
 			this.total = length;
 			
-			type === 'delete' && (this.dataSource.splice(target.index, 1), this.editor = null);
+			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
 		},
 		/**
 		 * tools-operation
@@ -182,22 +195,21 @@ export default {
 			this.current = current;
 
 			let { type, id, data, index, old } = this.historyData[this.current] || {};
-			// splice 操作了props的数据，待优化
 			switch (type) {
 				case 'create':
-					this.dataSource.splice(index, 1);
+					this.rebuildData.splice(index, 1);
 					break;
 				case 'delete':
-					this.dataSource.splice(index, 0, data);
+					this.rebuildData.splice(index, 0, data);
 					break;
 				case 'update':	
-					this.dataSource.splice(index, 1, cloneDeep({ ...data, ...old }));
+					this.rebuildData.splice(index, 1, cloneDeep({ ...data, ...old }));
 					break;
 				default:
 					break;
 			}
 			if (this.editor && this.editor.id === id) {
-				this.editor = this.dataSource[index];
+				this.editor = this.rebuildData[index];
 			}
 		},
 		redo() {
@@ -213,29 +225,28 @@ export default {
 			this.current = current;
 
 			let { type, id, data, index } = this.historyData[this.current - 1];
-			// splice 操作了props的数据，待优化
 			switch (type) {
 				case 'create':
-					this.dataSource.splice(index, 1, data);
+					this.rebuildData.splice(index, 1, data);
 					break;
 				case 'delete':
-					this.dataSource.splice(index, 1);
+					this.rebuildData.splice(index, 1);
 					break;
 				case 'update':	
-					this.dataSource.splice(index, 1, data);
+					this.rebuildData.splice(index, 1, data);
 					break;
 				default:
 					break;
 			}
 			if (this.editor && this.editor.id === id) {
-				this.editor = this.dataSource[index];
+				this.editor = this.rebuildData[index];
 			}
 		},
 		/**
 		 * tools-save
 		 */
 		save() {
-			const data = cloneDeep(this.dataSource) || [];
+			const data = cloneDeep(this.rebuildData) || [];
 
 			if (data.length === 0) {
 				this.$emit('error', { 
@@ -267,7 +278,7 @@ export default {
 			this.$emit('save', data);
 		},
 		preview() {
-			if (this.dataSource.length === 0) {
+			if (this.rebuildData.length === 0) {
 				this.$emit('error', { 
 					type: 'preview', 
 					msg: `预览数据对象不能为空` 
@@ -276,7 +287,7 @@ export default {
 			}
 			Preview.show({
 				components: this.$options.viewers,
-				dataSource: cloneDeep(this.dataSource),
+				dataSource: cloneDeep(this.rebuildData),
 				css: {
 					style: {
 						...this.frameStyle,
