@@ -4,14 +4,18 @@
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
-		<div v-if="active" :class="{ disable, active, dragging, resizing, rotating}" :style="style">
+		<div 
+			v-if="active && handles && handles.length !== 0" 
+			:class="{ disable, active, dragging, resizing, rotating }" 
+			:style="style"
+		>
 			<template v-for="item in handles">
 				<div
 					v-if="!disable"
 					:key="item"
 					:class="`handle-${item}`"
 					class="handle"
-					@mousedown.left.stop.prevent="handleDown($event, item)"
+					@mousedown.left.stop="handleDown($event, item)"
 				/>
 			</template>
 			<div v-if="rotating" :class="{ 'rotate-base-line': rotating }" :style="{ width }" />
@@ -26,7 +30,7 @@
 </template>
 
 <script>
-import { isPassiveSupported } from '../utils/helper';
+import { isPassiveSupported, eleInRegExp } from '../utils/helper';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
@@ -120,10 +124,23 @@ export default {
 			type: Boolean, 
 			default: false
 		},
-		editEle: {
+		editable: {
 			type: Array, 
 			default: () => (["#vm-editor", "#vm-tools-operation"])
-		}
+		},
+		/**
+		 * 是否屏蔽默认事件
+		 */
+		preventDefault: {
+			type: Boolean, 
+			default: true
+		},
+		preventDefaultException: {
+			type: Object, 
+			default: () => ({
+				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/
+			})
+		},
 	},
 	data() {
 		return {
@@ -247,8 +264,12 @@ export default {
 		 * 组件被按下事件
 		 */
 		handleContainerDown(e = {}) {
-			// 阻止默认事件
-			e.preventDefault && e.preventDefault();
+			// 去除默认事件 todo: 匹配输入框
+			this.preventDefault 
+				&& e.preventDefault 
+				&& !eleInRegExp(e.target, this.preventDefaultException)
+				&& e.preventDefault();
+
 			// 判断是否支持拖动
 			if (this.disable || !this.draggable) return;
 			const target = e.target || e.srcElement;
@@ -275,12 +296,15 @@ export default {
 			this.mouseY = e.pageY || e.clientY + doc.scrollTop;
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
-			const target = e.target || e.srcElement;
-			const regex = new RegExp('handle-([(top|right|-|bottom|left)]{2})', '');
-			const eles = this.editEle.filter(item => document.querySelector(item));
+			const target = e.target || e.srcElement; // body不要带上class, 否则会存在问题
+			const regex = {
+				className: /handle-([(top|right|-|bottom|left)]{2})/
+			};
+			const eles = this.editable.filter(item => document.querySelector(item));
+			// !(new RegExp('handle-([(top|right|-|bottom|left)]{2})', '')).test(target.className);
 			if (
 				!this.$el.contains(target) 
-				&& !regex.test(target.className)
+				&& !eleInRegExp(target, regex)
 				&& (eles.length === 0 || !eles.some(item => document.querySelector(item).contains(target)))
 			) {
 				if (this.active) {
@@ -296,6 +320,12 @@ export default {
 		 * 拖动点按下事件
 		 */
 		handleDown(e, handle) {
+			// 去除默认事件 todo: 匹配输入框
+			this.preventDefault 
+				&& e.preventDefault 
+				&& !eleInRegExp(e.target, this.preventDefaultException)
+				&& e.preventDefault();
+
 			// 将handle设置为当前元素
 			this.handle = handle;
 			if (handle === 'rotate') {
@@ -476,7 +506,7 @@ export default {
 		position: absolute;
 		z-index: 2;
 		border: 1px dotted #108ee9;
-		position: absolute;
+		cursor: move;
 		.handle {
 			display: block;
 		}

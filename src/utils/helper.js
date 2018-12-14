@@ -70,3 +70,19 @@ export const clearCtor = (obj) => {
 	}
 	return target;
 };
+
+/**
+ * 是否符合条件
+ * @exceptions {
+ *    tagName,
+ *    ...HTMLElement
+ * }
+ */
+export const eleInRegExp = (el, exceptions) => {
+	for (let i in exceptions) {
+		if (exceptions[i].test(el[i])) {
+			return true;
+		}
+	}
+	return false;
+};
