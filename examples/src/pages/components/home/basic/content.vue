@@ -9,22 +9,6 @@
 			@save="handleSave"
 			@error="handleError"
 		/>
-		<vm-draggable 
-			:parent="false"
-			:x.sync="x"
-			:y.sync="y"
-			:z.sync="z"
-			:w.sync="w"
-			:h.sync="h"
-			:r.sync="r"
-			:handles="handles"
-			:border="false"
-		>
-			<div>
-				<div @click="handleClick">test</div>
-				<input type="text" >
-			</div>
-		</vm-draggable>
 	</div>
 </template>
 
@@ -41,6 +25,7 @@ export default {
 	},
 	data() {
 		return {
+			value: '我可以输入',
 			x: 0,
 			y: 0,
 			z: 0,
@@ -63,9 +48,6 @@ export default {
 		},
 		handleError({ type, msg }) {
 			Message.error(msg);
-		},
-		handleClick() {
-			console.log('test');
 		}
 	},
 };
