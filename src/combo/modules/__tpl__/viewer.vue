@@ -1,11 +1,11 @@
 <template>
-	<div :style="[{ height: `${h}px`, width: `${w}px`, color: 'black' }]">
+	<div :style="[{ height: `${h ? `${h}px` : 'auto' }`, width: `${w ? `${w}px` : 'auto' }`, color: 'black' }]">
 		id: {{ id }} <br>
 		X: {{ x }} <br>
 		Y: {{ y }} <br>
 		Z: {{ z }} <br>
-		Width: {{ w }} <br>
-		Height: {{ h }} <br>
+		Width: {{ w ? w : 'auto' }} <br>
+		Height: {{ h ? h : 'auto' }} <br>
 		Rotate: {{ r }} <br>
 		Name: {{ name }} <br>
 	</div>

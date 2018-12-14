@@ -14,8 +14,8 @@
 						:key="it.id" 
 						:style="{ 
 							position: 'absolute', 
-							width: `${it.w}px`, 
-							height: `${it.h}px`, 
+							width: `${it.w ? `${it.w}px` : 'auto' }`, 
+							height: `${it.h ? `${it.h}px` : 'auto' }`, 
 							left: `${it.x}px`, 
 							top: `${it.y}px`, 
 							transform: `rotate(${it.r}deg)`

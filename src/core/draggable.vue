@@ -52,13 +52,13 @@ export default {
 		// 宽度
 		w: {
 			type: Number,
-			default: 200,
+			default: 0,
 			validator: val => val >= 0
 		},
 		// 高度
 		h: {
 			type: Number,
-			default: 200,
+			default: 0,
 			validator: val => val >= 0
 		},
 		// 选择角度
