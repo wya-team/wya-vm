@@ -54,7 +54,7 @@ export default {
 	props: {
 		width: Number,
 		height: Number,
-		type: {
+		mode: {
 			type: String,
 			default: 'free' // sort-list
 		},

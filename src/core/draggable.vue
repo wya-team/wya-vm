@@ -112,9 +112,11 @@ export default {
 			type: Boolean, 
 			default: false
 		},
-		editable: {
-			type: Array, 
-			default: () => (["#vm-editor", "#vm-tools-operation"])
+		editorRegExp: {
+			type: Object, 
+			default: () => ({
+				className: /vm-hack-editor$/
+			})
 		},
 		/**
 		 * 是否屏蔽默认事件
@@ -126,7 +128,8 @@ export default {
 		preventRegExp: {
 			type: Object, 
 			default: () => ({
-				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/
+				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/,
+				className: /vm-hack-pevent$/
 			})
 		},
 	},
@@ -287,15 +290,16 @@ export default {
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
 			const target = e.target || e.srcElement; // body不要带上class, 否则会存在问题
+
+			// 内部管理
 			const regex = {
 				className: /handle-([(top|right|-|bottom|left)]{2})/
 			};
-			const eles = this.editable.filter(item => document.querySelector(item));
-			// !(new RegExp('handle-([(top|right|-|bottom|left)]{2})', '')).test(target.className);
+
 			if (
 				!this.$el.contains(target) 
 				&& !eleInRegExp(target, regex)
-				&& (eles.length === 0 || !eles.some(item => document.querySelector(item).contains(target)))
+				&& (!e.path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
 				if (this.active) {
 					// 解绑

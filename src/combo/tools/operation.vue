@@ -1,5 +1,5 @@
 <template>
-	<div id="vm-tools-operation">
+	<div class="vm-tools-operation vm-hack-editor">
 		<div 
 			:class="{ disabled: current === 0 }" 
 			@click="handleUndo"
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#vm-tools-operation {
+.vm-tools-operation {
 	display: flex;
 	cursor: pointer;
 	align-items: center;

@@ -1,5 +1,5 @@
 <template>
-	<div id="vm-tools-save">
+	<div class="vm-tools-save vm-hack-editor">
 		<div @click="$emit('save')">保存</div>
 		<div @click="$emit('preview')">预览</div>
 	</div>
@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#vm-tools-save {
+.vm-tools-save {
 	display: flex;
 	cursor: pointer;
 	align-items: center;

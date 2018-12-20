@@ -1,9 +1,9 @@
 <template>
 	<component
-		id="vm-editor"
 		ref="target"
-		:is="`vm-${dataSource.module}-editor`" 
+		:is="`vm-${dataSource.module}-editor`"
 		v-bind.sync="dataSource" 
+		class="vm-editor vm-hack-editor" 
 		@change="handleChange"
 	/>
 </template>

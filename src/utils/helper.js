@@ -74,7 +74,9 @@ export const clearCtor = (obj) => {
 /**
  * 是否符合条件
  * @exceptions {
+ *    id,
  *    tagName,
+ *    className,
  *    ...HTMLElement
  * }
  */
