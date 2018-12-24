@@ -179,6 +179,7 @@ export default {
 					type: 'id', 
 					msg: "请先选择操作对象" 
 				});
+				return;
 			}
 			this.handleChange({ type: 'delete', id });
 		},

@@ -115,7 +115,7 @@ export default {
 		editorRegExp: {
 			type: Object, 
 			default: () => ({
-				className: /vm-hack-editor$/
+				className: /vm-hack-editor/
 			})
 		},
 		/**
@@ -129,7 +129,7 @@ export default {
 			type: Object, 
 			default: () => ({
 				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/,
-				className: /vm-hack-pevent$/
+				className: /vm-hack-pevent/
 			})
 		},
 	},
