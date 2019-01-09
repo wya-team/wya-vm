@@ -296,10 +296,11 @@ export default {
 				className: /handle-([(top|right|-|bottom|left)]{2})/
 			};
 
+			let path = e.path || (e.composedPath && e.composedPath()) || [];
 			if (
 				!this.$el.contains(target) 
 				&& !eleInRegExp(target, regex)
-				&& (!e.path.some(item => eleInRegExp(item, this.editorRegExp)))
+				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
 				if (this.active) {
 					// 解绑

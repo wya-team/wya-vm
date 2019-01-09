@@ -1,6 +1,6 @@
 {
   "name": "wya-vm",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/vm.min.js",
   "files": [

@@ -100,7 +100,7 @@ export default {
 			let index = this.dataSource.length;
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push({
-				...result.data,
+				...cloneDeep(result.data),
 				module: mod,
 				id,
 				x: mouseX - x,
