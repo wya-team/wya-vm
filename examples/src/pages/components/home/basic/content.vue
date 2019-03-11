@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import { vmRegister, Draggable } from 'wya-vm';
+import { createVMDrags, Draggable } from '@wya/vm';
 import { Message } from 'iview';
 
-let { Combo } = vmRegister();
+let { Combo } = createVMDrags();
 export default {
 	name: 'tpl-links',
 	components: {

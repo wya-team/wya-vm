@@ -17,6 +17,16 @@ import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
 
+import pkg from "./package.json";
+
+const external = [
+	'vue'
+	// ...Object.keys(pkg.devDependencies || {}),
+	// ...Object.keys(pkg.peerDependencies || {}),
+	// ...Object.keys(pkg.dependencies || {})
+];
+
+
 // 添加前缀和其他处理
 const BASIC_POSTCSS_PLUGIN = [
 	simplevars(),
@@ -39,9 +49,20 @@ const mainConfig = {
 			vue: 'Vue'
 		}
 	},
-	external: ['vue'],
+	external, // 移除vue
 	// 注意插件的先后循序
+	
 	plugins: [
+		// 使用amd模块引入，第三方模块支持
+		resolve({
+			jsnext: true,
+			main: true,
+			browser: true,
+		}),
+		// 使用cjs模块引入
+		commonjs({
+			include: "node_modules/**"
+		}),
 		// 提花全局字段ENV为....
 		replace({
 			'__DEV__': 'false',
@@ -62,18 +83,18 @@ const mainConfig = {
 			],
 			extensions: ['.css', '.scss'],
 		}),
-		// 使用babel
-		babel(),
+		// 使用babel，结合.babelrc
+		babel({ 
+			exclude: 'node_modules/**',
+			runtimeHelpers: true,
+			/**
+			 * 移除@babel/runtime, 当增加了babelHelpers，暂时无法处理
+			 * @babel/plugin-external-helpers
+			 */
+			// externalHelpers: true
+		}),
 		// 使用buble
 		buble(),
-		// 使用amd模块引入，第三方模块支持
-		resolve({
-			jsnext: true,
-			main: true,
-			browser: true,
-		}),
-		// 使用cjs模块引入
-		commonjs(),
 		// 是否压缩代码
 		(!ENV_IS_DEV && uglify())
 	]

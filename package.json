@@ -1,6 +1,6 @@
 {
-  "name": "wya-vm",
-  "version": "0.1.0",
+  "name": "@wya/vm",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/vm.min.js",
   "files": [
@@ -13,7 +13,7 @@
     "dev": "npm run all",
     "serve": "rm -rf build/ && cross-env NODE_ENV=development rollup --config rollup.config.js --watch",
     "demo": "cd examples/ && npm run dev",
-    "build": "rm -rf dist/ && cross-env NODE_ENV=production rollup --config rollup.config.js && npm publish",
+    "build": "rm -rf dist/ && cross-env NODE_ENV=production rollup --config rollup.config.js && npm publish --access public",
     "lint": "esw ./src  --ext .vue,.js",
     "lint:fix": "npm run lint -- --fix",
     "lint:watch": "npm run lint -- --fix --watch",
@@ -31,19 +31,24 @@
   "bugs": {
     "url": "https://github.com/wya-team/wya-vm/issues"
   },
-  "dependencies": {
-    "debug": "^3.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.3.3",
+    "@babel/plugin-proposal-decorators": "^7.2.3",
     "@babel/plugin-proposal-export-default-from": "^7.0.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
     "@babel/plugin-proposal-function-bind": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-jsx": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.3.4",
     "@babel/preset-env": "^7.1.6",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^23.6.0",
+    "@babel/runtime": "^7.3.4",
+    "babel-eslint": "^8.2.3",
+    "babel-jest": "^24.1.0",
+    "babel-loader": "^8.0.4",
     "cross-env": "^5.2.0",
     "cssnano": "^4.1.7",
     "enzyme": "^3.7.0",
@@ -56,7 +61,7 @@
     "eslint-plugin-vue": "^4.7.1",
     "eslint-watch": "^4.0.2",
     "fs-extra": "^7.0.1",
-    "jest": "^23.6.0",
+    "jest": "^24.1.0",
     "lint-staged": "^8.0.5",
     "node-sass": "^4.10.0",
     "npm-run-all": "^4.1.3",

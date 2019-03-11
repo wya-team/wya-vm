@@ -23,18 +23,15 @@ module.exports = {
 	],
 	// modulePathIgnorePatterns 与 testPathIgnorePatterns相似
 	modulePathIgnorePatterns: [
-		// '/src/mock'
 	],
 	testPathIgnorePatterns: [
-		'/src/mock',
-		'/node_modules/',
-		'dekko'
+		'/node_modules/'
 	],
 	testRegex: '.*\\.test\\.js$',
 	/**
 	 * 覆盖率相关
 	 */
-	collectCoverage: true, // 覆盖率统计暂时先关闭
+	collectCoverage: false, // 覆盖率统计暂时先关闭
 	coverageDirectory: 'tests/coverage',
 	// 检测src[js|jsx]是否都写了test用例
 	collectCoverageFrom: [

@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { Draggable } from 'wya-vm';
+import { Draggable } from '@wya/vm';
 import { Message } from 'iview';
 
 export default {

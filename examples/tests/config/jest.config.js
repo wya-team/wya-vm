@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = {
 	setupFiles: [
-		path.resolve(APP_ROOT, 'tests/setup.js')
+		path.resolve(APP_ROOT, 'tests/setup.js'),
 	],
 	/**
 	 * 匹配相关
@@ -23,18 +23,15 @@ module.exports = {
 	],
 	// modulePathIgnorePatterns 与 testPathIgnorePatterns相似
 	modulePathIgnorePatterns: [
-		// '/src/mock'
 	],
 	testPathIgnorePatterns: [
-		'/src/mock',
-		'/node_modules/',
-		'dekko'
+		'/node_modules/'
 	],
 	testRegex: '.*\\.test\\.js$',
 	/**
 	 * 覆盖率相关
 	 */
-	collectCoverage: true, // 覆盖率统计暂时先关闭
+	collectCoverage: false, // 覆盖率统计暂时先关闭
 	coverageDirectory: 'tests/coverage',
 	// 检测src[js|jsx]是否都写了test用例
 	collectCoverageFrom: [
@@ -56,7 +53,7 @@ module.exports = {
 	},
 	transformIgnorePatterns: [
 		'/dist/',
-		'/node_modules/'
+		'/node_modules/',
 		// Ignore modules without es dir
 		// 'node_modules\/[^/]+?\/(?!(es|node_modules)\/)',
 	],
@@ -65,6 +62,6 @@ module.exports = {
 	 * https://github.com/adriantoine/enzyme-to-json
 	 */
 	snapshotSerializers: [
-		'enzyme-to-json/serializer'
+		'enzyme-to-json/serializer',
 	]
 };

@@ -1,6 +1,5 @@
 /* eslint-disable global-require */
 const { JSDOM } = require('jsdom');
-const Enzyme = require('enzyme');
 
 // fixed jsdom miss
 if (typeof window === 'undefined') {
@@ -14,6 +13,10 @@ if (typeof window === 'undefined') {
 	};
 }
 
-global.requestAnimationFrame = global.requestAnimationFrame || (cb => setTimeout(cb, 0));
+global.requestAnimationFrame = global.requestAnimationFrame || function (cb) {
+	return setTimeout(cb, 0);
+};
+
+const Enzyme = require('enzyme');
 
 Enzyme.configure({});
