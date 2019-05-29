@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import Draggable from '../../core/draggable.vue';
+import Draggable from '../../../core/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
-import { getUid, cloneDeep } from '../../utils/helper';
+import { getUid, cloneDeep } from '../../../utils/helper';
 
 export default {
 	name: 'vm-frame',

@@ -17,8 +17,9 @@
 			@redo="handleOperate('redo')"
 			@delete="handleOperate('delete')"
 		/>
-		<vm-frame 
+		<components 
 			ref="frame"
+			:is="frame"
 			:style="frameStyle" 
 			:width="frameW" 
 			:height="frameH" 
@@ -56,7 +57,7 @@ export default {
 		height: Number,
 		mode: {
 			type: String,
-			default: 'free' // sort-list
+			default: 'draggable' // sort-list
 		},
 		dataSource: {
 			type: Array,
@@ -100,11 +101,15 @@ export default {
 				width: w,
 				height: h
 			};
+		},
+		frame() {
+			return this.mode === 'draggable' ? 'vm-draggable-frame' : 'vm-sort-list-frame'
 		}
 	},
 	watch: {
 		dataSource: {
 			deep: true,
+			immediate: true,
 			handler() {
 				// todo, 是否重写
 				this.rebuildData = cloneDeep(this.dataSource);
@@ -113,8 +118,6 @@ export default {
 	},
 	created() {
 		this.historyData = [];
-
-		this.rebuildData = cloneDeep(this.dataSource);
 	},
 	destroyed() {
 		Preview.hide();
