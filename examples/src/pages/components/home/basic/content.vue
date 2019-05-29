@@ -13,26 +13,18 @@
 </template>
 
 <script>
-import { createVMDrags, Draggable } from '@wya/vm';
+import { createVMDrags } from '@wya/vm';
 import { Message } from 'iview';
 
-let { Combo } = createVMDrags();
+let { Combo } = createVMDrags(undefined, { mode: 'list' });
+
 export default {
 	name: 'tpl-links',
 	components: {
-		'vm-combo': Combo,
-		'vm-draggable': Draggable
+		'vm-combo': Combo
 	},
 	data() {
 		return {
-			value: '我可以输入',
-			x: 0,
-			y: 0,
-			z: 0,
-			w: 50,
-			h: 50,
-			r: 0,
-			handles: []
 		};
 	},
 	computed: {

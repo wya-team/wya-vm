@@ -1,15 +1,16 @@
 import { defaultModules } from './modules/root';
 import { cloneDeep } from '../utils/helper';
+import { DraggableFrame, SortListFrame } from './frame/root';
 import Combo from './combo.vue';
-import Frame from './frame/frame.vue';
 import ToolsWidget from './tools/widget.vue';
 import ToolsPreview from './tools/preview.vue';
 import Editor from './editor/editor.vue';
 
 export default (modules = defaultModules, opts = {}) => {
+	const { mode = "draggable" } = opts;
 	try {
 		let newCombo = cloneDeep(opts.Combo || Combo);
-		let newFrame = cloneDeep(opts.Frame || Frame);
+		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? DraggableFrame : SortListFrame));
 		let newToolsWidget = cloneDeep(opts.ToolsWidget || ToolsWidget);
 		let newToolsPreview = cloneDeep(opts.ToolsPreview || ToolsPreview);
 		let newEditor = cloneDeep(opts.Editor || Editor);
@@ -17,6 +18,7 @@ export default (modules = defaultModules, opts = {}) => {
 		let viewers = {};
 		let editors = {};
 		let widgets = {};
+		
 		Object.keys(modules).forEach((item, index) => {
 			let { Viewer: _Vditor, Editor: _Editor, Widget: _Widget } = modules[item]; 
 			viewers[`vm-${item}-viewer`] = _Vditor;

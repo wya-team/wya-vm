@@ -6,12 +6,12 @@
 		<!-- handle -->
 		<div 
 			v-if="active && handles && handles.length !== 0" 
-			:class="{ disable, active }" 
+			:class="{ disabled, active }" 
 			:style="style"
 		>
 			<template v-for="item in handles">
 				<div
-					v-if="!disable"
+					v-if="!disabled"
 					:key="item"
 					:class="`handle-${item}`"
 					class="handle"
@@ -41,7 +41,7 @@ export default {
 	replace: true,
 	name: 'vm-draggable',
 	props: {
-		disable: {
+		disabled: {
 			type: Boolean, 
 			default: false
 		},
@@ -264,7 +264,7 @@ export default {
 				&& e.preventDefault();
 
 			// 判断是否支持拖动
-			if (this.disable) return;
+			if (this.disabled) return;
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
@@ -389,7 +389,7 @@ export default {
 					}
 					elmW += diffX;
 				}
-				!this.disable && this.sync({
+				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 					w: (Math.round(elmW / this.grid[0]) * this.grid[0]),
@@ -405,7 +405,7 @@ export default {
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
 				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
 
-				!this.disable && this.sync({ 
+				!this.disabled && this.sync({ 
 					r: angle === 360 ? 0 : angle
 				});
 				this.$emit('rotating');
@@ -426,7 +426,7 @@ export default {
 				elmX += diffX;
 				elmY += diffY;
 
-				!this.disable && this.sync({
+				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
 					y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
 				});
@@ -516,7 +516,7 @@ export default {
 			display: block;
 		}
 	}
-	.disable {
+	.disabled {
 		border: 1px dotted #e96101;
 		.handle-rotate {
 			&:after {

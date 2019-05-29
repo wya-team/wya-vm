@@ -17,9 +17,8 @@
 			@redo="handleOperate('redo')"
 			@delete="handleOperate('delete')"
 		/>
-		<components 
+		<vm-frame 
 			ref="frame"
-			:is="frame"
 			:style="frameStyle" 
 			:width="frameW" 
 			:height="frameH" 
@@ -55,10 +54,6 @@ export default {
 	props: {
 		width: Number,
 		height: Number,
-		mode: {
-			type: String,
-			default: 'draggable' // sort-list
-		},
 		dataSource: {
 			type: Array,
 			default: () => ([])
@@ -81,8 +76,6 @@ export default {
 	data() {
 		return {
 			editor: null,
-			dragging: false,
-			resizing: false,
 			/**
 			 * vm-tools-operation
 			 */
@@ -103,7 +96,7 @@ export default {
 			};
 		},
 		frame() {
-			return this.mode === 'draggable' ? 'vm-draggable-frame' : 'vm-sort-list-frame'
+			return this.mode === 'draggable' ? 'vm-draggable-frame' : 'vm-sort-list-frame';
 		}
 	},
 	watch: {
