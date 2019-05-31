@@ -55,7 +55,8 @@ const mainConfig = {
 	plugins: [
 		// 使用amd模块引入，第三方模块支持
 		resolve({
-			mainFields: ['module', 'jsnext:main', 'main']
+			mainFields: ['module', 'jsnext:main', 'main'],
+			browser: true,
 		}),
 		// 使用cjs模块引入
 		commonjs({
