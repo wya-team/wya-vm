@@ -17,7 +17,7 @@ import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
 
-import pkg from "./package.json";
+// import pkg from "./package.json";
 
 const external = [
 	'vue'
@@ -55,9 +55,7 @@ const mainConfig = {
 	plugins: [
 		// 使用amd模块引入，第三方模块支持
 		resolve({
-			jsnext: true,
-			main: true,
-			browser: true,
+			mainFields: ['module', 'jsnext:main', 'main']
 		}),
 		// 使用cjs模块引入
 		commonjs({
