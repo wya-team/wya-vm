@@ -12,14 +12,14 @@
 					<div 
 						v-for="(it) in dataSource" 
 						:key="it.id" 
-						:style="{ 
+						:style="isDraggable ? { 
 							position: 'absolute', 
 							width: `${it.w ? `${it.w}px` : 'auto' }`, 
 							height: `${it.h ? `${it.h}px` : 'auto' }`, 
 							left: `${it.x}px`, 
 							top: `${it.y}px`, 
 							transform: `rotate(${it.r}deg)`
-						}"
+						} : {} "
 					>
 						<component
 							:is="`vm-${it.module}-viewer`" 
@@ -55,6 +55,10 @@ const wrapper = {
 			type: Boolean,
 			default: true
 		},
+		mode: {
+			type: String,
+			default: 'draggable'
+		}
 	},
 	data() {
 		return {
@@ -63,7 +67,9 @@ const wrapper = {
 		};
 	},
 	computed: {
-
+		isDraggable() {
+			return this.mode === 'draggable';
+		}
 	},
 	watch: {
 		
