@@ -20,6 +20,7 @@
 
 <script>
 import { hasOwn } from '../../utils/helper';
+import { WIDGET_TO_FRAME } from '../constants';
 
 export default {
 	name: 'vm-tools-widget',
@@ -70,7 +71,7 @@ export default {
 	},
 	methods: {
 		handleStart(e, item) {
-			e.dataTransfer.setData('vm-modules', item);
+			e.dataTransfer.setData(WIDGET_TO_FRAME, item);
 		}
 	},
 };

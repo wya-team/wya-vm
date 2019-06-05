@@ -1,0 +1,203 @@
+<template>
+	<div 
+		:draggable="!disabled"
+		class="vm-sortable" 
+		@click="handleClick"
+		@dragstart="handleDragStart"
+		@dragenter="handleDragEnter"
+		@dragover.prevent
+		@dragend="handleDragEnd"
+	>
+		<div style="pointer-events: none;">
+			<slot />
+		</div>
+		<!-- handle -->
+		<div v-if="isActive" :class="{ 'is-disabled': disabled, 'is-active': isActive }" />
+	</div>
+</template>
+
+<script>
+import { isPassiveSupported, eleInRegExp } from '../../utils/helper';
+import Draggable from '../draggable/index';
+
+const doc = document.documentElement;
+let eleDrag = null;
+
+export default {
+	replace: true,
+	name: 'vm-srot-list-item',
+	props: {
+		// 当前排序数组的索引值，非order
+		index: {
+			type: Number | String,
+			required: true
+		},
+		// 用于getData/setData
+		type: {
+			type: String,
+			default: '@wya/vm'
+		},
+		disabled: Draggable.props.disabled,
+		editorRegExp: Draggable.props.editorRegExp,
+		prevent: Draggable.props.prevent,
+		preventRegExp: Draggable.props.preventRegExp
+	},
+	data() {
+		return {
+			isActive: false
+		};
+	},
+	computed: {
+		
+	},
+	watch: {},
+	beforeCreate() {
+		// 组件捕获阶段执行
+		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };
+	},
+	mounted() {
+		
+	},
+	destroyed() {
+		this.operateDOMEvents('remove');
+	},
+	methods: {
+		operateDOMEvents(type) {
+			let fn = type === 'add' ? doc.addEventListener : doc.removeEventListener;
+
+			fn('mousedown', this.handleDeselect, this.eventOpts);
+		},
+		/**
+		 * 模拟设置active状态
+		 */
+		setActived() {
+			this.handleClick();
+		},
+		/**
+		 * 组件被按下事件
+		 */
+		handleClick(e = {}) {
+			// 去除默认事件 todo: 匹配输入框
+			this.prevent
+				&& e.preventDefault 
+				&& !eleInRegExp(e.target, this.preventRegExp)
+				&& e.preventDefault();
+
+			// 判断是否支持拖动
+			if (this.disabled) return;
+			const target = e.target || e.srcElement;
+			// 确保事件发生在组件内部
+			if (!target || this.$el.contains(target)) {
+				if (!this.isActive) {
+					// 绑定事件
+					this.operateDOMEvents('add');
+
+					this.isActive = true;
+					this.$emit('activated');
+				}
+			}
+		},
+		/**
+		 * 取消选择事件
+		 */
+		handleDeselect(e) {
+			const target = e.target || e.srcElement; // body不要带上class, 否则会存在问题
+
+			let path = e.path || (e.composedPath && e.composedPath()) || [];
+			if (
+				!this.$el.contains(target) 
+				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
+			) {
+				if (this.isActive) {
+					// 解绑
+					this.operateDOMEvents('remove');
+
+					this.isActive = false;
+					this.$emit('deactivated');
+				}
+			}
+		},
+
+		/**
+		* 拖拽开始
+		*/
+		handleDragStart(e) {
+			// 定义拖动数据 - 拖到别的输入框展示的内容
+			e.dataTransfer.setData(this.type, this.index);
+
+			// 拖放效果
+			e.dataTransfer.effectAllowed = "move";
+
+			eleDrag = e.target;
+
+			eleDrag.__START_INDEX__ = this.index;
+			eleDrag.__END_INDEX__ = this.index;
+
+			e.target.style.opacity = 0;
+		},
+
+		/**
+		* 拖拽元素进入目标元素头上的时候
+		*/
+		handleDragEnter(e) {
+			if (eleDrag && e.target != eleDrag) { // 排序
+				if (this.index != eleDrag.__END_INDEX__) {
+					if (this.timer) return;
+					this.timer = setTimeout(() => {
+						this.timer = null;
+					}, 500);
+
+					this.$emit('sort', [eleDrag.__END_INDEX__, this.index]);
+					eleDrag.__END_INDEX__ = this.index;
+				}
+				
+
+			} else if (!eleDrag) { // 处理高亮
+				// ...
+			}
+		},
+		/**
+		* 拖拽结束
+		*/
+		handleDragEnd(e) {
+			e.dataTransfer.clearData(this.type);
+
+			e.target.style.opacity = 1;
+
+			if (eleDrag) {
+				this.$emit('sort-end', [eleDrag.__START_INDEX__, eleDrag.__END_INDEX__]);
+			}
+
+			eleDrag = null;
+		},
+	},
+};
+</script>
+
+<style lang="scss">
+.vm-sortable {
+	padding: 0;
+	box-sizing: border-box;
+	user-select: none;
+	position: relative;
+	transition: opacity .5s; // 目的是让拖拽的那个元素保持不透明， 文档流里透明
+	&:hover {
+		cursor: move;
+	}
+	.is-active {
+		padding: 0;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		position: absolute;
+		z-index: 2;
+		border: 1px dotted #108ee9;
+		cursor: move;
+	}
+	&.is-disabled {
+		cursor: no-drop;
+	}
+}
+
+</style>

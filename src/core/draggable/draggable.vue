@@ -1,38 +1,38 @@
 <template>
 	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
-		<div :style="style" :class="{ 'events-none': changing }" >
+		<div :style="style" :class="{ 'is-events-none': changing }" >
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
 		<div 
 			v-if="active && handles && handles.length !== 0" 
-			:class="{ disabled, active }" 
+			:class="{ 'is-disabled': disabled, 'is-active': active }" 
 			:style="style"
 		>
 			<template v-for="item in handles">
 				<div
 					v-if="!disabled"
 					:key="item"
-					:class="`handle-${item}`"
-					class="handle"
+					:class="`is-${item}`"
+					class="vm-draggable__handle"
 					@mousedown.left.stop="handleDown($event, item)"
 				/>
 			</template>
-			<div v-if="rotatable" :class="{ 'rotate-base-line': rotatable }" :style="{ width }" />
+			<div v-if="rotatable" :style="{ width }" class="vm-draggable__rotate"/>
 		</div>
 		<!-- grid for rotate -->
 		<template v-if="rotatable">
-			<div :class="{ 'rotate-deg-0': rotatable }" :style="{ width }" />
-			<div :class="{ 'rotate-deg-45': rotatable }" :style="{ width }" />
-			<div :class="{ 'rotate-deg-90': rotatable }" :style="{ width }" />
-			<div :class="{ 'rotate-deg-135': rotatable }" :style="{ width }" />
-			<div :class="{ 'rotate-tip': rotatable }">{{ r }} °</div>
+			<div :style="{ width }" class="is-deg-0" />
+			<div :style="{ width }" class="is-deg-45" />
+			<div :style="{ width }" class="is-deg-90" />
+			<div :style="{ width }" class="is-deg-135" />
+			<div class="is-deg-tip">{{ r }} °</div>
 		</template>
 	</div>
 </template>
 
 <script>
-import { isPassiveSupported, eleInRegExp } from '../utils/helper';
+import { isPassiveSupported, eleInRegExp } from '../../utils/helper';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
@@ -293,7 +293,7 @@ export default {
 
 			// 内部管理
 			const regex = {
-				className: /handle-([(top|right|-|bottom|left)]{2})/
+				className: /is-([(top|right|-|bottom|left)]{2})/
 			};
 
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
@@ -490,7 +490,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
+$url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="font-size: 20px;"><text y="15">↻</text></svg>';
+
 .vm-draggable {
 	padding: 0;
 	position: absolute;
@@ -499,10 +502,10 @@ export default {
 	&:hover {
 		cursor: move;
 	}
-	.events-none {
+	.is-events-none {
 		pointer-events: none;
 	}
-	.active {
+	.is-active {
 		padding: 0;
 		top: 0;
 		left: 0;
@@ -512,11 +515,11 @@ export default {
 		z-index: 2;
 		border: 1px dotted #108ee9;
 		// cursor: move;
-		.handle {
+		.vm-draggable__handle {
 			display: block;
 		}
 	}
-	.disabled {
+	.is-disabled {
 		border: 1px dotted #e96101;
 		.handle-rotate {
 			&:after {
@@ -527,7 +530,7 @@ export default {
 			}
 		}
 	}
-	.delete {
+	.is-delete {
 		background: #108ee9;
 		position: absolute;
 		right: 0;
@@ -538,108 +541,107 @@ export default {
 	}
 }
 
-.handle {
+.vm-draggable__handle {
 	display: none;
 	position: absolute;
 	box-sizing: border-box;
 	z-index: 999;
-}
-.handle-left {
-	top: 0;
-	left: -5px;
-	cursor: ew-resize;
-	position: absolute;
-	height: 100%;
-	width: 5px;
-	&:hover {
-		background: linear-gradient(to right, rgba(255, 255, 255, 0), #3F51B5);
+	&.is-left {
+		top: 0;
+		left: -5px;
+		cursor: ew-resize;
+		position: absolute;
+		height: 100%;
+		width: 5px;
+		&:hover {
+			background: linear-gradient(to right, rgba(255, 255, 255, 0), #3F51B5);
+		}
 	}
-}
-.handle-right {
-	top: 0;
-	right: -5px;
-	cursor: ew-resize;
-	position: absolute;
-	height: 100%;
-	width: 5px;
-	&:hover {
-		background: linear-gradient(to left, rgba(255, 255, 255, 0), #3F51B5);
+	&.is-right {
+		top: 0;
+		right: -5px;
+		cursor: ew-resize;
+		position: absolute;
+		height: 100%;
+		width: 5px;
+		&:hover {
+			background: linear-gradient(to left, rgba(255, 255, 255, 0), #3F51B5);
+		}
+	}
+
+	&.is-top {
+		position: absolute;
+		width: 100%;
+		height: 5px;
+		top: -5px;
+		left: 0;
+		cursor: ns-resize;
+		&:hover {
+			background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #3F51B5);
+		}
+	}
+	&.is-bottom {
+		position: absolute;
+		width: 100%;
+		height: 5px;
+		bottom: -5px;
+		left: 0;
+		cursor: ns-resize;
+		&:hover {
+			background: linear-gradient(to top, rgba(255, 255, 255, 0), #3F51B5);
+		}
+	}
+	&.is-top-left {
+		top: 0;
+		left: 0;
+		cursor: nwse-resize;
+		padding: 5px;
+	}
+	.is-bottom-left {
+		bottom: 0;
+		left: 0;
+		cursor: nesw-resize;
+		padding: 5px;
+	}
+	&.is-top-right {
+		top: 0;
+		right: 0;
+		cursor: nesw-resize;
+		padding: 5px;
+	}
+	&.is-bottom-right {
+		bottom: 0;
+		right: 0;
+		cursor: nwse-resize;
+		padding: 5px;
+	}
+	&.is-rotate {
+		top: 0;
+		left: 50%;
+		transform: translate(-50%, -100%);
+		cursor: url($url) 10 10,default;
+		display: flex !important;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		&:after {
+			content: ' ';
+			height: 10px;
+			width: 1px;
+			background: #108ee9;
+		}
+		&:before {
+			content: '☐';
+			transform: translateY(26%);
+			color: #108ee9;
+		}
 	}
 }
 
-.handle-top {
-	position: absolute;
-	width: 100%;
-	height: 5px;
-	top: -5px;
-	left: 0;
-	cursor: ns-resize;
-	&:hover {
-		background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #3F51B5);
-	}
-}
-.handle-bottom {
-	position: absolute;
-	width: 100%;
-	height: 5px;
-	bottom: -5px;
-	left: 0;
-	cursor: ns-resize;
-	&:hover {
-		background: linear-gradient(to top, rgba(255, 255, 255, 0), #3F51B5);
-	}
-}
-.handle-top-left {
-	top: 0;
-	left: 0;
-	cursor: nwse-resize;
-	padding: 5px;
-}
-.handle-bottom-left {
-	bottom: 0;
-	left: 0;
-	cursor: nesw-resize;
-	padding: 5px;
-}
-.handle-top-right {
-	top: 0;
-	right: 0;
-	cursor: nesw-resize;
-	padding: 5px;
-}
-.handle-bottom-right {
-	bottom: 0;
-	right: 0;
-	cursor: nwse-resize;
-	padding: 5px;
-}
-.handle-rotate {
-	top: 0;
-	left: 50%;
-	transform: translate(-50%, -100%);
-	cursor: url(
-		'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="font-size: 20px;"><text y="15">↻</text></svg>'
-	) 10 10,default;
-	display: flex !important;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	&:after {
-		content: ' ';
-		height: 10px;
-		width: 1px;
-		background: #108ee9;
-	}
-	&:before {
-		content: '☐';
-		transform: translateY(26%);
-		color: #108ee9;
-	}
-}
 /**
  * rotate
  */
-.rotate-base-line {
+.vm-draggable__rotate {
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -648,39 +650,40 @@ export default {
 	border: 1px solid #1fb6ff;
 	background-color: #1fb6ff;
 	transform: translate(-50%, -50%) rotate(90deg);
+	.is-deg-0 {
+		transform: translate(-50%, -50%);
+	}
+	.is-deg-45 {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+	.is-deg-90 {
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+	.is-deg-135 {
+		transform: translate(-50%, -50%) rotate(135deg);
+	}
+	.is-deg-tip {
+		position: absolute;
+		top: -50px;
+		left: 60%;
+		width: 40px;
+		height: 16px;
+		line-height: 16px;
+		text-align: center;
+		border: 1px solid #262626;
+		border-radius: 8px;
+		background-color: #fff;
+	}
+	div[class^=is-deg-] {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		z-index: 2;
+		width: 500px;
+		border-top: 1px dashed #fff;
+		border-bottom: 1px dashed #262626;
+		opacity: .4;
+	}
 }
-div[class^=rotate-deg-] {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: 2;
-	width: 500px;
-	border-top: 1px dashed #fff;
-	border-bottom: 1px dashed #262626;
-	opacity: .4;
-}
-.rotate-deg-0 {
-	transform: translate(-50%, -50%);
-}
-.rotate-deg-45 {
-	transform: translate(-50%, -50%) rotate(45deg);
-}
-.rotate-deg-90 {
-	transform: translate(-50%, -50%) rotate(90deg);
-}
-.rotate-deg-135 {
-	transform: translate(-50%, -50%) rotate(135deg);
-}
-.rotate-tip {
-	position: absolute;
-	top: -50px;
-	left: 60%;
-	width: 40px;
-	height: 16px;
-	line-height: 16px;
-	text-align: center;
-	border: 1px solid #262626;
-	border-radius: 8px;
-	background-color: #fff;
-}
+
 </style>

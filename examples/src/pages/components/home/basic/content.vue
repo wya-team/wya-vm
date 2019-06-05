@@ -16,7 +16,7 @@
 import { createVMDrags } from '@wya/vm';
 import { Message } from 'iview';
 
-let { Combo } = createVMDrags(undefined, { mode: 'list' });
+let { Combo } = createVMDrags(undefined, { mode: 'sortable' });
 
 export default {
 	name: 'tpl-links',

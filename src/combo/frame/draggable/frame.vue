@@ -8,6 +8,7 @@
 	>
 		<vm-grid-lines :width="width" :height="height" :grid="[10, 10]" />
 		<vm-align-lines :data-source="dataSource" :editor="editor"/>
+		<!-- TODO: 不操作引用修改 -->
 		<vm-draggable
 			v-for="(it, index) in dataSource"
 			ref="draggable"
@@ -41,10 +42,11 @@
 </template>
 
 <script>
-import Draggable from '../../../core/draggable.vue';
+import Draggable from '../../../core/draggable';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
+import { WIDGET_TO_FRAME } from '../../constants';
 
 export default {
 	name: 'vm-frame',
@@ -82,7 +84,7 @@ export default {
 			console.log(e);
 		},
 		handleDrop(e) {
-			let mod = e.dataTransfer.getData('vm-modules');
+			let mod = e.dataTransfer.getData(WIDGET_TO_FRAME);
 			let result = this.$parent.$options.modules[mod];
 			// 不存在的模块
 			if (!result) return;

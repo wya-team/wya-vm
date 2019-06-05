@@ -1,6 +1,6 @@
 import { defaultModules } from './modules/root';
 import { cloneDeep } from '../utils/helper';
-import { DraggableFrame, SortListFrame } from './frame/root';
+import { DraggableFrame, SortableFrame } from './frame/root';
 import Combo from './combo.vue';
 import ToolsWidget from './tools/widget.vue';
 import ToolsPreview from './tools/preview.vue';
@@ -10,7 +10,7 @@ export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
 	try {
 		let newCombo = cloneDeep(opts.Combo || Combo);
-		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? DraggableFrame : SortListFrame));
+		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? DraggableFrame : SortableFrame));
 		let newToolsWidget = cloneDeep(opts.ToolsWidget || ToolsWidget);
 		let newToolsPreview = cloneDeep(opts.ToolsPreview || ToolsPreview);
 		let newEditor = cloneDeep(opts.Editor || Editor);

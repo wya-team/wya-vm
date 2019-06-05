@@ -42,7 +42,11 @@ let baseClone = (target, source) => {
 	}
 	return target;
 };
-export const cloneDeep = (source) => baseClone(Array.isArray(source) ? [] : {}, source);
+export const cloneDeep = (source) => {
+	return source && typeof source === 'object' 
+		? baseClone(Array.isArray(source) ? [] : {}, source) 
+		: source;
+};
 
 
 /**

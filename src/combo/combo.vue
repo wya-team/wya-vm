@@ -139,8 +139,8 @@ export default {
 		/**
 		 * 数据变化
 		 */
-		handleChange({ type, id, index, old }) {
-			if (!type || !id) {
+		handleChange({ type, id, index, old, sort }) {
+			if (!type || (!sort && !id)) {
 				console.error('[wya-vm/combo]: id, type is required');
 			}
 			const { current, total } = this;
@@ -148,10 +148,14 @@ export default {
 				type,
 				id,
 				old,
-				index: typeof index === 'undefined' ? this.rebuildData.findIndex(item => item.id === id) : index,
+				sort,
+				index: id && typeof index === 'undefined' 
+					? this.rebuildData.findIndex(item => item.id === id) 
+					: index,
 				data: cloneDeep(this.rebuildData.find(item => item.id === id)),
 			};
 
+			// 继续插入，还是以当前停留位置插入
 			current === total 
 				? this.historyData.push(target)
 				: this.historyData.splice(current, total - current, target);
@@ -191,7 +195,7 @@ export default {
 
 			this.current = current;
 
-			let { type, id, data, index, old } = this.historyData[this.current] || {};
+			let { type, id, data, index, old, sort } = this.historyData[this.current] || {};
 			switch (type) {
 				case 'create':
 					this.rebuildData.splice(index, 1);
@@ -201,6 +205,9 @@ export default {
 					break;
 				case 'update':	
 					this.rebuildData.splice(index, 1, cloneDeep({ ...data, ...old }));
+					break;
+				case 'sort':	
+					this.$refs.frame.sortData(sort);
 					break;
 				default:
 					break;
@@ -221,7 +228,7 @@ export default {
 
 			this.current = current;
 
-			let { type, id, data, index } = this.historyData[this.current - 1];
+			let { type, id, data, index, sort } = this.historyData[this.current - 1];
 			switch (type) {
 				case 'create':
 					this.rebuildData.splice(index, 1, data);
@@ -231,6 +238,9 @@ export default {
 					break;
 				case 'update':	
 					this.rebuildData.splice(index, 1, data);
+					break;
+				case 'sort':	
+					this.$refs.frame.sortData(sort);
 					break;
 				default:
 					break;

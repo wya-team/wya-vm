@@ -1,32 +1,41 @@
 <template>
 	<div 
 		:style="style" 
+		class="vm-sort-list"
 		style="position: relative; overflow: auto" 
 		@dragover.prevent="handleDragOver" 
 		@dragend="handleDragEnd"
 		@drop="handleDrop"
 	>
-		<vm-sort-item
-			v-for="it in dataSource"
-			ref="sort"
-			:key="it.id"
-			:disabled="it.disabled"
-			@activated="$emit('activated', it)"
-			@deactivated="$emit('deactivated', it)"
-		>
-			<component :is="`vm-${it.module}-viewer`" v-bind="it" />
-		</vm-sort-item>
+		<transition-group tag="div" name="flip-list">
+			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-sort-list__item">
+				<!-- TODO: 不操作引用修改 -->
+				<vm-sortable
+					
+					ref="sort"
+					:index="index"
+					:type="dragType"
+					@activated="$emit('activated', it, index)"
+					@deactivated="$emit('deactivated', it, index)"
+					@sort="handleSort"
+					@sort-end="handleSortEnd"
+				>
+					<component :is="`vm-${it.module}-viewer`" v-bind="it" />
+				</vm-sortable>
+			</div>
+		</transition-group>
 	</div>
 </template>
 
 <script>
-import SortItem from '../../../core/sort-item.vue';
+import Sortable from '../../../core/sortable';
 import { getUid, cloneDeep } from '../../../utils/helper';
+import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../constants';
 
 export default {
 	name: 'vm-frame',
 	components: {
-		'vm-sort-item': SortItem,
+		'vm-sortable': Sortable,
 	},
 	props: {
 		width: Number,
@@ -36,6 +45,7 @@ export default {
 	},
 	data() {
 		return {
+			dragType: SORT_IN_FRAME
 		};
 	},
 	computed: {
@@ -49,25 +59,18 @@ export default {
 		}
 	},
 	created() {
+		this.eleDrag = null;
 	},
 	methods: {
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
-			console.log(e);
 		},
 		handleDrop(e) {
-			console.log(e);
-			let mod = e.dataTransfer.getData('vm-modules');
+			let mod = e.dataTransfer.getData(WIDGET_TO_FRAME);
 			let result = this.$parent.$options.modules[mod];
 			// 不存在的模块
 			if (!result) return;
-
-			// let { x, y } = this.$el.getBoundingClientRect();
-
-			// let mouseX = e.pageX || e.clientX + doc.scrollLeft;
-			// let mouseY = e.pageY || e.clientY + doc.scrollTop;
-
 			/**
 			 * TODO: 动态插入，暂时只做到插入到第一个
 			 */
@@ -89,14 +92,6 @@ export default {
 			// 新元素处于激活状态
 			this.setActived(index);
 		},
-		handleEnd(old, id, index) {
-			this.$emit('change', { 
-				type: 'update', 
-				id, 
-				index,
-				old
-			});
-		},
 		setActived(index) {
 			this.$nextTick(() => {
 				try {
@@ -105,10 +100,49 @@ export default {
 					console.error(e);
 				}
 			});
+		},
+
+		/**
+		 * 交换位置
+		 */
+		handleSort(v) {
+			this.sortData(v);
+		},
+
+
+		handleSortEnd(v) {
+			if (v[1] != v[2]) {
+				this.$emit('change', {
+					type: 'sort',
+					sort: v
+				});
+			}
+		},
+
+		/**
+		 * 外部使用
+		 */
+		
+		sortData(v) {
+			let current = this.dataSource[v[0]];
+			let target = this.dataSource[v[1]];
+			this.dataSource.splice(v[0], 1, target);
+			this.dataSource.splice(v[1], 1, current);
 		}
 	},
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.vm-sort-list__item {
+	transition: all .5s;
+}
+// 开始消失/进入的元素
+.flip-list-enter, 
+.flip-list-leave-to{
+	opacity: 0;
+}
+.flip-list-leave-active {
+	display: none;
+}
 </style>
