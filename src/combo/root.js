@@ -3,8 +3,9 @@ import { cloneDeep } from '../utils/helper';
 import { DraggableFrame, SortableFrame } from './frame/root';
 import Combo from './combo.vue';
 import ToolsWidget from './tools/widget.vue';
-import ToolsPreview from './tools/preview.vue';
 import Editor from './editor/editor.vue';
+import ToolsPreview, { PreviewManager } from './tools/preview';
+
 
 export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
@@ -56,10 +57,22 @@ export default (modules = defaultModules, opts = {}) => {
 			...newToolsPreview.components,
 			...viewers
 		};
+
+
 		// cloneDeep 避免相互干扰，vue内部会改变_Ctor缓存
+		let rebuildCombo = cloneDeep(newCombo);
+		let rebuildPreview = cloneDeep(newToolsPreview);
+
+		let manager = new PreviewManager(newToolsPreview, mode);
+
+		rebuildCombo.previewManager = manager;
+
+		rebuildPreview.show = manager.show;
+		rebuildPreview.hide = manager.hide;
+
 		return {
-			Combo: cloneDeep(newCombo),
-			Preview: cloneDeep(newToolsPreview)
+			Combo: rebuildCombo,
+			Preview: rebuildPreview
 		};
 	} catch (e) {
 		console.error(`[wya-vm/register]`, e);

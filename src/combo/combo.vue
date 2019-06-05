@@ -3,7 +3,7 @@
 		<vm-tools-widget 
 			:style="toolsStyle" 
 			v-bind="toolsOpts"
-			class="__tools"
+			class="vm-combo__tools"
 		/>
 		<vm-tools-save
 			@save="handleOperate('save')"
@@ -25,7 +25,7 @@
 			:data-source="rebuildData" 
 			:editor="editor" 
 			v-bind="frameOpts"
-			class="__frame"
+			class="vm-combo__frame"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 			@change="handleChange"
@@ -41,8 +41,7 @@
 <script>
 import ToolsOperation from './tools/operation.vue';
 import ToolsSave from './tools/save.vue';
-import { Preview } from './tools/preview.vue';
-import { cloneDeep } from '../utils/helper';
+import { cloneDeep, isEqualWith } from '../utils/helper';
 
 export default {
 	name: 'vm-combo',
@@ -50,6 +49,10 @@ export default {
 		// 会被注入vm-frame, vm-tools-widget, vm-editor,
 		'vm-tools-operation': ToolsOperation,
 		'vm-tools-save': ToolsSave,
+	},
+	model: {
+		prop: 'data-source',
+		event: 'change'
 	},
 	props: {
 		width: Number,
@@ -94,16 +97,16 @@ export default {
 				width: w,
 				height: h
 			};
-		},
-		frame() {
-			return this.mode === 'draggable' ? 'vm-draggable-frame' : 'vm-sort-list-frame';
 		}
 	},
 	watch: {
 		dataSource: {
 			deep: true,
 			immediate: true,
-			handler() {
+			handler(v) {
+				if (isEqualWith(v, this.rebuildData)) {
+					return;
+				}
 				// todo, 是否重写
 				this.rebuildData = cloneDeep(this.dataSource);
 			}
@@ -113,7 +116,7 @@ export default {
 		this.historyData = [];
 	},
 	destroyed() {
-		Preview.hide();
+		this.$options.previewManager.hide();
 	},
 	methods: {
 		/**
@@ -126,6 +129,9 @@ export default {
 					this.$emit(`update:${key}`, opts[key]);
 				}
 			}
+		},
+		syncData() {
+			this.$emit('change', this.rebuildData);
 		},
 		/**
 		 * draggable
@@ -165,6 +171,8 @@ export default {
 			this.total = length;
 			
 			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
+
+			this.syncData();
 		},
 		/**
 		 * tools-operation
@@ -215,6 +223,8 @@ export default {
 			if (this.editor && this.editor.id === id) {
 				this.editor = this.rebuildData[index];
 			}
+
+			this.syncData();
 		},
 		redo() {
 			let current = this.current + 1;
@@ -248,6 +258,8 @@ export default {
 			if (this.editor && this.editor.id === id) {
 				this.editor = this.rebuildData[index];
 			}
+
+			this.syncData();
 		},
 		/**
 		 * tools-save
@@ -292,25 +304,16 @@ export default {
 				});
 				return;
 			}
-			Preview.show({
-				components: this.$options.viewers,
+			this.$options.previewManager.show({
 				dataSource: cloneDeep(this.rebuildData),
-				css: {
-					style: {
-						...this.frameStyle,
-						width: this.frameW === 0 ? 'auto' : `${this.frameW}px`,
-						height: this.frameH === 0 ? 'auto' : `${this.frameH}px`
-					},
-					className: '__frame'
-				}
+				style: {
+					...this.frameStyle,
+					width: this.frameW === 0 ? 'auto' : `${this.frameW}px`,
+					height: this.frameH === 0 ? 'auto' : `${this.frameH}px`
+				},
+				className: 'vm-combo__frame'
 			});
 		}
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.vm-combo {
-	// display: flex
-}
-</style>
