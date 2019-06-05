@@ -19,7 +19,6 @@ const webpackConfig = {
 		new AssetsPlugin({
 			path: path.resolve(APP_ROOT, 'dist/js/'),
 			filename: 'webpack-assets.js',
-			includeAllFileTypes: false,
 			processOutput: assets => {
 				delete assets[''];
 				return `window.WEBPACK_ASSETS=${JSON.stringify(assets)}`;

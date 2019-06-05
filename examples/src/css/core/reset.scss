@@ -2,7 +2,13 @@
  * @file
  * reset.scss
  */
+
 body {
-	// background: rgba(0, 0, 0, 0.6) !important;
-	height: 100%;
+	font-family: "Microsoft YaHei", "微软雅黑", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #333;
+	background-color: #f2f2f2 !important;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }

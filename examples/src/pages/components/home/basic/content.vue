@@ -14,9 +14,10 @@
 
 <script>
 import { createVMDrags } from '@wya/vm';
-import { Message } from 'iview';
+import { Message } from '@wya/vc';
+import { defaultModules } from './modules/root';
 
-let { Combo } = createVMDrags(undefined, { mode: 'sortable' });
+let { Combo } = createVMDrags(defaultModules, { mode: 'sortable' });
 
 export default {
 	name: 'tpl-links',

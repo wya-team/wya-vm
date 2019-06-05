@@ -20,4 +20,7 @@ for (let i = 0; i <= 2; i++) {
 		}
 	}
 }
-module.exports = items;
+module.exports = (req, res) => ({
+	status: 1,
+	data: items
+});

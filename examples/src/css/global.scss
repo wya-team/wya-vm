@@ -1,5 +1,75 @@
 @import "core/index";
-
+.g-c-main {
+	color: $main;
+}
+.g-bg-main {
+	background-color: $main;
+}
 .g-m-t-24 {
 	margin-top: 24px;
+}
+.g-m-t-16 {
+	margin-top: 16px;
+}
+.g-pd-t-16 {
+	padding-top: 16px;
+}
+.g-m-b-16 {
+	margin-bottom: 16px;
+}
+.g-m-b-24 {
+	margin-bottom: 24px;
+}
+.g-m-b-32 {
+	margin-bottom: 32px;
+}
+.g-m-l-24 {
+	margin-left: 24px;
+}
+.g-m-l-12 {
+	margin-left: 12px;
+}
+.g-bg-f4 {
+	background-color: #f4f4f4;
+}
+.g-no-select {
+	user-select: none;
+}
+
+.g-lh-50 {
+	line-height: 45px;
+}
+.g-c-333 {
+	color: #333 !important;
+}
+
+.g-search-form {
+	.ivu-form-item {
+		margin-bottom: 0 !important;
+	}
+	.ivu-form-inline .ivu-form-item {
+		margin-right: 0 !important;
+	}
+}
+
+.g-w-100 {
+	display: inline-block;
+	width: 100px;
+	text-align: right;
+}
+.g-bg-f9 {
+	background-color: #f9f9f9;
+}
+.g-pd-lr-24 {
+	padding-left: 24px;
+	padding-right: 24px;
+}
+.g-pd-t-24 {
+	padding-top: 24px;
+}
+.g-m-b-26 {
+	margin-bottom: 26px;
+}
+.g-m-t-5 {
+	margin-top: 5px;
 }

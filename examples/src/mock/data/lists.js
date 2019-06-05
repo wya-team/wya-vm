@@ -13,23 +13,26 @@ for (let i = 1; i <= 30; i++) {
 }
 
 
-module.exports = {
-	"_items": items,
-	"_links": {
-		"self": {
-			"href": "http://localhost/users?page=1"
+module.exports = (req, res) => ({
+	status: 1,
+	data: {
+		"_items": items,
+		"_links": {
+			"self": {
+				"href": "http://localhost/users?page=1"
+			},
+			"next": {
+				"href": "http://localhost/users?page=2"
+			},
+			"last": {
+				"href": "http://localhost/users?page=50"
+			}
 		},
-		"next": {
-			"href": "http://localhost/users?page=2"
-		},
-		"last": {
-			"href": "http://localhost/users?page=50"
+		"_meta": {
+			"totalCount": 1000,
+			"pageCount": 50,
+			"currentPage": 1,
+			"perPage": 20
 		}
-	},
-	"_meta": {
-		"totalCount": 1000,
-		"pageCount": 50,
-		"currentPage": 1,
-		"perPage": 20
 	}
-};
+});

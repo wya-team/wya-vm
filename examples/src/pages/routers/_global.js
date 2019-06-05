@@ -1,7 +1,7 @@
 /**
- * 全部变量初始化及使用
+ * 全部变量初始化及使用, 不要随意引用其他模块，保证_global是最高级别变量
  */
-import { getItem, setItem, delItem, getCookie, getDevice, getParseUrl, getUrlParam, defineProperty, loadCssCode } from '../utils/utils';
+import { Device, Storage, Cookie } from '@wya/utils';
 
 /**
  * 组件内遵守使用this.$global
@@ -11,6 +11,9 @@ typeof window === "object" ? window._global = {} : this._global = {};
 
 // 版本号
 _global.version = '1.0';
+
+Storage.setVersion(_global.version);
+Cookie.setVersion(_global.version);
 
 // GUID
 _global.GUID = location.host.split(".")[0];
@@ -42,7 +45,7 @@ _global.env = process.env.NODE_ENV;
 _global.scale = 1;
 
 // 设备信息状态
-_global.device = getDevice();
+_global.device = Device;
 
 export default {
 	install(Vue) {

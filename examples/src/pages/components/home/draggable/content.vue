@@ -16,7 +16,7 @@
 
 <script>
 import { Draggable } from '@wya/vm';
-import { Message } from 'iview';
+import { Message } from '@wya/vc';
 
 export default {
 	name: 'tpl-links',

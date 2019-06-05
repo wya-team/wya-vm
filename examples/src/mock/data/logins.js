@@ -1,6 +1,10 @@
 let Mock = require('mockjs');
 
 let { Random } = Mock;
-module.exports = {
-	token: 'KHK5454HJK212'
-};
+
+module.exports = (req, res) => ({
+	status: 1,
+	data: {
+		token: 'KHK5454HJK212'
+	}
+});

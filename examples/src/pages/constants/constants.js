@@ -17,3 +17,10 @@ export const DEV_WITH_SERVER = !1;
 export const PRE_ROUTER_URL = process.env.NODE_ENV === 'development'
 	? '/'
 	: '/wya-vm/examples/dist/';
+
+export const URL_WEBSOCKET = '/wss';
+
+/**
+ * 用于判断登录token / user
+ */
+export const TOKEN_KEY = 'user';

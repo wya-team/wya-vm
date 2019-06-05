@@ -54,6 +54,8 @@
 			"exports": "never",
 			"functions": "ignore"
 		}],
+		"camelcase": 0,
+		"dot-notation": 0,
 		"new-parens": ["warn"],
 		"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
 		"object-curly-newline": 0, // { a, b, c } 允许不换行

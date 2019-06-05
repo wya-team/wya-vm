@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "start": "../../node_modules/json-server/bin/index.js db.js",
-    "start:win": "json-server db.js"
+    "start": "json-server db.js"
   }
 }
