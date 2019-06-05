@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<!-- <vm-preview :data-source="list"/> -->
 		<vm-combo 
 			v-model="list"
 			:frame-style="{ border: '1px solid red', margin: 100 }"
@@ -17,7 +18,7 @@ import { createVMDrags } from '@wya/vm';
 import { Message } from '@wya/vc';
 import { defaultModules } from './modules/root';
 
-let { Combo, Preview } = createVMDrags(defaultModules);
+let { Combo, Preview } = createVMDrags(defaultModules, { mode: 'sortable' });
 
 export default {
 	name: 'tpl-links',

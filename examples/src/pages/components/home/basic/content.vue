@@ -1,50 +1,38 @@
 <template>
-	<div>
-		<vm-combo 
-			:data-source="list"
-			:frame-style="{ border: '1px solid red', margin: 100 }"
-			:frame-w="500"
-			:frame-h="500"
-			style="height: 1000px; width: 1000px;"
-			@save="handleSave"
-			@error="handleError"
-		/>
+	<div class="v-home-basic-main">
+		<ul>
+			<li v-for="(item, index) in list" v-if="String(index)" :key="index">
+				<router-link :to="item.path">{{ item.name }}</router-link>
+				<vc-copy :value="item.path" tag="span">复制</vc-copy>
+			</li>
+		</ul>
 	</div>
+
 </template>
 
 <script>
-import { createVMDrags } from '@wya/vm';
-import { Message } from '@wya/vc';
-import { defaultModules } from './modules/root';
-
-let { Combo } = createVMDrags(defaultModules, { mode: 'sortable' });
+import { homeConfig } from '@containers/home/app';
 
 export default {
 	name: 'tpl-links',
 	components: {
-		'vm-combo': Combo
 	},
 	data() {
 		return {
+			list: homeConfig,
 		};
-	},
-	computed: {
-		list() {
-			return this.$store.state.homeBasic.list;
-		}
 	},
 	created() {
 	},
 	methods: {
-		handleSave(response) {
-			console.log(response, this.list);
-		},
-		handleError({ type, msg }) {
-			Message.error(msg);
-		}
 	},
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.v-home-basic-main {
+	li {
+		padding: 5px;
+	}
+}
 </style>
