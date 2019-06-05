@@ -1,0 +1,95 @@
+/**
+ * tabs
+ */
+.ivu-tabs-bar {
+	border-bottom: 0 !important;
+}
+.ivu-tabs-nav-container {
+	margin-bottom: 0;
+	font-size: 12px !important;
+}
+.ivu-tabs {
+	color: #676767 !important;
+}
+.ivu-tabs-tab-active, .ivu-tabs-tab-focused {
+	color: $main !important;
+	border-color: $main !important;
+	border-bottom: 1px solid $main !important;
+	z-index: 2;
+}
+.ivu-tabs-tab {
+	background-color: #fff !important;
+	transition: none !important;
+	-webkit-transition: none !important;
+	margin-right: -1px !important;
+	&:hover {
+		color: $main !important;
+	}
+	&:active {
+		color: $main !important;
+	}
+	&:focus {
+		color: $main !important;
+	}
+}
+.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+	height: 31px !important;
+	color: $main !important;
+}
+.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+	border-radius: 0 0 0 0 !important;
+	border-bottom: 1px solid #dcdee2 !important;
+	&:last-child {
+		border-radius: 0 4px 4px 0 !important;
+	}
+	&:nth-child(2) {
+		border-radius: 4px 0 0 4px !important;
+	}
+}
+.ivu-tabs-bar .ivu-tabs-nav-container .ivu-tabs-nav .ivu-tabs-tab-focused {
+	border-color: $main !important;
+}
+
+.ivu-select {
+	height: 28px !important;
+}
+.ivu-input, .ivu-select-selection {
+	height: 28px !important;
+	border: 1px solid #d9d9d9;
+}
+.ivu-input-number {
+	height: 28px !important;
+}
+.ivu-select-placeholder {
+	height: 26px !important;
+	line-height: 26px !important;
+}
+.ivu-form-item-label {
+	padding: 8px 0 8px 0 !important;
+}
+.ivu-form .ivu-form-item-label {
+	color: #333 !important;
+}
+.ivu-form-item-content {
+	line-height: unset !important;
+}
+.ivu-form-item {
+	margin-bottom: 26px !important;
+}
+.vcp-imgs-picker > .__upload {
+	margin-bottom: 0 !important;
+}
+.ivu-date-picker .ivu-input-icon {
+	height: 28px !important;
+	line-height: 28px !important;
+}
+
+// 表单块，调整上下边距问题
+.g-form-block {
+	.vc-form-item {
+		margin-bottom: 16px !important;
+	}
+	.vc-form-item.__error .__tip {
+		padding-top: 2px !important;
+	}
+}
