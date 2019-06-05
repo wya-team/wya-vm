@@ -4,13 +4,13 @@
 			v-for="item in yArr" 
 			:key="`y_${item}`" 
 			:style="{top: `${item}px`}"  
-			class="__y"
+			class="vm-grid-lines__y"
 		/>
 		<div 
 			v-for="item in xArr" 
 			:key="`x_${item}`" 
 			:style="{left: `${item}px`}"  
-			class="__x"
+			class="vm-grid-lines__x"
 		/>
 	</div>
 </template>
@@ -66,25 +66,25 @@ export default {
 	height: 100%;
 	overflow: hidden;
 	z-index: 0;
-	.__x {
-		position: absolute;
-		left: 0;
-		width: 1px;
-		height: 100%;
-		border-left-width: 1px;
-		border-left-style: dotted;
-		border-left-color: rgb(214, 214, 214);
-		box-sizing: border-box;
-	}
-	.__y {
-		position: absolute;
-		top: 0;
-		width: 100%;
-		height: 1px;
-		border-top-width: 1px;
-		border-top-style: dotted;
-		border-top-color: rgb(214, 214, 214); 
-		box-sizing: border-box;
-	}
+}
+.vm-grid-lines__x {
+	position: absolute;
+	left: 0;
+	width: 1px;
+	height: 100%;
+	border-left-width: 1px;
+	border-left-style: dotted;
+	border-left-color: rgb(214, 214, 214);
+	box-sizing: border-box;
+}
+.vm-grid-lines__y {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 1px;
+	border-top-width: 1px;
+	border-top-style: dotted;
+	border-top-color: rgb(214, 214, 214); 
+	box-sizing: border-box;
 }
 </style>
