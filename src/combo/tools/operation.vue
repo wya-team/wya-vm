@@ -55,24 +55,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.vm-tools-operation {
-	display: flex;
-	cursor: pointer;
-	align-items: center;
-	user-select: none;
-	div {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 30px;
-		height: 30px;
-		user-select: none;
-	}
-	.disabled {
-		pointer-events: none;
-		color: #ccc;
-	}
-}
-</style>

@@ -28,6 +28,9 @@
 			<div :style="{ width }" class="is-deg-135" />
 			<div class="is-deg-tip">{{ r }} °</div>
 		</template>
+
+		<!-- delete -->
+		<p class="vm-draggable__delete" @click="$emit('delete')">✕</p>
 	</div>
 </template>
 
@@ -684,6 +687,19 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		border-bottom: 1px dashed #262626;
 		opacity: .4;
 	}
+}
+
+.vm-draggable__delete {
+	background: rgb(16, 142, 233); 
+	position: absolute; 
+	right: 0px; 
+	width: 20px; 
+	color: white; 
+	text-align: center; 
+	z-index: 300;
+	top: 0;
+	right: 0px;
+	cursor: pointer;
 }
 
 </style>

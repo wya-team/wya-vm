@@ -13,6 +13,7 @@
 		</div>
 		<!-- handle -->
 		<div v-if="isActive" :class="{ 'is-disabled': disabled, 'is-active': isActive }" />
+		<p class="vm-sortable__delete" @click="$emit('delete')">✕</p>
 	</div>
 </template>
 
@@ -40,7 +41,7 @@ export default {
 		disabled: Draggable.props.disabled,
 		editorRegExp: Draggable.props.editorRegExp,
 		prevent: Draggable.props.prevent,
-		preventRegExp: Draggable.props.preventRegExp
+		preventRegExp: Draggable.props.preventRegExp,
 	},
 	data() {
 		return {
@@ -200,4 +201,17 @@ export default {
 	}
 }
 
+.vm-sortable__delete {
+	background: rgb(16, 142, 233); 
+	position: absolute; 
+	right: 0px; 
+	width: 20px; 
+	color: white; 
+	text-align: center; 
+	z-index: 300;
+	top: 0;
+	right: 0px;
+	cursor: pointer;
+}
+ 
 </style>

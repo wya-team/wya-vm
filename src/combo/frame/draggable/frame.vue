@@ -34,6 +34,7 @@
 			@rotating="$emit('rotating', it)"
 			@resize-end="$emit('resize-end', it)"
 			@drag-end="$emit('drag-end', it)"
+			@delete="$emit('change', { type: 'delete', id: it.id })"
 			@end="handleEnd(arguments[0], it.id, index)"
 		>
 			<component :is="`vm-${it.module}-viewer`" v-bind="it" />

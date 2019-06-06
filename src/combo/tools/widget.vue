@@ -76,25 +76,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-.vm-tools-widget {
-	width: 400px;
-	.__title {
-		padding: 15px;
-		font-size: 18px;
-	}
-	.__item {
-		display: inline-block;
-		border: 1px solid gray;
-		background-color: white;
-		line-height: 30px;
-		text-align: center;
-		width: 70px;
-		margin: 0 15px 15px 15px;
-		cursor: move;
-		border-radius: 3px;
-	}
-}
-
-</style>

@@ -1,22 +1,12 @@
 <template>
-	<div :style="style" class="vm-combo">
+	<div :style="style" :class="classes" class="vm-combo">
 		<vm-tools-widget 
 			:style="toolsStyle" 
 			v-bind="toolsOpts"
-			class="vm-combo__tools"
-		/>
-		<vm-tools-save
-			@save="handleOperate('save')"
-			@preview="handleOperate('preview')"
-		/>
-		<vm-tools-operation
-			:current="current"
-			:total="total"
-			:is-edit="!!editor"
-			@undo="handleOperate('undo')"
-			@redo="handleOperate('redo')"
-			@delete="handleOperate('delete')"
-		/>
+		>
+			<!-- TODO -->
+			<slot name="widget-default" />
+		</vm-tools-widget>
 		<vm-frame 
 			ref="frame"
 			:style="frameStyle" 
@@ -25,16 +15,36 @@
 			:data-source="rebuildData" 
 			:editor="editor" 
 			v-bind="frameOpts"
-			class="vm-combo__frame"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 			@change="handleChange"
-		/>
-		<!-- 
-			vue.sync遇到引用类型可跨层级修改，Object/Array. 
-			如Object, 不要操作对象，把每个值解构出来v-bind.sync.
-		-->
-		<vm-editor v-if="editor" :data-source="editor" @change="handleChange"/>
+		>
+			<!-- TODO -->
+			<slot name="frame-default" />
+		</vm-frame>
+		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
+		<vm-editor 
+			v-if="editor" 
+			:data-source="editor"
+			@change="handleChange"
+		>
+			<!-- TODO -->
+			<slot name="editor-default" />
+		</vm-editor>
+		<slot>
+			<vm-tools-save
+				@save="handleOperate('save')"
+				@preview="handleOperate('preview')"
+			/>
+			<vm-tools-operation
+				:current="current"
+				:total="total"
+				:is-edit="!!editor"
+				@undo="handleOperate('undo')"
+				@redo="handleOperate('redo')"
+				@delete="handleOperate('delete')"
+			/>
+		</slot>
 	</div>
 </template>
 
@@ -42,6 +52,7 @@
 import ToolsOperation from './tools/operation.vue';
 import ToolsSave from './tools/save.vue';
 import { cloneDeep, isEqualWith } from '../utils/helper';
+import './combo-defaut.scss';
 
 export default {
 	name: 'vm-combo',
@@ -74,7 +85,15 @@ export default {
 		toolsStyle: Object,
 		toolsW: Number,
 		toolsH: Number,
-		toolsOpts: Object
+		toolsOpts: Object,
+
+		/**
+		 * combo
+		 */
+		theme: {
+			type: String,
+			default: 'default'
+		}
 	},
 	data() {
 		return {
@@ -96,6 +115,11 @@ export default {
 			return {
 				width: w,
 				height: h
+			};
+		},
+		classes() {
+			return {
+				[`vm-combo__theme--${this.theme}`]: !!this.theme
 			};
 		}
 	},
@@ -177,11 +201,11 @@ export default {
 		/**
 		 * tools-operation
 		 */
-		handleOperate(type) {
-			this[type] && this[type]();
+		handleOperate(type, ...rest) {
+			this[type] && this[type](...rest);
 		},
-		delete() {
-			const { id } = this.editor || {};
+		delete(id) {
+			id = id || (this.editor || {}).id;
 			if (!id) {
 				this.$emit('error', { 
 					type: 'id', 

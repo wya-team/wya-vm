@@ -11,12 +11,12 @@
 			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-sort-list__item">
 				<!-- TODO: 不操作引用修改 -->
 				<vm-sortable
-					
 					ref="sort"
 					:index="index"
 					:type="dragType"
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
+					@delete="$emit('change', { type: 'delete', id: it.id })"
 					@sort="handleSort"
 					@sort-end="handleSortEnd"
 				>
