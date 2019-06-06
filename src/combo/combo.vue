@@ -31,20 +31,20 @@
 			<!-- TODO -->
 			<slot name="editor-default" />
 		</vm-editor>
-		<slot>
-			<vm-tools-save
-				@save="handleOperate('save')"
-				@preview="handleOperate('preview')"
-			/>
-			<vm-tools-operation
-				:current="current"
-				:total="total"
-				:is-edit="!!editor"
-				@undo="handleOperate('undo')"
-				@redo="handleOperate('redo')"
-				@delete="handleOperate('delete')"
-			/>
-		</slot>
+		<vm-tools-save
+			v-if="showAssist"
+			@save="handleOperate('save')"
+			@preview="handleOperate('preview')"
+		/>
+		<vm-tools-operation
+			v-if="showAssist"
+			:current="current"
+			:total="total"
+			:is-edit="!!editor"
+			@undo="handleOperate('undo')"
+			@redo="handleOperate('redo')"
+			@delete="handleOperate('delete')"
+		/>
 	</div>
 </template>
 
@@ -93,7 +93,12 @@ export default {
 		theme: {
 			type: String,
 			default: 'default'
+		},
+		showAssist: {
+			type: Boolean,
+			default: true
 		}
+
 	},
 	data() {
 		return {
