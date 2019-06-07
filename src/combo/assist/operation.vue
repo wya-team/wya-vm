@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-tools-operation vm-hack-editor">
+	<div class="vm-assist-operation vm-hack-editor">
 		<div 
 			:class="{ disabled: current === 0 }" 
 			@click="handleUndo"
@@ -22,7 +22,7 @@
 <script>
 
 export default {
-	name: 'vm-tools-operation',
+	name: 'vm-assist-operation',
 	components: {
 	},
 	props: {

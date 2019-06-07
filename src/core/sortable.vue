@@ -5,21 +5,36 @@
 		@click="handleClick"
 		@dragstart="handleDragStart"
 		@dragenter="handleDragEnter"
+		@dragleave="handleDragLeave"
 		@dragover.prevent
 		@dragend="handleDragEnd"
+		@mouseenter="isHover = true"
+		@mouseleave="isHover = false"
 	>
 		<div style="pointer-events: none;">
 			<slot />
 		</div>
 		<!-- handle -->
-		<div v-if="isActive" :class="{ 'is-disabled': disabled, 'is-active': isActive }" />
-		<p class="vm-sortable__delete" @click="$emit('delete')">✕</p>
+		<div 
+			v-if="isActive || isHover" 
+			:class="{ 
+				'is-disabled': disabled, 
+				'is-active': true 
+			}" 
+		/>
+		<p 
+			v-if="clearable && (isActive || isHover)" 
+			class="vm-sortable__delete" 
+			@click="$emit('delete')"
+		>✕</p>
+
+		<p v-if="highlight" class="vm-sortable__highlight" />
 	</div>
 </template>
 
 <script>
-import { isPassiveSupported, eleInRegExp } from '../../utils/helper';
-import Draggable from '../draggable/index';
+import { isPassiveSupported, eleInRegExp } from '../utils/helper';
+import Draggable from './draggable.vue';
 
 const doc = document.documentElement;
 let eleDrag = null;
@@ -42,10 +57,13 @@ export default {
 		editorRegExp: Draggable.props.editorRegExp,
 		prevent: Draggable.props.prevent,
 		preventRegExp: Draggable.props.preventRegExp,
+		clearable: Draggable.props.clearable,
 	},
 	data() {
 		return {
-			isActive: false
+			isActive: false,
+			isHover: false,
+			highlight: false
 		};
 	},
 	computed: {
@@ -151,12 +169,20 @@ export default {
 					this.$emit('sort', [eleDrag.__END_INDEX__, this.index]);
 					eleDrag.__END_INDEX__ = this.index;
 				}
-				
-
 			} else if (!eleDrag) { // 处理高亮
-				// ...
+				this.highlight = true;
+				this.$emit('highlight-change', true);
 			}
 		},
+
+		/**
+		 * 拖拽离开
+		 */
+		handleDragLeave() {
+			this.highlight = false;
+			this.$emit('highlight-change', false);
+		},
+
 		/**
 		* 拖拽结束
 		*/
@@ -170,7 +196,7 @@ export default {
 			}
 
 			eleDrag = null;
-		},
+		}
 	},
 };
 </script>
@@ -212,6 +238,11 @@ export default {
 	top: 0;
 	right: 0px;
 	cursor: pointer;
+}
+
+.vm-sortable__highlight {
+	height: 2px;
+	background: red;
 }
  
 </style>

@@ -1,6 +1,7 @@
 <template>
 	<div 
 		:style="style" 
+		class="vm-frame-draggable"
 		style="position: relative;" 
 		@dragover.prevent="handleDragOver" 
 		@dragend="handleDragEnd"
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import Draggable from '../../../core/draggable';
+import Draggable from '../../../core/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
@@ -85,8 +86,8 @@ export default {
 			console.log(e);
 		},
 		handleDrop(e) {
-			let mod = e.dataTransfer.getData(WIDGET_TO_FRAME);
-			let result = this.$parent.$options.modules[mod];
+			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME)) || {};
+			let result = this.$parent.$options.modules[module];
 			// 不存在的模块
 			if (!result) return;
 
@@ -96,24 +97,31 @@ export default {
 			let mouseY = e.pageY || e.clientY + doc.scrollTop;
 
 			let id = getUid();
-			let index = this.dataSource.length;
-			// 会同步到上级 这里不用this.$emit("update:sync")
-			this.dataSource.push({
-				...cloneDeep(result.data),
-				module: mod,
+			let rowIndex = this.dataSource.length;
+
+			let data = {
+				...cloneDeep(
+					typeof result.data === 'function' 
+						? result.data(index) 
+						: result.data
+				),
+				module,
 				id,
 				x: mouseX - x,
 				y: mouseY - y
-			});
+			};
+
+			// 会同步到上级 这里不用this.$emit("update:sync")
+			this.dataSource.push(data);
 
 			this.$emit('change', { 
 				type: 'create', 
-				index,
+				index: rowIndex,
 				id
 			});
 
 			// 新元素处于激活状态
-			this.setActived(index);
+			this.setActived(rowIndex);
 		},
 		handleEnd(old, id, index) {
 			this.$emit('change', { 

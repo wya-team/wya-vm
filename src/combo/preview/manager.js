@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Wrapper from './popup.vue';
-import { cloneDeep } from '../../../utils/helper';
+import { cloneDeep } from '../../utils/helper';
 
 let Dom = document.body;
 

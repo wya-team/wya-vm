@@ -1,12 +1,12 @@
 <template>
 	<div :style="style" :class="classes" class="vm-combo">
-		<vm-tools-widget 
+		<vm-widget 
 			:style="toolsStyle" 
 			v-bind="toolsOpts"
 		>
 			<!-- TODO -->
 			<slot name="widget-default" />
-		</vm-tools-widget>
+		</vm-widget>
 		<vm-frame 
 			ref="frame"
 			:style="frameStyle" 
@@ -19,8 +19,8 @@
 			@deactivated="handleDeactivated"
 			@change="handleChange"
 		>
-			<!-- TODO -->
-			<slot name="frame-default" />
+			<slot name="frame-header" />
+			<slot name="frame-footer" />
 		</vm-frame>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor 
@@ -31,12 +31,12 @@
 			<!-- TODO -->
 			<slot name="editor-default" />
 		</vm-editor>
-		<vm-tools-save
+		<vm-assist-save
 			v-if="showAssist"
 			@save="handleOperate('save')"
 			@preview="handleOperate('preview')"
 		/>
-		<vm-tools-operation
+		<vm-assist-operation
 			v-if="showAssist"
 			:current="current"
 			:total="total"
@@ -49,17 +49,16 @@
 </template>
 
 <script>
-import ToolsOperation from './tools/operation.vue';
-import ToolsSave from './tools/save.vue';
+import Assist from './assist';
 import { cloneDeep, isEqualWith } from '../utils/helper';
 import './combo-defaut.scss';
 
 export default {
 	name: 'vm-combo',
 	components: {
-		// 会被注入vm-frame, vm-tools-widget, vm-editor,
-		'vm-tools-operation': ToolsOperation,
-		'vm-tools-save': ToolsSave,
+		// 会被注入vm-frame, vm-widget, vm-editor,
+		'vm-assist-operation': Assist.Operation,
+		'vm-assist-save': Assist.Save,
 	},
 	model: {
 		prop: 'data-source',
@@ -96,7 +95,7 @@ export default {
 		},
 		showAssist: {
 			type: Boolean,
-			default: true
+			default: false
 		}
 
 	},
@@ -104,7 +103,7 @@ export default {
 		return {
 			editor: null,
 			/**
-			 * vm-tools-operation
+			 * vm-assist-operation
 			 */
 			current: 0,
 			total: 0,

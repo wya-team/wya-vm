@@ -1,19 +1,18 @@
 import { defaultModules } from './modules/root';
 import { cloneDeep } from '../utils/helper';
-import { DraggableFrame, SortableFrame } from './frame/root';
 import Combo from './combo.vue';
-import ToolsWidget from './tools/widget.vue';
-import Editor from './editor/editor.vue';
-import ToolsPreview, { PreviewManager } from './tools/preview';
-
+import Frame from './frame';
+import Widget from './widget';
+import Editor from './editor';
+import Preview, { PreviewManager } from './preview';
 
 export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
 	try {
 		let newCombo = cloneDeep(opts.Combo || Combo);
-		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? DraggableFrame : SortableFrame));
-		let newToolsWidget = cloneDeep(opts.ToolsWidget || ToolsWidget);
-		let newToolsPreview = cloneDeep(opts.ToolsPreview || ToolsPreview);
+		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? Frame.Draggable : Frame.Sortable));
+		let newWidget = cloneDeep(opts.Widget || Widget);
+		let newPreview = cloneDeep(opts.Preview || Preview);
 		let newEditor = cloneDeep(opts.Editor || Editor);
 
 		let viewers = {};
@@ -41,8 +40,8 @@ export default (modules = defaultModules, opts = {}) => {
 			...editors
 		};
 
-		newToolsWidget.components = {
-			...newToolsWidget.components,
+		newWidget.components = {
+			...newWidget.components,
 			...widgets
 		};
 
@@ -50,20 +49,20 @@ export default (modules = defaultModules, opts = {}) => {
 			...newCombo.components,
 			'vm-frame': newFrame,
 			'vm-editor': newEditor,
-			'vm-tools-widget': newToolsWidget,
+			'vm-widget': newWidget,
 		};
 
-		newToolsPreview.components = {
-			...newToolsPreview.components,
+		newPreview.components = {
+			...newPreview.components,
 			...viewers
 		};
 
 
 		// cloneDeep 避免相互干扰，vue内部会改变_Ctor缓存
 		let rebuildCombo = cloneDeep(newCombo);
-		let rebuildPreview = cloneDeep(newToolsPreview);
+		let rebuildPreview = cloneDeep(newPreview);
 
-		let manager = new PreviewManager(newToolsPreview, mode);
+		let manager = new PreviewManager(newPreview, mode);
 
 		rebuildCombo.previewManager = manager;
 

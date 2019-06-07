@@ -30,12 +30,16 @@
 		</template>
 
 		<!-- delete -->
-		<p class="vm-draggable__delete" @click="$emit('delete')">✕</p>
+		<p 
+			v-if="clearable && isActive" 
+			class="vm-draggable__delete" 
+			@click="$emit('delete')"
+		>✕</p>
 	</div>
 </template>
 
 <script>
-import { isPassiveSupported, eleInRegExp } from '../../utils/helper';
+import { isPassiveSupported, eleInRegExp } from '../utils/helper';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
@@ -135,6 +139,11 @@ export default {
 				className: /vm-hack-pevent/
 			})
 		},
+
+		clearable: {
+			type: Boolean, 
+			default: false
+		}
 	},
 	data() {
 

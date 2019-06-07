@@ -1,11 +1,16 @@
 <template>
-	<component
-		ref="target"
-		:is="`vm-${dataSource.module}-editor`"
-		v-bind.sync="dataSource" 
-		class="vm-editor vm-hack-editor" 
-		@change="handleChange"
-	/>
+	<div class="vm-editor vm-hack-editor">
+		<div class="vm-editor-wrapper">
+			<div class="vm-editor__arrow" />
+			<component
+				ref="target"
+				:is="`vm-${dataSource.module}-editor`"
+				v-bind.sync="dataSource" 
+				
+				@change="handleChange"
+			/>
+		</div>
+	</div>
 </template>
 
 <script>

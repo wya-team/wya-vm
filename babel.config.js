@@ -18,7 +18,8 @@ module.exports = (api) => {
 			// "@babel/plugin-transform-runtime", // 多了很多无用代码
 			// "@babel/plugin-external-helpers",
 			["@babel/plugin-proposal-decorators", { legacy: true }],
-			["@babel/plugin-proposal-class-properties", { loose: true }]
+			["@babel/plugin-proposal-class-properties", { loose: true }],
+			"transform-vue-jsx"
 		]
 	};
 };

@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-tools-save vm-hack-editor">
+	<div class="vm-assist-save vm-hack-editor">
 		<div @click="$emit('save')">保存</div>
 		<div @click="$emit('preview')">预览</div>
 	</div>
@@ -7,7 +7,7 @@
 
 <script>
 export default {
-	name: 'vm-tools-save',
+	name: 'vm-assist-save',
 	components: {
 	},
 	props: {

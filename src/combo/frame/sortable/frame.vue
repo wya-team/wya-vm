@@ -1,26 +1,31 @@
 <template>
 	<div 
 		:style="style" 
-		class="vm-sort-list"
-		style="position: relative; overflow: auto" 
+		class="vm-frame-sortable"
 		@dragover.prevent="handleDragOver" 
 		@dragend="handleDragEnd"
 		@drop="handleDrop"
 	>
 		<transition-group tag="div" name="flip-list">
-			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-sort-list__item">
+			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
 				<!-- TODO: 不操作引用修改 -->
 				<vm-sortable
 					ref="sort"
 					:index="index"
 					:type="dragType"
+					clearable
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
 					@delete="$emit('change', { type: 'delete', id: it.id })"
+					@highlight-change="handleHighlightChange(arguments[0], index)"
 					@sort="handleSort"
 					@sort-end="handleSortEnd"
 				>
-					<component :is="`vm-${it.module}-viewer`" v-bind="it" />
+					<component 
+						:is="`vm-${it.module}-viewer`" 
+						v-bind="it" 
+						style="min-height: 3px"
+					/>
 				</vm-sortable>
 			</div>
 		</transition-group>
@@ -28,7 +33,7 @@
 </template>
 
 <script>
-import Sortable from '../../../core/sortable';
+import Sortable from '../../../core/sortable.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
 import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../constants';
 
@@ -62,35 +67,54 @@ export default {
 		this.eleDrag = null;
 	},
 	methods: {
+		handleHighlightChange(status, index) {
+			// console.log(status, index);
+		},
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
 		},
 		handleDrop(e) {
-			let mod = e.dataTransfer.getData(WIDGET_TO_FRAME);
-			let result = this.$parent.$options.modules[mod];
+			let rowIndex = this.dataSource.length;
+			/**
+			 * 清理高亮, 设置插入位置
+			 */
+			if (this.$refs.sort) {
+				this.$refs.sort.forEach((instance, index) => {
+					if (instance.highlight === true) {
+						rowIndex = index + 1;
+						instance.highlight = false;
+					}
+				});
+			}
+
+			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME)) || {};
+			let result = this.$parent.$options.modules[module];
 			// 不存在的模块
 			if (!result) return;
-			/**
-			 * TODO: 动态插入，暂时只做到插入到第一个
-			 */
 			let id = getUid();
-			let index = this.dataSource.length;
-			// // 会同步到上级 这里不用this.$emit("update:sync")
-			this.dataSource.push({
-				...cloneDeep(result.data),
-				module: mod,
+
+			let data = {
+				...cloneDeep(
+					typeof result.data === 'function' 
+						? result.data(index) 
+						: result.data
+				),
+				module,
 				id,
-			});
+			};
+
+			// 会同步到上级 这里不用this.$emit("update:sync")
+			this.dataSource.splice(rowIndex, 0, data);
 
 			this.$emit('change', { 
 				type: 'create', 
-				index,
+				index: rowIndex,
 				id
 			});
 
 			// 新元素处于激活状态
-			this.setActived(index);
+			this.setActived(rowIndex);
 		},
 		setActived(index) {
 			this.$nextTick(() => {
@@ -134,7 +158,7 @@ export default {
 </script>
 
 <style lang="scss">
-.vm-sort-list__item {
+.vm-frame-sortable__item {
 	transition: all .5s;
 }
 // 开始消失/进入的元素

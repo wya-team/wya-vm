@@ -23,8 +23,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 export default {
 	name: 'vm-tools-preview',
 	components: {
