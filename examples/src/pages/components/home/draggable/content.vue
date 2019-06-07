@@ -17,7 +17,7 @@ import { createVMDrags } from '@wya/vm';
 import { Message } from '@wya/vc';
 import { defaultModules } from './modules/root';
 
-let { Combo, Preview } = createVMDrags();
+let { Combo, Preview } = createVMDrags(defaultModules);
 
 export default {
 	name: 'tpl-links',

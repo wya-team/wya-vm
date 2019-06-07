@@ -10,6 +10,9 @@ export const tpl = {
 	Editor, 
 	// 初始数据
 	data: {
+		// for sortable
+		clearable: true,
+
 		name: '名称'
 	},
 	dataValidity: (res = {}) => {

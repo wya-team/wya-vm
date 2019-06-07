@@ -1,13 +1,14 @@
 <template>
-	<div style="height: 200px">
+	<div @click="$emit('change', 1)">
 		Name: {{ name }}
+		<input type="text" >
 	</div>
 </template>
 
 <script>
 
 export default {
-	name: 'vm-array-viewer',
+	name: 'vm-tpl-viewer',
 	components: {
 	},
 	props: {

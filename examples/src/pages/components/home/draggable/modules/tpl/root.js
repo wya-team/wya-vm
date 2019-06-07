@@ -18,6 +18,8 @@ export const tpl = {
 		y: 0, // 动态分配
 		z: 1,
 		parent: false,
+		clearable: true,
+		
 		// for content
 		name: '名称'
 	},

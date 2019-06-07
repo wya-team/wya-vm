@@ -7,20 +7,17 @@
 <script>
 
 export default {
-	name: 'vm-tpl-editor',
+	name: 'vm-array-editor',
 	components: {
 	},
+	// 以下两周都可行，相对的inheritAttrs比较好用的一点
+	inheritAttrs: false,
 	props: {
-		w: Number,
-		h: Number,
-		r: Number,
-		x: Number,
-		y: Number,
-		z: Number,
-		name: [Number, String],
+		// name: [Number, String],
 	},
 	data() {
 		return {
+			...this.$attrs
 		};
 	},
 	computed: {

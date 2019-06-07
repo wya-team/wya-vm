@@ -23,8 +23,12 @@ export const array = {
 	],
 	Viewer,
 	Editor, 
+	max: 5,
 	// 初始数据
 	data: (index) => ({
+		// for sortable
+		clearable: true,
+		
 		name: `名称${index}`
 	}),
 	dataValidity: (res = {}) => {
