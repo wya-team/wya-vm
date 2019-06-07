@@ -1,5 +1,5 @@
 <template>
-	<div style="height: 100px">
+	<div style="height: 100vh">
 		<vm-draggable
 			:parent="false"
 			:x.sync="x"

@@ -1,8 +1,10 @@
 /**
  * roots
  */
-import { tpl } from './__tpl__/root';
+import { tpl } from './tpl/root';
+import { array } from './array/root';
 
 export const defaultModules = {
-	tpl
+	tpl,
+	array
 };

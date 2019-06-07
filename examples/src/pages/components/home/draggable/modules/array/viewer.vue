@@ -8,7 +8,6 @@
 		Height: {{ h ? h : 'auto' }} <br>
 		Rotate: {{ r }} <br>
 		Name: {{ name }} <br>
-		<vcm-input />
 	</div>
 </template>
 
@@ -42,5 +41,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 </style>

@@ -5,20 +5,11 @@ import Editor from './editor.vue';
 export const tpl = {
 	module: "tpl",
 	type: '基础组件',
-	name: "模版",
+	name: "单个模版",
 	Viewer,
 	Editor, 
 	// 初始数据
 	data: {
-		// for draggable
-		w: 200,
-		h: 150,
-		r: 0,
-		x: 0, // 动态分配
-		y: 0, // 动态分配
-		z: 1,
-		parent: false,
-		// for content
 		name: '名称'
 	},
 	dataValidity: (res = {}) => {
