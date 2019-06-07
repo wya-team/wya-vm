@@ -1,7 +1,7 @@
 <template>
 	<div :style="style" class="vm-widget">
 		<div class="vm-widget__wrapper">
-			<p class="vm-widget__title">组件库</p>
+			<p class="vm-widget__header">组件库</p>
 			<div v-if="showTip" class="vm-widget__tip" @click="showTip = !showTip">
 				<p>拖拽添加组件，点击修改样式</p>
 				<span>✕</span>
@@ -18,21 +18,18 @@
 			<div 
 				v-for="(it) in toolsList[currentTab]" 
 				:key="it.module" 
-				:draggable="!it.widgets"
-				@dragstart="!it.widgets && handleStart($event, it.module)"
+				:draggable="it.draggable"
+				@dragstart="it.draggable && handleStart($event, it.module)"
 			>
 				<!-- 组件标题 -->
 				<div 
-					:class="{ 'is-active': it.active, 'is-draggable': !it.widgets }" 
+					:class="{ 'is-active': it.active, 'is-draggable': it.draggable, 'is-click': it.widgets }" 
 					class="vm-widget__title"
 					@click="it.widgets && (it.active = !it.active)"
 				>
 					<p v-if="typeof it.component === 'string'" v-html="it.component"/>
-					<component v-else :is="`vm-${it.module}-widget`"/>
-					<div 
-						v-if="it.widgets"
-						class="vm-widget__arrow"
-					/>
+					<component v-else :is="`vm-${it.module}-widget`" v-on="handleEvent(it.module)"/>
+					<div v-if="it.widgets" class="vm-widget__arrow" />
 				</div>
 				<!-- 子元素 -->
 				<div v-if="it.active" class="vm-widget__combo">
@@ -93,7 +90,11 @@ export default {
 				toolsList[type].push({
 					module: item.module,
 					component: item.Widget || item.name,
-					widgets: item.widgets,
+					widgets: item.widgets, 
+					// 最外层拖拽
+					draggable: !item.widgets && item.Viewer && item.Editor,
+
+					// 更多
 					active: false
 				});
 			}
@@ -120,10 +121,6 @@ export default {
 	},
 	methods: {
 		handleStart(e, module, index) {
-			console.log(JSON.stringify({
-				module,
-				index
-			}), /2/);
 			e.dataTransfer.setData(
 				WIDGET_TO_FRAME, 
 				JSON.stringify({
@@ -131,6 +128,11 @@ export default {
 					index
 				})
 			);
+		},
+		handleEvent(module) {
+			return {
+				change: (...rest) => this.$emit('change', module, ...rest)
+			};
 		}
 	},
 };

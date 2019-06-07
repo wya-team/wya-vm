@@ -13,7 +13,7 @@
 					ref="sort"
 					:index="index"
 					:type="dragType"
-					clearable
+					:clearable="it.clearable"
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
 					@delete="$emit('change', { type: 'delete', id: it.id })"
@@ -92,6 +92,15 @@ export default {
 			let result = this.$parent.$options.modules[module];
 			// 不存在的模块
 			if (!result) return;
+
+			if (result.max && result.max <= this.dataSource.filter(i => i.module === module).length) {
+				this.$emit('error', {
+					type: 'create',
+					msg: `当前模块最多只能创建${result.max}个`
+				});
+				return;
+			}
+			
 			let id = getUid();
 
 			let data = {

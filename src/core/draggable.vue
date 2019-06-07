@@ -31,7 +31,7 @@
 
 		<!-- delete -->
 		<p 
-			v-if="clearable && isActive" 
+			v-if="clearable && active" 
 			class="vm-draggable__delete" 
 			@click="$emit('delete')"
 		>✕</p>

@@ -16,14 +16,14 @@
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="isActive || isHover" 
+			v-if="active || isHover" 
 			:class="{ 
 				'is-disabled': disabled, 
 				'is-active': true 
 			}" 
 		/>
 		<p 
-			v-if="clearable && (isActive || isHover)" 
+			v-if="clearable && (active || isHover)" 
 			class="vm-sortable__delete" 
 			@click="$emit('delete')"
 		>✕</p>
@@ -61,7 +61,7 @@ export default {
 	},
 	data() {
 		return {
-			isActive: false,
+			active: false,
 			isHover: false,
 			highlight: false
 		};
@@ -107,11 +107,11 @@ export default {
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
-				if (!this.isActive) {
+				if (!this.active) {
 					// 绑定事件
 					this.operateDOMEvents('add');
 
-					this.isActive = true;
+					this.active = true;
 					this.$emit('activated');
 				}
 			}
@@ -127,11 +127,11 @@ export default {
 				!this.$el.contains(target) 
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
-				if (this.isActive) {
+				if (this.active) {
 					// 解绑
 					this.operateDOMEvents('remove');
 
-					this.isActive = false;
+					this.active = false;
 					this.$emit('deactivated');
 				}
 			}

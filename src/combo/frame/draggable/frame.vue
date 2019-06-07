@@ -28,6 +28,7 @@
 			:zoom="it.zoom"
 			:grid="it.grid"
 			:restrain="it.restrain"
+			:clearable="it.clearable"
 			@activated="$emit('activated', it)"
 			@deactivated="$emit('deactivated', it)"
 			@dragging="$emit('dragging', it)"
@@ -90,7 +91,14 @@ export default {
 			let result = this.$parent.$options.modules[module];
 			// 不存在的模块
 			if (!result) return;
-
+			if (result.max && result.max <= this.dataSource.filter(i => i.module === module).length) {
+				this.$emit('error', {
+					type: 'create',
+					msg: `当前模块最多只能创建${result.max}个`
+				});
+				return;
+			}
+			
 			let { x, y } = this.$el.getBoundingClientRect();
 
 			let mouseX = e.pageX || e.clientX + doc.scrollLeft;

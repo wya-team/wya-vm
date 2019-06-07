@@ -16,17 +16,20 @@ export default {
 	name: 'vm-tpl-editor',
 	components: {
 	},
+	// 以下两周都可行，相对的inheritAttrs比较好用的一点
+	inheritAttrs: false,
 	props: {
-		w: Number,
-		h: Number,
-		r: Number,
-		x: Number,
-		y: Number,
-		z: Number,
-		name: [Number, String],
+		// w: Number,
+		// h: Number,
+		// r: Number,
+		// x: Number,
+		// y: Number,
+		// z: Number,
+		// name: [Number, String],
 	},
 	data() {
 		return {
+			...this.$attrs
 		};
 	},
 	computed: {
@@ -45,7 +48,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 input {
 	border: 1px solid #000;
 	margin: 10px;

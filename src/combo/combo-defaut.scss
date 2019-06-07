@@ -18,7 +18,7 @@ $assit: #666;
 		background: white;
 		padding: 10px 0;
 	}
-	.vm-widget__title {
+	.vm-widget__header {
 		font-size: 15px;
 		color: #000;
 		padding: 8px 15px;
@@ -58,9 +58,6 @@ $assit: #666;
 			}
 		}
 	}
-	.vm-widget__content {
-		border-bottom: 1px solid $border;
-	}
 	.vm-widget__title {
 		padding: 15px 20px;
 		font-size: 12px;
@@ -68,9 +65,12 @@ $assit: #666;
 		font-weight: bold;
 		display: flex;
 		justify-content: space-between;
-		cursor: pointer;
+		border-bottom: 1px solid $border;
 		&.is-draggable {
 			cursor: move;
+		}
+		&.is-click {
+			cursor: pointer;
 		}
 		&.is-active {
 			border-left: 2px solid $primary;
@@ -93,7 +93,7 @@ $assit: #666;
 		display: flex;
 		flex-wrap: wrap;
 		width: 100%;
-		border-top: 1px solid $border;
+		border-bottom: 1px solid $border;
 		justify-content: center;
 		padding: 12px;
 	}

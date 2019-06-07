@@ -1,4 +1,3 @@
-
 import Viewer from './viewer.vue';
 import Editor from './editor.vue';
 
@@ -7,7 +6,7 @@ export const tpl = {
 	type: '基础组件',
 	name: "模版",
 	Viewer,
-	Editor, 
+	Editor,
 	// 初始数据
 	data: {
 		// for draggable
@@ -18,6 +17,8 @@ export const tpl = {
 		y: 0, // 动态分配
 		z: 1,
 		parent: false,
+		clearable: true,
+		
 		// for content
 		name: '名称'
 	},

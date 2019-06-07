@@ -1,12 +1,10 @@
 <template>
 	<div :style="style" :class="classes" class="vm-combo">
 		<vm-widget 
-			:style="toolsStyle" 
-			v-bind="toolsOpts"
-		>
-			<!-- TODO -->
-			<slot name="widget-default" />
-		</vm-widget>
+			:style="widgetStyle" 
+			v-bind="widgetOpts"
+			@change="handleWidgetChangee"
+		/>
 		<vm-frame 
 			ref="frame"
 			:style="frameStyle" 
@@ -18,6 +16,7 @@
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 			@change="handleChange"
+			@error="$emit('error', arguments[0])"
 		>
 			<slot name="frame-header" />
 			<slot name="frame-footer" />
@@ -27,10 +26,7 @@
 			v-if="editor" 
 			:data-source="editor"
 			@change="handleChange"
-		>
-			<!-- TODO -->
-			<slot name="editor-default" />
-		</vm-editor>
+		/>
 		<vm-assist-save
 			v-if="showAssist"
 			@save="handleOperate('save')"
@@ -79,12 +75,12 @@ export default {
 		frameH: Number,
 		frameOpts: Object,
 		/**
-		 * tools
+		 * widget
 		 */
-		toolsStyle: Object,
-		toolsW: Number,
-		toolsH: Number,
-		toolsOpts: Object,
+		widgetStyle: Object,
+		widgetW: Number,
+		widgetH: Number,
+		widgetOpts: Object,
 
 		/**
 		 * combo
@@ -158,18 +154,31 @@ export default {
 				}
 			}
 		},
+
 		syncData() {
 			this.$emit('change', this.rebuildData);
+			this.$emit('update:data-source', this.rebuildData);
 		},
+
 		/**
 		 * draggable
 		 */
 		handleActivated(it) {
 			this.editor = it;
 		},
+
 		handleDeactivated(it) {
 			this.editor = null;
 		},
+
+		/**
+		 * 用户处理widget出来的数据, 暂时做不到记忆
+		 * TODO: 可能被废弃
+		 */
+		handleWidgetChangee(module, ...rest) {
+			this.$emit('widget-change', module, ...rest);
+		},
+
 		/**
 		 * 数据变化
 		 */
@@ -202,12 +211,14 @@ export default {
 
 			this.syncData();
 		},
+
 		/**
-		 * tools-operation
+		 * widget-operation
 		 */
 		handleOperate(type, ...rest) {
 			this[type] && this[type](...rest);
 		},
+
 		delete(id) {
 			id = id || (this.editor || {}).id;
 			if (!id) {
@@ -219,6 +230,7 @@ export default {
 			}
 			this.handleChange({ type: 'delete', id });
 		},
+
 		undo() {
 			let current = this.current - 1;
 			if (current < 0) {
@@ -254,6 +266,7 @@ export default {
 
 			this.syncData();
 		},
+
 		redo() {
 			let current = this.current + 1;
 			if (current > this.total) {
@@ -289,8 +302,9 @@ export default {
 
 			this.syncData();
 		},
+
 		/**
-		 * tools-save
+		 * widget-save
 		 */
 		save() {
 			const data = cloneDeep(this.rebuildData) || [];
@@ -324,6 +338,7 @@ export default {
 			 */
 			this.$emit('save', data);
 		},
+
 		preview() {
 			if (this.rebuildData.length === 0) {
 				this.$emit('error', { 
