@@ -33,6 +33,7 @@ export const array = {
 		y: 0, // 动态分配
 		z: 1,
 		parent: false,
+		// for frame
 		clearable: true,
 		
 		// for content

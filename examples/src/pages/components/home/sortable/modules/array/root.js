@@ -24,11 +24,12 @@ export const array = {
 	Viewer,
 	Editor, 
 	max: 5,
+	insertion: '', // first/last/every
 	// 初始数据
 	data: (index) => ({
-		// for sortable
+		// for frame
 		clearable: true,
-		
+		// for content
 		name: `名称${index}`
 	}),
 	dataValidity: (res = {}) => {
