@@ -314,7 +314,7 @@ export default {
 					type: 'save', 
 					msg: `保存对象不能为空` 
 				});
-				return;
+				return false;
 			}
 			const { modules } = this.$options;
 			for (let i = 0; i < data.length; i++) {
@@ -329,7 +329,7 @@ export default {
 						});
 						// 错误元素激活
 						this.$refs.frame.setActived(i);
-						return;
+						return false;
 					}
 				}
 			}
@@ -337,6 +337,7 @@ export default {
 			 * 数据验证
 			 */
 			this.$emit('save', data);
+			return true;
 		},
 
 		preview() {
@@ -345,7 +346,7 @@ export default {
 					type: 'preview', 
 					msg: `预览数据对象不能为空` 
 				});
-				return;
+				return false;
 			}
 			this.$options.previewManager.show({
 				dataSource: cloneDeep(this.rebuildData),
@@ -356,6 +357,8 @@ export default {
 				},
 				className: 'vm-combo__frame'
 			});
+
+			return true;
 		}
 	},
 };
