@@ -39,7 +39,8 @@
 			@delete="$emit('change', { type: 'delete', id: it.id })"
 			@end="handleEnd(arguments[0], it.id, index)"
 		>
-			<component :is="`vm-${it.module}-viewer`" v-bind="it" />
+			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+			<component :is="`vm-${it.module}-viewer`" v-bind="it" :vm-type="'frame'"/>
 		</vm-draggable>
 	</div>
 </template>

@@ -15,7 +15,8 @@
 			>
 				<component
 					:is="`vm-${it.module}-viewer`" 
-					v-bind="it" 
+					v-bind="it"
+					:vm-type="'preview'"
 				/>
 			</div>
 		</div>
