@@ -1,5 +1,7 @@
 export cloneDeep from 'lodash/cloneDeep';
 export isEqualWith from 'lodash/isEqualWith';
+export kebabCase from 'lodash/kebabCase';
+
 /**
  * 判断浏览器是否支持passive, 默认preventDefault无效
  */

@@ -1,5 +1,5 @@
 import { defaultModules } from './modules/root';
-import { cloneDeep } from '../utils/helper';
+import { cloneDeep, kebabCase } from '../utils/helper';
 import Combo from './combo.vue';
 import Frame from './frame';
 import Widget from './widget';
@@ -20,6 +20,7 @@ export default (modules = defaultModules, opts = {}) => {
 		let widgets = {};
 		
 		Object.keys(modules).forEach((item, index) => {
+			item = kebabCase(item); // fooBar -> foo-bar
 			let { Viewer: _Vditor, Editor: _Editor, Widget: _Widget } = modules[item]; 
 			viewers[`vm-${item}-viewer`] = _Vditor;
 			editors[`vm-${item}-editor`] = _Editor;
