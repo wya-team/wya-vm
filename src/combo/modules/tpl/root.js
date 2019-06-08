@@ -7,6 +7,8 @@ export const tpl = {
 	name: "模版",
 	Viewer,
 	Editor,
+	max: 5,
+	insertion: '', // first/last/every
 	// 初始数据
 	data: {
 		// for draggable
@@ -17,8 +19,8 @@ export const tpl = {
 		y: 0, // 动态分配
 		z: 1,
 		parent: false,
+		// for frame
 		clearable: true,
-		
 		// for content
 		name: '名称'
 	},

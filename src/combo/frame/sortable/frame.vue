@@ -13,11 +13,11 @@
 					ref="sort"
 					:index="index"
 					:type="dragType"
-					:clearable="it.clearable"
+					:disabled="it.disabled"
+					:clearable="it.clearable || typeof it.clearable === 'undefined'"
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
 					@delete="$emit('change', { type: 'delete', id: it.id })"
-					@highlight-change="handleHighlightChange(arguments[0], index)"
 					@sort="handleSort"
 					@sort-end="handleSortEnd"
 				>
@@ -67,9 +67,6 @@ export default {
 		this.eleDrag = null;
 	},
 	methods: {
-		handleHighlightChange(status, index) {
-			// console.log(status, index);
-		},
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
@@ -112,6 +109,18 @@ export default {
 				module,
 				id,
 			};
+
+			// 只能插入到第一个位置
+			switch (result.insertion) {
+				case 'first':
+					rowIndex = 0;
+					break;
+				case 'last':
+					rowIndex = this.dataSource.length;
+					break;
+				default:
+					break;
+			}
 
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.splice(rowIndex, 0, data);
