@@ -18,6 +18,10 @@ export default {
 	components: {
 	},
 	props: {
+		vm: {
+			type: Object,
+			default: () => ({})
+		},
 		id: String,
 		x: Number,
 		y: Number,
@@ -25,7 +29,7 @@ export default {
 		w: Number,
 		h: Number,
 		r: Number,
-		name: [Number, String],
+		name: [Number, String]
 	},
 	data() {
 		return {
