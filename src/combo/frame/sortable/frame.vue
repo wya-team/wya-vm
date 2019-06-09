@@ -18,7 +18,7 @@
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
 					@delete="$emit('change', { type: 'delete', id: it.id })"
-					@sort="handleSort"
+					@sorting="handleSorting"
 					@sort-end="handleSortEnd"
 				>
 					<component 
@@ -148,7 +148,7 @@ export default {
 		/**
 		 * 交换位置
 		 */
-		handleSort(v) {
+		handleSorting(v) {
 			this.sortData(v);
 		},
 

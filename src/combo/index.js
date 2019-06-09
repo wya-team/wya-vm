@@ -20,11 +20,11 @@ export default (modules = defaultModules, opts = {}) => {
 		let widgets = {};
 		
 		Object.keys(modules).forEach((item, index) => {
-			item = kebabCase(item); // fooBar -> foo-bar
+			let cName = kebabCase(item); // fooBar -> foo-bar
 			let { Viewer: _Vditor, Editor: _Editor, Widget: _Widget } = modules[item]; 
-			viewers[`vm-${item}-viewer`] = _Vditor;
-			editors[`vm-${item}-editor`] = _Editor;
-			widgets[`vm-${item}-widget`] = _Widget;
+			viewers[`vm-${cName}-viewer`] = _Vditor;
+			editors[`vm-${cName}-editor`] = _Editor;
+			widgets[`vm-${cName}-widget`] = _Widget;
 		});
 		// $options
 		newCombo.modules = modules;

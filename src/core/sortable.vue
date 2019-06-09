@@ -16,14 +16,14 @@
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="active || isHover" 
+			v-if="isActive || isHover" 
 			:class="{ 
 				'is-disabled': disabled, 
 				'is-active': true 
 			}" 
 		/>
 		<p 
-			v-if="clearable && (active || isHover)" 
+			v-if="clearable && (isActive || isHover)" 
 			class="vm-sortable__delete" 
 			@click="$emit('delete')"
 		>✕</p>
@@ -61,7 +61,7 @@ export default {
 	},
 	data() {
 		return {
-			active: false,
+			isActive: false,
 			isHover: false,
 			highlight: false
 		};
@@ -87,7 +87,7 @@ export default {
 			fn('mousedown', this.handleDeselect, this.eventOpts);
 		},
 		/**
-		 * 模拟设置active状态
+		 * 模拟设置Active状态
 		 */
 		setActived() {
 			this.handleClick();
@@ -107,11 +107,11 @@ export default {
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
-				if (!this.active) {
+				if (!this.isActive) {
 					// 绑定事件
 					this.operateDOMEvents('add');
 
-					this.active = true;
+					this.isActive = true;
 					this.$emit('activated');
 				}
 			}
@@ -127,11 +127,11 @@ export default {
 				!this.$el.contains(target) 
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
-				if (this.active) {
+				if (this.isActive) {
 					// 解绑
 					this.operateDOMEvents('remove');
 
-					this.active = false;
+					this.isActive = false;
 					this.$emit('deactivated');
 				}
 			}
@@ -166,7 +166,7 @@ export default {
 						this.timer = null;
 					}, 500);
 
-					this.$emit('sort', [eleDrag.__END_INDEX__, this.index]);
+					this.$emit('sorting', [eleDrag.__END_INDEX__, this.index]);
 					eleDrag.__END_INDEX__ = this.index;
 				}
 			} else if (!eleDrag) { // 处理高亮

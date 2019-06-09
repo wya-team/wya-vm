@@ -30,6 +30,7 @@ import { beforeEach, afterEach, clearLocalStorage } from './hooks';
 import { storeConfig } from '../stores/root';
 
 import RoutesManager from './routes.dynamic';
+import { PRE_ROUTER_URL } from '../constants/constants';
 /**
  * vue-router Config
  */

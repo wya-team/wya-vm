@@ -1,12 +1,12 @@
 <template>
 	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
-		<div :style="style" :class="{ 'is-events-none': changing }" >
+		<div :style="style" :class="{ 'is-events-none': isChanging }" >
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="active && handles && handles.length !== 0" 
-			:class="{ 'is-disabled': disabled, 'is-active': active }" 
+			v-if="isActive && handles && handles.length !== 0" 
+			:class="{ 'is-disabled': disabled, 'is-active': isActive }" 
 			:style="style"
 		>
 			<template v-for="item in handles">
@@ -31,7 +31,7 @@
 
 		<!-- delete -->
 		<p 
-			v-if="clearable && active" 
+			v-if="clearable && isActive" 
 			class="vm-draggable__delete" 
 			@click="$emit('delete')"
 		>✕</p>
@@ -74,13 +74,13 @@ export default {
 			default: 0
 		},
 		// 最小宽度
-		minw: {
+		minW: {
 			type: Number,
 			default: 36,
 			validator: val => val > 0
 		},
 		// 最小高度
-		minh: {
+		minH: {
 			type: Number,
 			default: 36,
 			validator: val => val > 0
@@ -151,8 +151,8 @@ export default {
 			resizable: false,
 			draggable: false,
 			rotatable: false,
-			changing: false,
-			active: false
+			isChanging: false,
+			isActive: false
 		};
 	},
 	computed: {
@@ -202,11 +202,11 @@ export default {
 	},
 	mounted() {
 		// 初始化控件宽高, todo: 宽高未零时，是否需要计算
-		if (this.w && this.minw > this.w) {
-			this.sync({ w: this.minw });
+		if (this.w && this.minW > this.w) {
+			this.sync({ w: this.minW });
 		}
-		if (this.h && this.minh > this.h) {
-			this.sync({ h: this.minh });
+		if (this.h && this.minH > this.h) {
+			this.sync({ h: this.minH });
 		}
 		const { x, y } = this.$el.parentNode.getBoundingClientRect();
 		this.parentX = x;
@@ -259,7 +259,7 @@ export default {
 			fn('mouseup', this.handleUp, this.eventOpts);
 		},
 		/**
-		 * 模拟设置active状态
+		 * 模拟设置isActive状态
 		 */
 		setActived() {
 			this.handleContainerDown();
@@ -280,14 +280,14 @@ export default {
 			const target = e.target || e.srcElement;
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
-				if (!this.active) {
+				if (!this.isActive) {
 					this.lastMouseX = e.pageX || e.clientX + doc.scrollLeft;
 					this.lastMouseY = e.pageY || e.clientY + doc.scrollTop;
 
 					// 绑定事件
 					this.operateDOMEvents('add');
 
-					this.active = true;
+					this.isActive = true;
 					this.$emit('activated');
 				}
 				this.draggable = true;
@@ -314,11 +314,11 @@ export default {
 				&& !eleInRegExp(target, regex)
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
-				if (this.active) {
+				if (this.isActive) {
 					// 解绑
 					this.operateDOMEvents('remove');
 
-					this.active = false;
+					this.isActive = false;
 					this.$emit('deactivated');
 				}
 			}
@@ -366,9 +366,9 @@ export default {
 			this.lastMouseY = this.mouseY;
 			if (this.resizable) {
 				if (this.handle.includes('top')) {
-					if (elmH - diffY < this.minh) { // 向下移动
+					if (elmH - diffY < this.minH) { // 向下移动
 						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
-						this.mouseOffY = (diffY - (diffY = elmH - this.minh));
+						this.mouseOffY = (diffY - (diffY = elmH - this.minH));
 					} else if (this.parent && elmY + diffY < 0) { // 向上移动 
 						// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
 						this.mouseOffY = (diffY - (diffY = -elmY));
@@ -377,16 +377,16 @@ export default {
 					elmH -= diffY;
 				}
 				if (this.handle.includes('bottom')) {
-					if (elmH + diffY < this.minh) { // 向上移动
-						this.mouseOffY = (diffY - (diffY = this.minh - elmH));
+					if (elmH + diffY < this.minH) { // 向上移动
+						this.mouseOffY = (diffY - (diffY = this.minH - elmH));
 					} else if (elmY + elmH + diffY > this.parentH) { // 向下移动
 						this.mouseOffY = (diffY - (diffY = this.parentH - elmY - elmH));
 					}
 					elmH += diffY;
 				}
 				if (this.handle.includes('left')) {
-					if (elmW - diffX < this.minw) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = elmW - this.minw));
+					if (elmW - diffX < this.minW) { // 向右移动
+						this.mouseOffX = (diffX - (diffX = elmW - this.minW));
 					} else if (this.parent && elmX + diffX < 0) { // 向左移动
 						this.mouseOffX = (diffX - (diffX = -elmX));
 					}
@@ -394,8 +394,8 @@ export default {
 					elmW -= diffX;
 				}
 				if (this.handle.includes('right')) {
-					if (elmW + diffX < this.minw) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = this.minw - elmW));
+					if (elmW + diffX < this.minW) { // 向左移动
+						this.mouseOffX = (diffX - (diffX = this.minW - elmW));
 					} else if (elmX + elmW + diffX > this.parentW) { // 向右移动
 						this.mouseOffX = (diffX - (diffX = this.parentW - elmX - elmW));
 					}
@@ -446,9 +446,9 @@ export default {
 			}
 
 			// 正在改变
-			!this.changing 
+			!this.isChanging 
 				&& (this.rotatable || this.draggable || this.resizable)
-				&& (this.changing = true);
+				&& (this.isChanging = true);
 				
 		},
 		getAngle(center, last) {
@@ -469,7 +469,7 @@ export default {
 			return (num / restrain).toFixed(0) * restrain;
 		},
 		handleUp(e) {
-			this.changing = false;
+			this.isChanging = false;
 			this.handle = null;
 			// 约束
 			const restrain = this.restrain;
