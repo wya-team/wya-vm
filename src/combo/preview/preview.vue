@@ -16,7 +16,7 @@
 				<component
 					:is="`vm-${it.module}-viewer`" 
 					v-bind="it"
-					:vm-type="'preview'"
+					:vm="vm"
 				/>
 			</div>
 		</div>
@@ -34,7 +34,11 @@ export default {
 		mode: String
 	},
 	data() {
-		return {};
+		return {
+			vm: {
+				type: 'preview'
+			}
+		};
 	},
 	computed: {
 		isDraggable() {

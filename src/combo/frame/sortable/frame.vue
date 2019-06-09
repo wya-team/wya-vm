@@ -24,7 +24,7 @@
 					<component 
 						:is="`vm-${it.module}-viewer`" 
 						v-bind="it" 
-						:vm-type="'frame'"
+						:vm="vm"
 						style="min-height: 3px"
 					/>
 				</vm-sortable>
@@ -51,7 +51,10 @@ export default {
 	},
 	data() {
 		return {
-			dragType: SORT_IN_FRAME
+			dragType: SORT_IN_FRAME,
+			vm: {
+				type: 'frame'
+			}
 		};
 	},
 	computed: {
