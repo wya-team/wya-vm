@@ -1,6 +1,6 @@
 {
   "name": "@wya/vm",
-  "version": "1.0.15",
+  "version": "1.1.0",
   "description": "",
   "main": "dist/vm.min.js",
   "files": [
@@ -73,7 +73,7 @@
     "pre-commit": "^1.2.2",
     "prompt": "^1.0.0",
     "rimraf": "^2.6.2",
-    "rollup": "^1.12.5",
+    "rollup": "^1.14.4",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-commonjs": "^10.0.0",

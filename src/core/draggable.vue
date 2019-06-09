@@ -18,23 +18,20 @@
 					@mousedown.left.stop="handleDown($event, item)"
 				/>
 			</template>
-			<div v-if="rotatable" :style="{ width }" class="vm-draggable__rotate"/>
+			<div v-if="isRotating" :style="{ width }" class="vm-draggable__rotate"/>
+			<!-- delete -->
+			<p v-if="clearable && isActive" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
 		</div>
-		<!-- grid for rotate -->
-		<template v-if="rotatable">
-			<div :style="{ width }" class="is-deg-0" />
-			<div :style="{ width }" class="is-deg-45" />
-			<div :style="{ width }" class="is-deg-90" />
-			<div :style="{ width }" class="is-deg-135" />
-			<div class="is-deg-tip">{{ r }} °</div>
-		</template>
 
-		<!-- delete -->
-		<p 
-			v-if="clearable && isActive" 
-			class="vm-draggable__delete" 
-			@click="$emit('delete')"
-		>✕</p>
+		<!-- 位置不会改变的 -->
+		<!-- grid for rotate -->
+		<template v-if="isRotating">
+			<div :style="{ width }" class="vm-draggable__rotate--deg is-0" />
+			<div :style="{ width }" class="vm-draggable__rotate--deg is-45" />
+			<div :style="{ width }" class="vm-draggable__rotate--deg is-90" />
+			<div :style="{ width }" class="vm-draggable__rotate--deg is-135" />
+			<div class="vm-draggable__rotate--tip">{{ r }} °</div>
+		</template>
 	</div>
 </template>
 
@@ -148,9 +145,9 @@ export default {
 	data() {
 
 		return {
-			resizable: false,
-			draggable: false,
-			rotatable: false,
+			isResizing: false,
+			isDraging: false,
+			isRotating: false,
 			isChanging: false,
 			isActive: false
 		};
@@ -290,7 +287,7 @@ export default {
 					this.isActive = true;
 					this.$emit('activated');
 				}
-				this.draggable = true;
+				this.isDraging = true;
 			}
 		},
 		/**
@@ -336,9 +333,9 @@ export default {
 			// 将handle设置为当前元素
 			this.handle = handle;
 			if (handle === 'rotate') {
-				this.rotatable = true;
+				this.isRotating = true;
 			} else {
-				this.resizable = true;
+				this.isResizing = true;
 			}
 
 			this.preMouseX = e.pageX || e.clientX + doc.scrollLeft;
@@ -364,7 +361,7 @@ export default {
 			this.mouseOffY = 0;
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
-			if (this.resizable) {
+			if (this.isResizing) {
 				if (this.handle.includes('top')) {
 					if (elmH - diffY < this.minH) { // 向下移动
 						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
@@ -408,7 +405,7 @@ export default {
 					h: (Math.round(elmH / this.grid[1]) * this.grid[1]),
 				});
 				this.$emit('resizing');
-			} else if (this.rotatable) {
+			} else if (this.isRotating) {
 				let angle = this.getAngle(
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
 					[this.lastMouseX, -this.lastMouseY],
@@ -421,7 +418,7 @@ export default {
 					r: angle === 360 ? 0 : angle
 				});
 				this.$emit('rotating');
-			} else if (this.draggable) {
+			} else if (this.isDraging) {
 				if (this.parent) {
 					if (elmX + diffX < 0) {
 						this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
@@ -447,7 +444,7 @@ export default {
 
 			// 正在改变
 			!this.isChanging 
-				&& (this.rotatable || this.draggable || this.resizable)
+				&& (this.isRotating || this.isDraging || this.isResizing)
 				&& (this.isChanging = true);
 				
 		},
@@ -481,16 +478,16 @@ export default {
 					h: this.getRestrain(this.h),
 				});
 			}
-			if (this.rotatable) {
-				this.rotatable = false;
+			if (this.isRotating) {
+				this.isRotating = false;
 				this.$emit('rotate-end');
 			}
-			if (this.resizable) {
-				this.resizable = false;
+			if (this.isResizing) {
+				this.isResizing = false;
 				this.$emit('resize-end');
 			}
-			if (this.draggable) {
-				this.draggable = false;
+			if (this.isDraging) {
+				this.isDraging = false;
 				this.$emit('drag-end');
 			}
 			if (this.beforeStatus) {
@@ -662,40 +659,41 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 	border: 1px solid #1fb6ff;
 	background-color: #1fb6ff;
 	transform: translate(-50%, -50%) rotate(90deg);
-	.is-deg-0 {
+}
+.vm-draggable__rotate--deg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 2;
+	width: 500px;
+	border-top: 1px dashed #fff;
+	border-bottom: 1px dashed #262626;
+	opacity: .4;
+	&.is-0 {
 		transform: translate(-50%, -50%);
 	}
-	.is-deg-45 {
+	&.is-45 {
 		transform: translate(-50%, -50%) rotate(45deg);
 	}
-	.is-deg-90 {
+	&.is-90 {
 		transform: translate(-50%, -50%) rotate(90deg);
 	}
-	.is-deg-135 {
+	&.is-135 {
 		transform: translate(-50%, -50%) rotate(135deg);
 	}
-	.is-deg-tip {
-		position: absolute;
-		top: -50px;
-		left: 60%;
-		width: 40px;
-		height: 16px;
-		line-height: 16px;
-		text-align: center;
-		border: 1px solid #262626;
-		border-radius: 8px;
-		background-color: #fff;
-	}
-	div[class^=is-deg-] {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		z-index: 2;
-		width: 500px;
-		border-top: 1px dashed #fff;
-		border-bottom: 1px dashed #262626;
-		opacity: .4;
-	}
+}
+
+.vm-draggable__rotate--tip {
+	position: absolute;
+	top: -50px;
+	left: 60%;
+	width: 40px;
+	height: 16px;
+	line-height: 16px;
+	text-align: center;
+	border: 1px solid #262626;
+	border-radius: 8px;
+	background-color: #fff;
 }
 
 .vm-draggable__delete {
