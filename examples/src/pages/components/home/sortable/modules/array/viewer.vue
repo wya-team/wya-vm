@@ -1,6 +1,11 @@
 <template>
 	<div style="height: 200px">
-		Name: {{ name }}
+		<div>
+			Name: {{ name }}
+		</div>
+		<div>
+			list: {{ list }}
+		</div>
 	</div>
 </template>
 
@@ -17,6 +22,7 @@ export default {
 		},
 		id: String,
 		name: [Number, String],
+		list: Array,
 	},
 	data() {
 		return {

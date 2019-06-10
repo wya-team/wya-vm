@@ -1,6 +1,10 @@
 <template>
 	<div style="display: flex; flex-direction: column;">
-		<div>name: <input :value="name" @input="handleChange($event, 'name')"></div>
+		<div>
+			<span>Name: </span>
+			<input :value="$attrs.name" @input="handleChange($event, 'name')">
+		</div>
+		<div @click="handleClick">+ListItem</div>
 	</div>
 </template>
 
@@ -12,12 +16,8 @@ export default {
 	},
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
-	props: {
-		// name: [Number, String],
-	},
 	data() {
 		return {
-			...this.$attrs
 		};
 	},
 	computed: {
@@ -29,8 +29,13 @@ export default {
 			this.$emit('change', { [key]: e.target.value });
 		},
 		handleClick() {
-			// this.$emit('update:x', this.x + 1);
-			this.$emit('change', { x: this.x + 1 });
+			let list = this.$attrs.list.slice(0);
+
+			list.push({
+				value: list.length,
+				label: list.length
+			});
+			this.$emit('change', { list });
 		}
 	},
 };

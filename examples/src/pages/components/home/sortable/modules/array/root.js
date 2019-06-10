@@ -30,7 +30,8 @@ export const array = {
 		// for frame
 		clearable: true,
 		// for content
-		name: `名称${index}`
+		name: `名称${index}`,
+		list: []
 	}),
 	dataValidity: (res = {}) => {
 		if (!res.name) {
