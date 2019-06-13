@@ -36,7 +36,7 @@ export const array = {
 		z: 1,
 		parent: false,
 		// for frame
-		clearable: true,
+		closeable: true,
 		// for content
 		name: `名称${index}`
 	}),

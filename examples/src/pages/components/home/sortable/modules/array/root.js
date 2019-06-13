@@ -28,7 +28,7 @@ export const array = {
 	// 初始数据
 	data: (index) => ({
 		// for frame
-		clearable: true,
+		closeable: true,
 		// for content
 		name: `名称${index}`,
 		list: []

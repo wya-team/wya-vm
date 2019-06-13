@@ -11,7 +11,7 @@ export const tpl = {
 	// 初始数据
 	data: {
 		// for sortable
-		clearable: true,
+		closeable: true,
 
 		name: '名称'
 	},

@@ -23,7 +23,7 @@
 			}" 
 		/>
 		<p 
-			v-if="clearable && (isActive || isHover)" 
+			v-if="closeable && (isActive || isHover)" 
 			class="vm-sortable__delete" 
 			@click="$emit('delete')"
 		>✕</p>
@@ -57,7 +57,7 @@ export default {
 		editorRegExp: Draggable.props.editorRegExp,
 		prevent: Draggable.props.prevent,
 		preventRegExp: Draggable.props.preventRegExp,
-		clearable: Draggable.props.clearable,
+		closeable: Draggable.props.closeable,
 	},
 	data() {
 		return {

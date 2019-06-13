@@ -35,7 +35,7 @@ editorRegExp | - | `any` | -
 prevent | - | `any` | -
 preventRegExp | - | `any` | -
 preventRegExp | - | `any` | -
-clearable | - | `any` | -
+closeable | - | `any` | -
 
 - 事件
 
@@ -64,7 +64,7 @@ disabled | - | `any` | -
 editorRegExp | - | `any` | -
 prevent | - | `any` | -
 preventRegExp | - | `any` | -
-clearable | - | `any` | -
+closeable | - | `any` | -
 
 - 事件
 

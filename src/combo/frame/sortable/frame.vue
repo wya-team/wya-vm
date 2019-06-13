@@ -14,7 +14,7 @@
 					:index="index"
 					:type="dragType"
 					:disabled="it.disabled"
-					:clearable="it.clearable || typeof it.clearable === 'undefined'"
+					:closeable="it.closeable || typeof it.closeable === 'undefined'"
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"
 					@delete="$emit('change', { type: 'delete', id: it.id })"

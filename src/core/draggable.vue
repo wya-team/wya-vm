@@ -20,7 +20,7 @@
 			</template>
 			<div v-if="isRotating" :style="{ width }" class="vm-draggable__rotate"/>
 			<!-- delete -->
-			<p v-if="clearable && isActive" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
+			<p v-if="closeable && isActive" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
 		</div>
 
 		<!-- 位置不会改变的 -->
@@ -137,7 +137,7 @@ export default {
 			})
 		},
 
-		clearable: {
+		closeable: {
 			type: Boolean, 
 			default: false
 		}

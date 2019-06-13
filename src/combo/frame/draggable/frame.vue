@@ -28,7 +28,7 @@
 			:zoom="it.zoom"
 			:grid="it.grid"
 			:restrain="it.restrain"
-			:clearable="it.clearable || typeof it.clearable === 'undefined'"
+			:closeable="it.closeable || typeof it.closeable === 'undefined'"
 			@activated="$emit('activated', it)"
 			@deactivated="$emit('deactivated', it)"
 			@dragging="$emit('dragging', it)"
