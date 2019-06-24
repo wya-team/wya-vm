@@ -58,13 +58,18 @@ $assit: #666;
 			}
 		}
 	}
+	.vm-widget__content {
+		overflow: auto;
+		max-height: 800px
+	}
 	.vm-widget__title {
 		padding: 15px 20px;
 		font-size: 12px;
 		color: #000;
-		font-weight: bold;
+		// font-weight: bold;
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		border-bottom: 1px solid $border;
 		&.is-draggable {
 			cursor: move;
@@ -94,7 +99,7 @@ $assit: #666;
 		flex-wrap: wrap;
 		width: 100%;
 		border-bottom: 1px solid $border;
-		justify-content: center;
+		// justify-content: center;
 		padding: 12px;
 	}
 	.vm-widget__item {

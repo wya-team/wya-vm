@@ -2,6 +2,7 @@
 	<div :style="style" :class="classes" class="vm-combo">
 		<vm-widget 
 			:style="widgetStyle" 
+			:content-style="widgetContentStyle" 
 			v-bind="widgetOpts"
 			@change="handleWidgetChangee"
 		/>
@@ -78,6 +79,7 @@ export default {
 		 * widget
 		 */
 		widgetStyle: Object,
+		widgetContentStyle: Object,
 		widgetW: Number,
 		widgetH: Number,
 		widgetOpts: Object,

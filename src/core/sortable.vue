@@ -21,6 +21,7 @@
 				'is-disabled': disabled, 
 				'is-active': true 
 			}" 
+			class="vm-sortable__handle"
 		/>
 		<p 
 			v-if="closeable && (isActive || isHover)" 
@@ -28,7 +29,9 @@
 			@click="$emit('delete')"
 		>✕</p>
 
-		<p v-if="highlight" class="vm-sortable__highlight" />
+		<p v-if="showHighlight && highlight" class="vm-sortable__highlight">
+			释放鼠标将模块添加到此处
+		</p>
 	</div>
 </template>
 
@@ -58,6 +61,10 @@ export default {
 		prevent: Draggable.props.prevent,
 		preventRegExp: Draggable.props.preventRegExp,
 		closeable: Draggable.props.closeable,
+		showHighlight: {
+			type: Boolean,
+			default: true
+		}
 	},
 	data() {
 		return {
@@ -151,6 +158,7 @@ export default {
 
 			eleDrag.__START_INDEX__ = this.index;
 			eleDrag.__END_INDEX__ = this.index;
+			eleDrag.__DISABLED__ = this.disabled;
 
 			e.target.style.opacity = 0;
 		},
@@ -159,7 +167,7 @@ export default {
 		* 拖拽元素进入目标元素头上的时候
 		*/
 		handleDragEnter(e) {
-			if (eleDrag && e.target != eleDrag) { // 排序
+			if (!this.disabled && eleDrag && !eleDrag.__DISABLED__ && e.target != eleDrag) { // 排序
 				if (this.index != eleDrag.__END_INDEX__) {
 					if (this.timer) return;
 					this.timer = setTimeout(() => {
@@ -211,16 +219,18 @@ export default {
 	&:hover {
 		cursor: move;
 	}
-	.is-active {
-		padding: 0;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		position: absolute;
-		z-index: 2;
-		border: 1px dotted #108ee9;
-		cursor: move;
+	.vm-sortable__handle {
+		&.is-active {
+			padding: 0;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			position: absolute;
+			z-index: 2;
+			border: 1px dotted #5495F6;
+			cursor: move;
+		}
 	}
 	&.is-disabled {
 		cursor: no-drop;
@@ -228,7 +238,7 @@ export default {
 }
 
 .vm-sortable__delete {
-	background: rgb(16, 142, 233); 
+	background: #5495F6; 
 	position: absolute; 
 	right: 0px; 
 	width: 20px; 
@@ -241,8 +251,13 @@ export default {
 }
 
 .vm-sortable__highlight {
-	height: 2px;
-	background: red;
+	height: 55px;
+	background: #E7F4FF;
+	color: #5495F6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px dotted #5495F6;
 }
  
 </style>

@@ -522,7 +522,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		bottom: 0;
 		position: absolute;
 		z-index: 2;
-		border: 1px dotted #108ee9;
+		border: 1px dotted #5495F6;
 		// cursor: move;
 		.vm-draggable__handle {
 			display: block;
@@ -540,7 +540,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		}
 	}
 	.is-delete {
-		background: #108ee9;
+		background: #5495F6;
 		position: absolute;
 		right: 0;
 		width: 20px;
@@ -637,12 +637,12 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 			content: ' ';
 			height: 10px;
 			width: 1px;
-			background: #108ee9;
+			background: #5495F6;
 		}
 		&:before {
 			content: '☐';
 			transform: translateY(26%);
-			color: #108ee9;
+			color: #5495F6;
 		}
 	}
 }
@@ -697,7 +697,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 }
 
 .vm-draggable__delete {
-	background: rgb(16, 142, 233); 
+	background: #5495F6; 
 	position: absolute; 
 	right: 0px; 
 	width: 20px; 

@@ -143,6 +143,10 @@ export default {
 				old
 			});
 		},
+		/**
+		 * index因为都是最后一个插入
+		 * 所以不用像sortable/frame.vue一样做判断
+		 */
 		setActived(index) {
 			this.$nextTick(() => {
 				try {

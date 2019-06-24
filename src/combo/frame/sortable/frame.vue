@@ -2,8 +2,9 @@
 	<div 
 		:style="style" 
 		class="vm-frame-sortable"
-		@dragover.prevent="handleDragOver" 
-		@dragend="handleDragEnd"
+		@dragover.prevent
+		@dragenter="handleDragEnter"
+		@dragleave="handleDragLeave"
 		@drop="handleDrop"
 	>
 		<transition-group tag="div" name="flip-list">
@@ -52,6 +53,7 @@ export default {
 	data() {
 		return {
 			dragType: SORT_IN_FRAME,
+			dragWaiting: false,
 			vm: {
 				type: 'frame'
 			}
@@ -68,14 +70,30 @@ export default {
 		}
 	},
 	created() {
-		this.eleDrag = null;
+		this.timer = null;
+	},
+	beforeDestory() {
+		clearTimeout(this.timer);
 	},
 	methods: {
-		handleDragOver(e) {
+		/**
+		 * TODO：
+		 * 1. dragWaiting等待时，默认插入到最后一个
+		 * 2. 区分是widget还是内部排序
+		 */
+		handleDragEnter(e) {
+			this.timer = setTimeout(() => {
+				this.dragWaiting = !this.$refs.sort || this.$refs.sort.every(i => i.highlight === false);
+			}, 300);
 		},
-		handleDragEnd(e) {
+		handleDragLeave(e) {
+			clearTimeout(this.timer);
+			this.dragWaiting = false;
 		},
 		handleDrop(e) {
+			clearTimeout(this.timer);
+			this.dragWaiting = false;
+
 			let rowIndex = this.dataSource.length;
 			/**
 			 * 清理高亮, 设置插入位置
@@ -83,7 +101,7 @@ export default {
 			if (this.$refs.sort) {
 				this.$refs.sort.forEach((instance, index) => {
 					if (instance.highlight === true) {
-						rowIndex = index + 1;
+						rowIndex = instance.index + 1;
 						instance.highlight = false;
 					}
 				});
@@ -138,10 +156,15 @@ export default {
 			// 新元素处于激活状态
 			this.setActived(rowIndex);
 		},
+
+		/**
+		 * refs.sort是递增的，和index无关
+		 */
 		setActived(index) {
 			this.$nextTick(() => {
 				try {
-					this.$refs.sort[index].setActived();
+					let target = this.$refs.sort.find(i => i.index === index);
+					target.setActived();
 				} catch (e) {
 					console.error(e);
 				}

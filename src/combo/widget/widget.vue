@@ -2,9 +2,9 @@
 	<div :style="style" class="vm-widget">
 		<div class="vm-widget__wrapper">
 			<p class="vm-widget__header">组件库</p>
-			<div v-if="showTip" class="vm-widget__tip" @click="showTip = !showTip">
+			<div v-if="showTip" class="vm-widget__tip">
 				<p>拖拽添加组件，点击修改样式</p>
-				<span>✕</span>
+				<span @click="showTip = !showTip">✕</span>
 			</div>
 			<div class="vm-widget__tabs">
 				<p 
@@ -15,41 +15,43 @@
 					@click="currentTab = key"
 				>{{ key }}</p>		
 			</div>
-			<div 
-				v-for="(it) in toolsList[currentTab]" 
-				:key="it.module" 
-				:draggable="it.draggable"
-				@dragstart="it.draggable && handleStart($event, it.module)"
-			>
-				<!-- 组件标题 -->
+			<div :style="contentStyle" class="vm-widget__content">
 				<div 
-					:class="{ 'is-active': it.active, 'is-draggable': it.draggable, 'is-click': it.widgets }" 
-					class="vm-widget__title"
-					@click="it.widgets && (it.active = !it.active)"
+					v-for="(it) in toolsList[currentTab]" 
+					:key="it.module" 
+					:draggable="it.draggable"
+					@dragstart="it.draggable && handleStart($event, it.module)"
 				>
-					<p v-if="typeof it.component === 'string'" v-html="it.component"/>
-					<component v-else :is="`vm-${it.module}-widget`" v-on="handleEvent(it.module)"/>
-					<div v-if="it.widgets" class="vm-widget__arrow" />
-				</div>
-				<!-- 子元素 -->
-				<div v-if="it.active" class="vm-widget__combo">
+					<!-- 组件标题 -->
 					<div 
-						v-for="(widget, index) in it.widgets" 
-						:key="index" 
-						draggable
-						class="vm-widget__item"
-						@dragstart="handleStart($event, it.module, index)"
-					>	
-						<template v-if="widget.render">
-							<vm-assist-customer 
-								:render="widget.render" 
-								:index="index"
-							/>
-						</template>
-						<template v-else>
-							<img :src="widget.image" >
-							<p>{{ widget.name }}</p>
-						</template>
+						:class="{ 'is-active': it.active, 'is-draggable': it.draggable, 'is-click': it.widgets }" 
+						class="vm-widget__title"
+						@click="it.widgets && (it.active = !it.active)"
+					>
+						<p v-if="typeof it.component === 'string'" v-html="it.component"/>
+						<component v-else :is="`vm-${it.module}-widget`" v-on="handleEvent(it.module)"/>
+						<div v-if="it.widgets" class="vm-widget__arrow" />
+					</div>
+					<!-- 子元素 -->
+					<div v-if="it.active" class="vm-widget__combo">
+						<div 
+							v-for="(widget, index) in it.widgets" 
+							:key="index" 
+							draggable
+							class="vm-widget__item"
+							@dragstart="handleStart($event, it.module, index)"
+						>	
+							<template v-if="widget.render">
+								<vm-assist-customer 
+									:render="widget.render" 
+									:index="index"
+								/>
+							</template>
+							<template v-else>
+								<img :src="widget.image" >
+								<p>{{ widget.name }}</p>
+							</template>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -74,7 +76,8 @@ export default {
 			type: String,
 			default: 'free' // sort-list
 		},
-		dataSource: Array
+		dataSource: Array,
+		contentStyle: Object
 	},
 	data() {
 		const { modules } = this.$parent.$options;
