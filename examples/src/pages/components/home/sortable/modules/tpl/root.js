@@ -1,7 +1,7 @@
-
 import Viewer from './viewer.vue';
 import Editor from './editor.vue';
 
+let count = 0;
 export const tpl = {
 	module: "tpl",
 	type: '基础组件',
@@ -9,11 +9,13 @@ export const tpl = {
 	Viewer,
 	Editor, 
 	// 初始数据
-	data: {
-		// for sortable
-		closeable: true,
+	data() {
+		return {
+			// for sortable
+			closeable: true,
 
-		name: '名称'
+			name: `名称_${count++}`,
+		};
 	},
 	dataValidity: (res = {}) => {
 		if (!res.name) {

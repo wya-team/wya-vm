@@ -1,6 +1,7 @@
-
 import Viewer from './viewer.vue';
 import Editor from './editor.vue';
+
+let count = 0;
 
 export const array = {
 	module: "array",
@@ -24,14 +25,15 @@ export const array = {
 	Viewer,
 	Editor, 
 	max: 5,
-	insertion: '', // first/last/every
+	insertion: 'first', // first/last/every
 	// 初始数据
 	data: (index) => ({
 		// for frame
 		closeable: true,
 		// for content
-		name: `名称${index}`,
-		list: []
+		name: `名称${index}_${count++}`,
+		list: [],
+		disabled: true,
 	}),
 	dataValidity: (res = {}) => {
 		if (!res.name) {
