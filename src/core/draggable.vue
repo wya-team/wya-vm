@@ -8,6 +8,7 @@
 			v-if="isActive && handles && handles.length !== 0" 
 			:class="{ 'is-disabled': disabled, 'is-active': isActive }" 
 			:style="style"
+			class="vm-draggable__handles"
 		>
 			<template v-for="item in handles">
 				<div
@@ -514,7 +515,19 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 	.is-events-none {
 		pointer-events: none;
 	}
-	.is-active {
+	// 重复？
+	.is-delete {
+		background: #5495F6;
+		position: absolute;
+		right: 0;
+		width: 20px;
+		color: white;
+		text-align: center;
+		z-index: 300
+	}
+}
+.vm-draggable__handles {
+	&.is-active {
 		padding: 0;
 		top: 0;
 		left: 0;
@@ -528,7 +541,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 			display: block;
 		}
 	}
-	.is-disabled {
+	&.is-disabled {
 		border: 1px dotted #e96101;
 		.handle-rotate {
 			&:after {
@@ -539,17 +552,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 			}
 		}
 	}
-	.is-delete {
-		background: #5495F6;
-		position: absolute;
-		right: 0;
-		width: 20px;
-		color: white;
-		text-align: center;
-		z-index: 300
-	}
 }
-
 .vm-draggable__handle {
 	display: none;
 	position: absolute;

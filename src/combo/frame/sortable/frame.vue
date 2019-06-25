@@ -15,6 +15,7 @@
 					:index="index"
 					:type="dragType"
 					:disabled="it.disabled"
+					:draggable="it.draggable || typeof it.draggable === 'undefined'"
 					:closeable="it.closeable || typeof it.closeable === 'undefined'"
 					@activated="$emit('activated', it, index)"
 					@deactivated="$emit('deactivated', it, index)"

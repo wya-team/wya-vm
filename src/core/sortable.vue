@@ -1,6 +1,6 @@
 <template>
 	<div 
-		:draggable="!disabled"
+		:draggable="draggable && !disabled"
 		class="vm-sortable" 
 		@click="handleClick"
 		@dragstart="handleDragStart"
@@ -61,6 +61,10 @@ export default {
 		prevent: Draggable.props.prevent,
 		preventRegExp: Draggable.props.preventRegExp,
 		closeable: Draggable.props.closeable,
+		draggable: {
+			type: Boolean,
+			default: true
+		},
 		showHighlight: {
 			type: Boolean,
 			default: true
@@ -158,7 +162,7 @@ export default {
 
 			eleDrag.__START_INDEX__ = this.index;
 			eleDrag.__END_INDEX__ = this.index;
-			eleDrag.__DISABLED__ = this.disabled;
+			eleDrag.__DRAGGABLE__ = this.draggable;
 
 			e.target.style.opacity = 0;
 		},
@@ -167,7 +171,7 @@ export default {
 		* 拖拽元素进入目标元素头上的时候
 		*/
 		handleDragEnter(e) {
-			if (!this.disabled && eleDrag && !eleDrag.__DISABLED__ && e.target != eleDrag) { // 排序
+			if (!this.draggable && eleDrag && !eleDrag.__DRAGGABLE__ && e.target != eleDrag) { // 排序
 				if (this.index != eleDrag.__END_INDEX__) {
 					if (this.timer) return;
 					this.timer = setTimeout(() => {
