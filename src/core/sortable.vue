@@ -171,7 +171,7 @@ export default {
 		* 拖拽元素进入目标元素头上的时候
 		*/
 		handleDragEnter(e) {
-			if (!this.draggable && eleDrag && !eleDrag.__DRAGGABLE__ && e.target != eleDrag) { // 排序
+			if (this.draggable && eleDrag && eleDrag.__DRAGGABLE__ && e.target != eleDrag) { // 排序
 				if (this.index != eleDrag.__END_INDEX__) {
 					if (this.timer) return;
 					this.timer = setTimeout(() => {
