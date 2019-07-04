@@ -90,6 +90,7 @@ Viewer | 展示视图 | `any` | -
 Editor | 编辑（需要特定的事件） | `any` | -
 Widget | 组件/控件 | `any` | -
 widgets | 组件/控件展开 | `any` | -
+showWidget | 是否显示控件按钮 | `any` | -
 max | - | `any` | -
 insertion | `first/last/every` | `String` | -
 data | 编辑的数据，一部分需要配合CORE的API参数 | `Object` `Function` | -

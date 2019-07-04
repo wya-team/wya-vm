@@ -33,7 +33,7 @@ export const array = {
 		// for content
 		name: `名称${index}_${count++}`,
 		list: [],
-		draggable: false,
+		draggable: true,
 	}),
 	dataValidity: (res = {}) => {
 		if (!res.name) {

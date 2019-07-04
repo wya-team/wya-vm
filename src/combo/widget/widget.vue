@@ -3,7 +3,7 @@
 		<div class="vm-widget__wrapper">
 			<p class="vm-widget__header">组件库</p>
 			<div v-if="showTip" class="vm-widget__tip">
-				<p>拖拽添加组件，点击修改样式</p>
+				<p>拖拽添加组件</p>
 				<span @click="showTip = !showTip">✕</span>
 			</div>
 			<div class="vm-widget__tabs">
@@ -89,17 +89,18 @@ export default {
 				if (!toolsList[type]) {
 					toolsList[type] = [];
 				}
+				if (item.showWidget || typeof item.showWidget === 'undefined') {
+					toolsList[type].push({
+						module: item.module,
+						component: item.Widget || item.name,
+						widgets: item.widgets, 
+						// 最外层拖拽
+						draggable: !item.widgets && item.Viewer && item.Editor,
 
-				toolsList[type].push({
-					module: item.module,
-					component: item.Widget || item.name,
-					widgets: item.widgets, 
-					// 最外层拖拽
-					draggable: !item.widgets && item.Viewer && item.Editor,
-
-					// 更多
-					active: false
-				});
+						// 更多
+						active: false
+					});
+				}
 			}
 		}
 		return {
