@@ -17,8 +17,8 @@ export const tpl = {
 		x: 0, // 动态分配
 		y: 0, // 动态分配
 		z: 1,
-		parent: false,
-
+		parent: true, // 不能超过父级
+		handles: [],
 		// for frame
 		closeable: true,
 		

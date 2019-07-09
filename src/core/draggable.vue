@@ -5,7 +5,7 @@
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="isActive && handles && handles.length !== 0" 
+			v-if="isActive && (closeable || handles)" 
 			:class="{ 'is-disabled': disabled, 'is-active': isActive }" 
 			:style="style"
 			class="vm-draggable__handles"
@@ -21,7 +21,7 @@
 			</template>
 			<div v-if="isRotating" :style="{ width }" class="vm-draggable__rotate"/>
 			<!-- delete -->
-			<p v-if="closeable && isActive" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
+			<p v-if="closeable" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
 		</div>
 
 		<!-- 位置不会改变的 -->
