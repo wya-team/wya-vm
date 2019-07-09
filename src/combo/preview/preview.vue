@@ -6,10 +6,10 @@
 				:key="it.id" 
 				:style="isDraggable ? { 
 					position: 'absolute', 
-					width: `${it.w ? `${it.w}px` : 'auto' }`, 
-					height: `${it.h ? `${it.h}px` : 'auto' }`, 
-					left: `${it.x}px`, 
-					top: `${it.y}px`, 
+					width: `${it.w ? `${it.w * mult}px` : 'auto' }`, 
+					height: `${it.h ? `${it.h * mult}px` : 'auto' }`, 
+					left: `${it.x * mult}px`, 
+					top: `${it.y * mult}px`, 
 					transform: `rotate(${it.r}deg)`
 				} : {} "
 			>
@@ -31,7 +31,8 @@ export default {
 	},
 	props: {
 		dataSource: Array,
-		mode: String
+		mode: String,
+		frameW: Number
 	},
 	data() {
 		return {
@@ -43,6 +44,12 @@ export default {
 	computed: {
 		isDraggable() {
 			return this.mode === 'draggable';
+		},
+
+		mult() {
+			return typeof this.width === 'undefined' 
+				? 1 
+				: window.innerWidth / this.frameW;
 		}
 	}
 };
