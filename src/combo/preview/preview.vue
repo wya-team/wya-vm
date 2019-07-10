@@ -47,7 +47,7 @@ export default {
 		},
 
 		mult() {
-			return typeof this.width === 'undefined' 
+			return typeof this.frameW === 'undefined' 
 				? 1 
 				: window.innerWidth / this.frameW;
 		}

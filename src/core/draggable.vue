@@ -46,10 +46,6 @@ export default {
 	replace: true,
 	name: 'vm-draggable',
 	props: {
-		disabled: {
-			type: Boolean, 
-			default: false
-		},
 		handles: {
 			type: Array,
 			default: () => (['top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-right', 'bottom-left', 'rotate'])
@@ -138,9 +134,29 @@ export default {
 			})
 		},
 
+		disabled: {
+			type: Boolean, 
+			default: false
+		},
+		
 		closeable: {
 			type: Boolean, 
 			default: false
+		},
+
+		draggable: {
+			type: Boolean, 
+			default: true
+		},
+
+		resizable: {
+			type: Boolean, 
+			default: true
+		},
+
+		rotatable: {
+			type: Boolean, 
+			default: true
 		}
 	},
 	data() {
@@ -288,7 +304,7 @@ export default {
 					this.isActive = true;
 					this.$emit('activated');
 				}
-				this.isDraging = true;
+				this.draggable && (this.isDraging = true);
 			}
 		},
 		/**
@@ -334,9 +350,9 @@ export default {
 			// 将handle设置为当前元素
 			this.handle = handle;
 			if (handle === 'rotate') {
-				this.isRotating = true;
+				this.rotatable && (this.isRotating = true);
 			} else {
-				this.isResizing = true;
+				this.resizable && (this.isResizing = true);
 			}
 
 			this.preMouseX = e.pageX || e.clientX + doc.scrollLeft;

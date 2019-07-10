@@ -29,6 +29,9 @@
 			:grid="it.grid"
 			:restrain="it.restrain"
 			:closeable="it.closeable || typeof it.closeable === 'undefined'"
+			:draggable="it.draggable || typeof it.draggable === 'undefined'"
+			:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
+			:resizable="it.resizable || typeof it.resizable === 'undefined'"
 			@activated="$emit('activated', it)"
 			@deactivated="$emit('deactivated', it)"
 			@dragging="$emit('dragging', it)"
@@ -114,14 +117,21 @@ export default {
 			let data = {
 				...cloneDeep(
 					typeof result.data === 'function' 
-						? result.data(index) 
+						? result.data(index, this.dataSource) 
 						: result.data
 				),
 				module,
-				id,
-				x: mouseX - x,
-				y: mouseY - y
+				id
 			};
+
+			// 不可拖拽的情况下
+			if (!data.draggable) {
+				data.x = 0;
+				data.y = 0;
+			} else {
+				data.x = mouseX - x;
+				data.y = mouseY - y;
+			}
 
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push(data);

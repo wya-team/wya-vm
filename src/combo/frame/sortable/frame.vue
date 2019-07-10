@@ -14,6 +14,7 @@
 					ref="sort"
 					:index="index"
 					:type="dragType"
+					:style="[it.style]"
 					:disabled="it.disabled"
 					:draggable="it.draggable || typeof it.draggable === 'undefined'"
 					:closeable="it.closeable || typeof it.closeable === 'undefined'"
@@ -126,7 +127,7 @@ export default {
 			let data = {
 				...cloneDeep(
 					typeof result.data === 'function' 
-						? result.data(index) 
+						? result.data(index, this.dataSource) 
 						: result.data
 				),
 				module,

@@ -18,7 +18,10 @@ export const tpl = {
 		y: 0, // 动态分配
 		z: 1,
 		parent: true, // 不能超过父级
-		handles: [],
+		// handles: [], // 可以控制操作handles
+		draggable: true, // 可以拖拽
+		rotatable: true, // 可以旋转
+		resizable: true, // 可以变化
 		// for frame
 		closeable: true,
 		

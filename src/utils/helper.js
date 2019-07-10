@@ -28,6 +28,7 @@ export const hasOwn = (target, key) => Object.prototype.hasOwnProperty.call(targ
 
 /**
  * getUid
+ * 时间戳是有必要的
  */
 const now = +(new Date());
 let index = 0;
