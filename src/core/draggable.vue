@@ -1,11 +1,16 @@
 <template>
-	<div :style="coord" class="vm-draggable" @mousedown.stop="handleContainerDown">
+	<div 
+		:style="coord" 
+		class="vm-draggable"
+		@mousedown.stop="handleContainerDown"
+		@touchstart.stop="handleContainerDown"
+	>
 		<div :style="style" :class="{ 'is-events-none': isChanging }" >
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="isActive && (closeable || handles)" 
+			v-if="isActive && (closeable || handles.length > 0)" 
 			:class="{ 'is-disabled': disabled, 'is-active': isActive }" 
 			:style="style"
 			class="vm-draggable__handles"
@@ -17,6 +22,7 @@
 					:class="`is-${item}`"
 					class="vm-draggable__handle"
 					@mousedown.left.stop="handleDown($event, item)"
+					@touchstart.stop="handleDown($event, item)"
 				/>
 			</template>
 			<div v-if="isRotating" :style="{ width }" class="vm-draggable__rotate"/>
@@ -41,6 +47,12 @@ import { isPassiveSupported, eleInRegExp } from '../utils/helper';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+
+export const draggableEvents = {
+	start: ['touchstart', 'mousedown'],
+	move: ['touchmove', 'mousemove'],
+	end: ['touchend', 'touchcancel', 'mouseup']
+};
 
 export default {
 	replace: true,
@@ -268,9 +280,16 @@ export default {
 		operateDOMEvents(type) {
 			let fn = type === 'add' ? doc.addEventListener : doc.removeEventListener;
 
-			fn('mousedown', this.handleDeselect, this.eventOpts);
-			fn('mousemove', this.handleMove, this.eventOpts);
-			fn('mouseup', this.handleUp, this.eventOpts);
+			// 使用原生绑定 不区分移动端还是桌面端
+			draggableEvents.start.forEach(eventName => {
+				fn(eventName, this.handleDeselect, this.eventOpts);
+			});
+			draggableEvents.move.forEach(eventName => {
+				fn(eventName, this.handleMove, this.eventOpts);
+			});
+			draggableEvents.end.forEach(eventName => {
+				fn(eventName, this.handleUp, this.eventOpts);
+			});
 		},
 		/**
 		 * 模拟设置isActive状态
@@ -283,7 +302,6 @@ export default {
 		 * 组件被按下事件
 		 */
 		handleContainerDown(e = {}) {
-			// 去除默认事件 todo: 匹配输入框
 			this.prevent
 				&& e.preventDefault 
 				&& !eleInRegExp(e.target, this.preventRegExp)
@@ -295,8 +313,10 @@ export default {
 			// 确保事件发生在组件内部
 			if (!target || this.$el.contains(target)) {
 				if (!this.isActive) {
-					this.lastMouseX = e.pageX || e.clientX + doc.scrollLeft;
-					this.lastMouseY = e.pageY || e.clientY + doc.scrollTop;
+					const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
+
+					this.lastMouseX = mousePositionX + doc.scrollLeft;
+					this.lastMouseY = mousePositionY + doc.scrollTop;
 
 					// 绑定事件
 					this.operateDOMEvents('add');
@@ -311,8 +331,10 @@ export default {
 		 * 取消选择事件
 		 */
 		handleDeselect(e) {
-			this.mouseX = e.pageX || e.clientX + doc.scrollLeft;
-			this.mouseY = e.pageY || e.clientY + doc.scrollTop;
+			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
+
+			this.mouseX = mousePositionX + doc.scrollLeft;
+			this.mouseY = mousePositionY + doc.scrollTop;
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
 			const target = e.target || e.srcElement; // body不要带上class, 否则会存在问题
@@ -341,7 +363,6 @@ export default {
 		 * 拖动点按下事件
 		 */
 		handleDown(e, handle) {
-			// 去除默认事件 todo: 匹配输入框
 			this.prevent
 				&& e.preventDefault 
 				&& !eleInRegExp(e.target, this.preventRegExp)
@@ -355,15 +376,19 @@ export default {
 				this.resizable && (this.isResizing = true);
 			}
 
-			this.preMouseX = e.pageX || e.clientX + doc.scrollLeft;
-			this.preMouseY = e.pageY || e.clientY + doc.scrollTop;
+			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
+
+			this.preMouseX = mousePositionX + doc.scrollLeft;
+			this.preMouseY = mousePositionY + doc.scrollTop;
 		},
 		/**
 		 * 鼠标在页面上的坐标
 		 */
 		handleMove(e) {
-			this.mouseX = e.pageX || e.clientX + doc.scrollLeft;
-			this.mouseY = e.pageY || e.clientY + doc.scrollTop;
+			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
+
+			this.mouseX = mousePositionX + doc.scrollLeft;
+			this.mouseY = mousePositionY + doc.scrollTop;
 
 			// x, y, w, h
 			let elmX = parseInt(this.x, 10);
@@ -481,6 +506,18 @@ export default {
 		getRestrain(num) {
 			const restrain = this.restrain;
 			return (num / restrain).toFixed(0) * restrain;
+		},
+		getPositionByEvent(e) {
+			const mousePositionX = e.targetTouches
+				? e.targetTouches[0].pageX
+				: e.clientX;
+			const mousePositionY = e.targetTouches
+				? e.targetTouches[0].pageY
+				: e.clientY;
+			return {
+				mousePositionX: mousePositionX || 0,
+				mousePositionY: mousePositionY || 0
+			};
 		},
 		handleUp(e) {
 			this.isChanging = false;
