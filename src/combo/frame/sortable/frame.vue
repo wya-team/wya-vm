@@ -10,27 +10,29 @@
 		<transition-group tag="div" name="flip-list">
 			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
 				<!-- TODO: 不操作引用修改 -->
-				<vm-sortable
-					ref="sort"
-					:index="index"
-					:type="dragType"
-					:style="[it.style]"
-					:disabled="it.disabled"
-					:draggable="it.draggable || typeof it.draggable === 'undefined'"
-					:closeable="it.closeable || typeof it.closeable === 'undefined'"
-					@activated="$emit('activated', it, index)"
-					@deactivated="$emit('deactivated', it, index)"
-					@delete="$emit('change', { type: 'delete', id: it.id })"
-					@sorting="handleSorting"
-					@sort-end="handleSortEnd"
-				>
-					<component 
-						:is="`vm-${it.module}-viewer`" 
-						v-bind="it" 
-						:vm="vm"
-						style="min-height: 3px"
-					/>
-				</vm-sortable>
+				<div :style="it.style">
+					<vm-sortable
+						ref="sort"
+						:index="index"
+						:type="dragType"
+						:disabled="it.disabled"
+						:draggable="it.draggable || typeof it.draggable === 'undefined'"
+						:closeable="it.closeable || typeof it.closeable === 'undefined'"
+						@activated="$emit('activated', it, index)"
+						@deactivated="$emit('deactivated', it, index)"
+						@delete="$emit('change', { type: 'delete', id: it.id })"
+						@sorting="handleSorting"
+						@sort-end="handleSortEnd"
+					>
+						<component 
+							:is="`vm-${it.module}-viewer`" 
+							v-bind="it" 
+							:vm="vm"
+							style="min-height: 3px"
+						/>
+					</vm-sortable>
+				</div>
+				<div v-if="it.placeholder" :style="{height: `${it.placeholder}px`}"/>
 			</div>
 		</transition-group>
 	</div>

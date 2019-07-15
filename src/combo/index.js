@@ -58,7 +58,6 @@ export default (modules = defaultModules, opts = {}) => {
 			...viewers
 		};
 
-
 		// cloneDeep 避免相互干扰，vue内部会改变_Ctor缓存
 		let rebuildCombo = cloneDeep(newCombo);
 		let rebuildPreview = cloneDeep(newPreview);
