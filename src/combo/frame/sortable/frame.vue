@@ -10,7 +10,7 @@
 		<transition-group tag="div" name="flip-list">
 			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
 				<!-- TODO: 不操作引用修改 -->
-				<div :style="it.style">
+				<div :style="it.wrapperStyle">
 					<vm-sortable
 						ref="sort"
 						:index="index"
