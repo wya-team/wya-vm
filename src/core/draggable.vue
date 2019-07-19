@@ -10,12 +10,12 @@
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="(active || isActive) && (closeable || handles.length > 0)" 
+			v-if="(active || isActive) && (closeable || realHandles.length > 0)" 
 			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }" 
 			:style="style"
 			class="vm-draggable__handles"
 		>
-			<template v-for="item in handles">
+			<template v-for="item in realHandles">
 				<div
 					v-if="!disabled"
 					:key="item"
@@ -178,7 +178,6 @@ export default {
 		}
 	},
 	data() {
-
 		return {
 			isResizing: false,
 			isDraging: false,
@@ -209,6 +208,19 @@ export default {
 				Math.sqrt(this.w * this.w + this.h * this.h) * 1.15
 			);
 			return `${num}px`;
+		},
+		realHandles() {
+			let handles = this.handles;
+
+			if (!this.rotatable) {
+				handles = handles.filter(i => i !== 'rotate');
+			}
+
+			if (!this.resizable) {
+				handles = handles.filter(i => i === 'rotate');
+			}
+
+			return handles;
 		}
 	},
 	watch: {},
@@ -254,8 +266,11 @@ export default {
 	methods: {
 		calculation() {
 			const { width, height } = this.$el.parentNode.getBoundingClientRect();
+			if (!width || !height) return;
+			
 			this.parentW = width;
 			this.parentH = height; // this.$el.parentNode.clientHeight
+
 			if (this.w > this.parentW) {
 				this.sync({ w: this.parentW });
 			}
