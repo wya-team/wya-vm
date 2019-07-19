@@ -100,7 +100,7 @@ export default {
 						// 最外层拖拽
 						draggable: !!(!item.widgets && item.Viewer && item.Editor),
 
-						// 更多
+						// 更多, 由click事件控制
 						active: false
 					});
 				}

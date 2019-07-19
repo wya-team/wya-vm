@@ -130,12 +130,12 @@ export default {
 			};
 
 			// 不可拖拽的情况下
-			if (!data.draggable) {
-				data.x = 0;
-				data.y = 0;
-			} else {
+			if (data.draggable || typeof data.draggable === 'undefined') {
 				data.x = mouseX - x;
 				data.y = mouseY - y;
+			} else {
+				data.x = 0;
+				data.y = 0;
 			}
 
 			// 会同步到上级 这里不用this.$emit("update:sync")

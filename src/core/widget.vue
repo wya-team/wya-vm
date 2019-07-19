@@ -29,8 +29,7 @@ export default {
 		 * data函数时使用
 		 */
 		index: {
-			type: Boolean,
-			default: true
+			type: Number
 		}
 	},
 	methods: {
