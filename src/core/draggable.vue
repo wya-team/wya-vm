@@ -25,7 +25,7 @@
 					@touchstart.stop="handleDown($event, item)"
 				/>
 			</template>
-			<div v-if="isRotating" :style="{ width }" class="vm-draggable__rotate"/>
+			<div v-if="rotatable && isRotating" :style="{ width }" class="vm-draggable__rotate"/>
 			<!-- delete -->
 			<p v-if="closeable" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
 		</div>
