@@ -44,7 +44,12 @@
 			@end="handleEnd(arguments[0], it.id, index)"
 		>
 			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
-			<component :is="`vm-${it.module}-viewer`" v-bind="it" :vm="vm" />
+			<component 
+				:is="`vm-${it.module}-viewer`" 
+				:index="index" 
+				:vm="vm"  
+				v-bind="it"
+			/>
 		</vm-draggable>
 	</div>
 </template>

@@ -26,8 +26,9 @@
 					>
 						<component 
 							:is="`vm-${it.module}-viewer`" 
-							v-bind="it" 
+							:index="index"
 							:vm="vm"
+							v-bind="it" 
 							style="min-height: 3px"
 						/>
 					</vm-sortable>
