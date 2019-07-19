@@ -10,8 +10,8 @@
 		</div>
 		<!-- handle -->
 		<div 
-			v-if="isActive && (closeable || handles.length > 0)" 
-			:class="{ 'is-disabled': disabled, 'is-active': isActive }" 
+			v-if="(active || isActive) && (closeable || handles.length > 0)" 
+			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }" 
 			:style="style"
 			class="vm-draggable__handles"
 		>
@@ -169,6 +169,12 @@ export default {
 		rotatable: {
 			type: Boolean, 
 			default: true
+		},
+
+		// 激活状态， 特殊需求
+		active: {
+			type: Boolean, 
+			default: false
 		}
 	},
 	data() {

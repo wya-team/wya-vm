@@ -24,6 +24,7 @@ export const tpl = {
 		resizable: true, // 可以变化
 		// for frame
 		closeable: true,
+		active: true,
 		
 		// for content
 		name: '名称'

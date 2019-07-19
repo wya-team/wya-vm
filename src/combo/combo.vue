@@ -1,6 +1,7 @@
 <template>
 	<div :style="style" :class="classes" class="vm-combo">
 		<vm-widget 
+			v-if="showWidget"
 			:style="widgetStyle" 
 			:content-style="widgetContentStyle" 
 			v-bind="widgetOpts"
@@ -13,6 +14,7 @@
 			:height="frameH" 
 			:data-source="rebuildData" 
 			:editor="editor" 
+			:show-lines="showLines"
 			v-bind="frameOpts"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
@@ -24,7 +26,7 @@
 		</vm-frame>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor 
-			v-if="editor" 
+			v-if="showEditor && editor" 
 			:data-source="editor"
 			@change="handleChange"
 		/>
@@ -94,6 +96,18 @@ export default {
 		showAssist: {
 			type: Boolean,
 			default: false
+		},
+		showWidget: {
+			type: Boolean,
+			default: true
+		},
+		showEditor: {
+			type: Boolean,
+			default: true
+		},
+		showLines: {
+			type: Boolean,
+			default: true
 		}
 
 	},

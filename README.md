@@ -36,6 +36,10 @@ prevent | - | `any` | -
 preventRegExp | - | `any` | -
 preventRegExp | - | `any` | -
 closeable | - | `any` | -
+draggable | - | `any` | -
+resizable | - | `any` | -
+rotatable | - | `any` | -
+active | - | `any` | -
 
 - 事件
 
@@ -76,6 +80,26 @@ sorting | - | `any` | -
 sort-end | - | `any` | -
 highlight-change | - | `any` | -
 delete | - | `any` | -
+
+
+### Widget
+
+- api
+
+属性 | 说明 | 类型 | 默认值
+---|---|---|---
+index | - | `any` | -
+module | - | `any` | -
+draggable | - | `any` | -
+
+
+- 事件
+
+属性 | 说明 | 类型 | 默认值
+---|---|---|---
+click | 待开发 | `any` | -
+
+
 
 ## 组合组件
 

@@ -16,11 +16,11 @@
 				>{{ key }}</p>		
 			</div>
 			<div :style="contentStyle" class="vm-widget__content">
-				<div 
+				<vm-widget-item
 					v-for="(it) in toolsList[currentTab]" 
 					:key="it.module" 
 					:draggable="it.draggable"
-					@dragstart="it.draggable && handleStart($event, it.module)"
+					:module="it.module"
 				>
 					<!-- 组件标题 -->
 					<div 
@@ -34,12 +34,13 @@
 					</div>
 					<!-- 子元素 -->
 					<div v-if="it.active" class="vm-widget__combo">
-						<div 
+						<vm-widget-item 
 							v-for="(widget, index) in it.widgets" 
 							:key="index" 
+							:module="it.module"
+							:index="index"
 							draggable
 							class="vm-widget__item"
-							@dragstart="handleStart($event, it.module, index)"
 						>	
 							<template v-if="widget.render">
 								<vm-assist-customer 
@@ -51,23 +52,25 @@
 								<img :src="widget.image" >
 								<p>{{ widget.name }}</p>
 							</template>
-						</div>
+						</vm-widget-item>
 					</div>
-				</div>
+				</vm-widget-item>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import Widget from '../../core/widget.vue';
 import { hasOwn } from '../../utils/helper';
-import { WIDGET_TO_FRAME } from '../constants';
+import { WIDGET_TO_FRAME } from '../../utils/constants';
 import Assist from '../assist';
 
 export default {
 	name: 'vm-widget',
 	components: {
-		'vm-assist-customer': Assist.Customer
+		'vm-assist-customer': Assist.Customer,
+		'vm-widget-item': Widget,
 	},
 	props: {
 		width: Number,
@@ -95,7 +98,7 @@ export default {
 						component: item.Widget || item.name,
 						widgets: item.widgets, 
 						// 最外层拖拽
-						draggable: !item.widgets && item.Viewer && item.Editor,
+						draggable: !!(!item.widgets && item.Viewer && item.Editor),
 
 						// 更多
 						active: false
@@ -124,15 +127,6 @@ export default {
 		// console.log(this.$options.modules);
 	},
 	methods: {
-		handleStart(e, module, index) {
-			e.dataTransfer.setData(
-				WIDGET_TO_FRAME, 
-				JSON.stringify({
-					module,
-					index
-				})
-			);
-		},
 		handleEvent(module) {
 			return {
 				change: (...rest) => this.$emit('change', module, ...rest)

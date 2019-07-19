@@ -41,7 +41,7 @@
 <script>
 import Sortable from '../../../core/sortable.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
-import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../constants';
+import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../../utils/constants';
 
 export default {
 	name: 'vm-frame',

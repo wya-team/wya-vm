@@ -7,8 +7,8 @@
 		@dragend="handleDragEnd"
 		@drop="handleDrop"
 	>
-		<vm-grid-lines :width="width" :height="height" :grid="[10, 10]" />
-		<vm-align-lines :data-source="dataSource" :editor="editor"/>
+		<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
+		<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
 		<!-- TODO: 不操作引用修改 -->
 		<vm-draggable
 			v-for="(it, index) in dataSource"
@@ -27,6 +27,7 @@
 			:min-h="it.minH"
 			:zoom="it.zoom"
 			:grid="it.grid"
+			:active="it.active"
 			:restrain="it.restrain"
 			:closeable="it.closeable || typeof it.closeable === 'undefined'"
 			:draggable="it.draggable || typeof it.draggable === 'undefined'"
@@ -53,7 +54,7 @@ import Draggable from '../../../core/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
-import { WIDGET_TO_FRAME } from '../../constants';
+import { WIDGET_TO_FRAME } from '../../../utils/constants';
 
 export default {
 	name: 'vm-frame',
@@ -66,7 +67,11 @@ export default {
 		width: Number,
 		height: Number,
 		dataSource: Array,
-		editor: Object
+		editor: Object,
+		showLines: {
+			type: Boolean,
+			default: true
+		},
 	},
 	data() {
 		return {
