@@ -252,13 +252,15 @@ export default {
 		if (this.h && this.minH > this.h) {
 			this.sync({ h: this.minH });
 		}
-		const { x, y } = this.$el.parentNode.getBoundingClientRect();
-		this.parentX = x;
-		this.parentY = y;
 
-		// 判断是否只能在父级元素中拖动
-		this.parent && this.calculation();
-		this.$emit('resizing');
+		this.$nextTick(() => {
+			const { x, y } = this.$el.parentNode.getBoundingClientRect();
+			this.parentX = x;
+			this.parentY = y;
+			// 判断是否只能在父级元素中拖动
+			this.parent && this.calculation();
+			this.$emit('resizing');
+		});
 	},
 	destroyed() {
 		this.operateDOMEvents('remove');
@@ -266,7 +268,9 @@ export default {
 	methods: {
 		calculation() {
 			const { width, height } = this.$el.parentNode.getBoundingClientRect();
-			if (!width || !height) return;
+			if (!width || !height) {
+				throw new Error('@wya/vm: 父层容器宽度计算异常');
+			}
 			
 			this.parentW = width;
 			this.parentH = height; // this.$el.parentNode.clientHeight
