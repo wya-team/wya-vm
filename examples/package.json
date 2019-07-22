@@ -114,9 +114,20 @@
     "webpack-merge": "^4.2.1"
   },
   "lint-staged": {
-    "{src,config}/**/*.{js,jsx,vue}": ["esw --fix", "git add"],
-    "*.md": ["esw --ext '.md' --fix", "git add"],
-    "*.scss": ["stylelint --fix --syntax scss", "git add"]
+    "{src,config}/**/*.{js,jsx,vue}": [
+      "esw --fix",
+      "git add"
+    ],
+    "*.md": [
+      "esw --ext '.md' --fix",
+      "git add"
+    ],
+    "*.scss": [
+      "stylelint --fix --syntax scss",
+      "git add"
+    ]
   },
-  "pre-commit": ["lint-staged"]
+  "pre-commit": [
+    "lint-staged"
+  ]
 }

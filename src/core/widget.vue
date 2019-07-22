@@ -1,5 +1,6 @@
 <template>
 	<div
+		:style="style"
 		:draggable="draggable"
 		@dragstart="draggable && handleStart($event)"
 	>
@@ -30,6 +31,13 @@ export default {
 		 */
 		index: {
 			type: Number
+		}
+	},
+	computed: {
+		style() {
+			return this.draggable 
+				? { cursor: 'move' }
+				: {};
 		}
 	},
 	methods: {
