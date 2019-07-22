@@ -5,7 +5,7 @@
 			:style="widgetStyle" 
 			:content-style="widgetContentStyle" 
 			v-bind="widgetOpts"
-			@change="handleWidgetChangee"
+			@change="handleWidgetChange"
 		/>
 		<vm-frame 
 			ref="frame"
@@ -191,7 +191,7 @@ export default {
 		 * 用户处理widget出来的数据, 暂时做不到记忆
 		 * TODO: 可能被废弃
 		 */
-		handleWidgetChangee(module, ...rest) {
+		handleWidgetChange(module, ...rest) {
 			this.$emit('widget-change', module, ...rest);
 		},
 
@@ -235,6 +235,26 @@ export default {
 			this[type] && this[type](...rest);
 		},
 
+		/**
+		 * 模拟添加
+		 */
+		add(module, index) {
+			this.$refs.frame.handleDrop({
+				fake: true,
+				dataTransfer: {
+					getData: () => {
+						return JSON.stringify({
+							module,
+							index
+						});
+					}
+				}
+			}, true);
+		},
+
+		/**
+		 * 删除
+		 */
 		delete(id) {
 			id = id || (this.editor || {}).id;
 			if (!id) {

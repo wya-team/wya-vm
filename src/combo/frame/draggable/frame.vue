@@ -118,8 +118,8 @@ export default {
 			
 			let { x, y } = this.$el.getBoundingClientRect();
 
-			let mouseX = e.pageX || e.clientX + doc.scrollLeft;
-			let mouseY = e.pageY || e.clientY + doc.scrollTop;
+			let mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft || 0;
+			let mouseY = e.pageY || e.clientY + document.documentElement.scrollTop || 0;
 
 			let id = getUid();
 			let rowIndex = this.dataSource.length;
@@ -135,7 +135,7 @@ export default {
 			};
 
 			// 不可拖拽的情况下
-			if (data.draggable || typeof data.draggable === 'undefined') {
+			if (!e.fake && (data.draggable || typeof data.draggable === 'undefined')) {
 				data.x = mouseX - x;
 				data.y = mouseY - y;
 			} else {
