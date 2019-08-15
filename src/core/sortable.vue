@@ -29,7 +29,11 @@
 			@click="$emit('delete')"
 		>✕</p>
 
-		<p v-if="showHighlight && highlight" class="vm-sortable__highlight">
+		<p 
+			v-if="showHighlight && highlight" 
+			ref="highlight" 
+			class="vm-sortable__highlight"
+		>
 			释放鼠标将模块添加到此处
 		</p>
 	</div>
@@ -190,7 +194,9 @@ export default {
 		/**
 		 * 拖拽离开
 		 */
-		handleDragLeave() {
+		handleDragLeave(e) {
+			if (this.$refs.highlight === e.fromElement) return;
+
 			this.highlight = false;
 			this.$emit('highlight-change', false);
 		},
