@@ -125,19 +125,20 @@ export default {
 			type: Boolean, 
 			default: false
 		},
-		editorRegExp: {
-			type: Object, 
-			default: () => ({
-				className: /vm-hack-editor/
-			})
-		},
 
-		// 弹窗下的编辑，有些把这个置空
+		// 在入口文件下，才会去判断editorRegExp，如弹层不会判断让其失去激活状态（除非配置）
 		entryRegExp: {
 			type: Object, 
 			default: () => ({
 				className: /vm-hack-entry/,
 				id: /^(app|pages)$/
+			})
+		},
+
+		editorRegExp: {
+			type: Object, 
+			default: () => ({
+				className: /vm-hack-editor/
 			})
 		},
 

@@ -4,7 +4,7 @@
 		:mask-closable="false"
 		title="绘制热区"
 		size="large"
-		class="vm-basic-area-paint vm-hack-editor"
+		class="vm-basic-area-paint"
 		@ok="handleOk"
 		@cancel="handleCancel"
 	>
