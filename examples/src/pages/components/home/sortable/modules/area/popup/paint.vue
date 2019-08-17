@@ -77,7 +77,7 @@
 	</vc-modal>
 </template>
 <script>
-import { CreatePortal, Message } from '@wya/vc';
+import { Portal, Message } from '@wya/vc';
 import { createVMDrags, Widget } from '@wya/vm';
 import { paint } from './paint/root';
 
@@ -146,7 +146,7 @@ const config = {
 };
 
 export default config;
-export const Paint = CreatePortal({
+export const Paint = new Portal(config, {
 	onBefore(props) {
 		Message.loading('数据处理中...');
 		return new Promise(resolve => {
@@ -163,7 +163,7 @@ export const Paint = CreatePortal({
 			};
 		});
 	}
-}, config);
+});
 </script>
 <style lang="scss">
 @import "~@wya/sass/lib/mixins/bem.scss";
