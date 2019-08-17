@@ -31,6 +31,7 @@ zoom | - | `any` | -
 grid | - | `any` | -
 restrain | - | `any` | -
 parent | - | `any` | -
+entryRegExp | - | `any` | -
 editorRegExp | - | `any` | -
 prevent | - | `any` | -
 preventRegExp | - | `any` | -
@@ -65,6 +66,7 @@ delete | - | `any` | -
 index | - | `any` | -
 type | - | `any` | -
 disabled | - | `any` | -
+entryRegExp | - | `any` | -
 editorRegExp | - | `any` | -
 prevent | - | `any` | -
 preventRegExp | - | `any` | -
