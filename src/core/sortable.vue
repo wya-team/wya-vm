@@ -140,7 +140,7 @@ export default {
 
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
 
-			// 非弹窗下
+			// 是否是入口下的元素，如果不是，就意味着可能是弹层（避免销毁）
 			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
 
 			if (
