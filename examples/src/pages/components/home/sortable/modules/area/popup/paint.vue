@@ -8,6 +8,11 @@
 		@ok="handleOk"
 		@cancel="handleCancel"
 	>
+		<vc-button class="vm-hack-entry">测试：销毁editor</vc-button>
+		<vc-button class="vm-hack-entry vm-hack-editor">测试：无法销毁</vc-button>
+		<div>
+			<br>
+		</div>
 		<div style="display: flex; align-items: flex-start;">
 			<vm-combo
 				ref="combo"
