@@ -108,7 +108,9 @@ const config = {
 		list: {
 			immediate: true,
 			handler(val) {
-				this.editorData = val;
+				setTimeout(() => {
+					this.editorData = val;
+				}, 301);
 			}
 		}
 	},

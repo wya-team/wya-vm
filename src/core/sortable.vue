@@ -62,6 +62,7 @@ export default {
 		},
 		disabled: Draggable.props.disabled,
 		editorRegExp: Draggable.props.editorRegExp,
+		entryRegExp: Draggable.props.entryRegExp,
 		prevent: Draggable.props.prevent,
 		preventRegExp: Draggable.props.preventRegExp,
 		closeable: Draggable.props.closeable,
@@ -138,8 +139,13 @@ export default {
 			const target = e.target || e.srcElement; // body不要带上class, 否则会存在问题
 
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
+
+			// 非弹窗下
+			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
+
 			if (
-				!this.$el.contains(target) 
+				isInline 
+				&& !this.$el.contains(target) 
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
 				if (this.isActive) {

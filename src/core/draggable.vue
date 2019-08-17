@@ -131,6 +131,16 @@ export default {
 				className: /vm-hack-editor/
 			})
 		},
+
+		// 弹窗下的编辑，有些把这个置空
+		entryRegExp: {
+			type: Object, 
+			default: () => ({
+				className: /vm-hack-entry/,
+				id: /^(app|pages)$/
+			})
+		},
+
 		/**
 		 * 是否屏蔽默认事件
 		 */
@@ -142,7 +152,7 @@ export default {
 			type: Object, 
 			default: () => ({
 				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/,
-				className: /vm-hack-pevent/
+				className: /vm-hack-pevent/,
 			})
 		},
 
@@ -370,8 +380,13 @@ export default {
 			};
 
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
+
+			// 非弹窗下
+			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
+			
 			if (
-				!this.$el.contains(target) 
+				isInline 
+				&& !this.$el.contains(target) 
 				&& !eleInRegExp(target, regex)
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
