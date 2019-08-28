@@ -162,23 +162,29 @@ export default {
 		makeRebuildData(source) {
 			let { modules } = this.$options;
 			let result = cloneDeep(source).map((it) => {
-				let { data, rebuilder } = modules[it.module] || {};
+				let { data = {}, rebuilder = {} } = modules[it.module] || {};
 
 				typeof data === 'function' && (data = data());
 				typeof rebuilder === 'function' && (rebuilder = rebuilder());
 
 				// TODO: 深度遍历，目前仅一层
 				Object.keys(it).forEach(key => {
-					if (it[key] instanceof Array && rebuilder[key]) {
+					if (!rebuilder[key]) return;
+					if (it[key] instanceof Array) {
 						it[key] = it[key].map((children) => {
 							return {
 								...rebuilder[key],
 								...children
 							};
 						});
+					} else if (it[key] instanceof Object) {
+						it[key] = {
+							...rebuilder[key],
+							...it[key]
+						};
 					}
 				});
-				
+
 				return {
 					...data,
 					...it
