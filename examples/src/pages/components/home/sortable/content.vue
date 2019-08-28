@@ -5,6 +5,7 @@
 			v-model="list"
 			:frame-w="375"
 			:frame-h="606"
+			show-assist
 			@save="handleSave"
 			@error="handleError"
 		/>
@@ -26,7 +27,13 @@ export default {
 	},
 	data() {
 		return {
-			list: []
+			list: [
+				{
+					id: "vm-1566971480749-1",
+					module: "tpl"
+					// 测试动态注入字段
+				}
+			]
 		};
 	},
 	computed: {

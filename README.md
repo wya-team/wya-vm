@@ -121,6 +121,7 @@ max | - | `any` | -
 insertion | `first/last/every` | `String` | -
 data | 编辑的数据，一部分需要配合CORE的API参数 | `Object` `Function` | -
 dataValidity | 数据校验 | `Function` | -
+rebuilder | 针对data补全数据用 | `Object` `Function` | -
 
 > Viewer 组件会提供一个参数vm, vm.type用来告知当前是`frame`还是`preview`下的内容
 

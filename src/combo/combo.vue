@@ -148,7 +148,7 @@ export default {
 					return;
 				}
 				// todo, 是否重写
-				this.rebuildData = cloneDeep(this.dataSource);
+				this.rebuildData = this.makeRebuildData(this.dataSource);
 			}
 		}
 	},
@@ -159,6 +159,33 @@ export default {
 		this.$options.previewManager.hide();
 	},
 	methods: {
+		makeRebuildData(source) {
+			let { modules } = this.$options;
+			let result = cloneDeep(source).map((it) => {
+				let { data, rebuilder } = modules[it.module] || {};
+
+				typeof data === 'function' && (data = data());
+				typeof rebuilder === 'function' && (rebuilder = rebuilder());
+
+				// TODO: 深度遍历，目前仅一层
+				Object.keys(it).forEach(key => {
+					if (it[key] instanceof Array && rebuilder[key]) {
+						it[key] = it[key].map((children) => {
+							return {
+								...rebuilder[key],
+								...children
+							};
+						});
+					}
+				});
+				
+				return {
+					...data,
+					...it
+				};
+			});
+			return result;
+		},
 		/**
 		 * 目前只支持以下几种数据
 		 * current, total
