@@ -1,7 +1,7 @@
 <template>
-	<div 
+	<div
 		:draggable="draggable && !disabled"
-		class="vm-sortable" 
+		class="vm-sortable"
 		@click="handleClick"
 		@dragstart="handleDragStart"
 		@dragenter="handleDragEnter"
@@ -15,23 +15,23 @@
 			<slot />
 		</div>
 		<!-- handle -->
-		<div 
-			v-if="isActive || isHover" 
-			:class="{ 
-				'is-disabled': disabled, 
-				'is-active': true 
-			}" 
+		<div
+			v-if="isActive || isHover"
+			:class="{
+				'is-disabled': disabled,
+				'is-active': true
+			}"
 			class="vm-sortable__handle"
 		/>
-		<p 
-			v-if="closeable && (isActive || isHover)" 
-			class="vm-sortable__delete" 
+		<p
+			v-if="closeable && (isActive || isHover)"
+			class="vm-sortable__delete"
 			@click="$emit('delete')"
 		>✕</p>
 
-		<p 
-			v-if="showHighlight && highlight" 
-			ref="highlight" 
+		<p
+			v-if="showHighlight && highlight"
+			ref="highlight"
 			class="vm-sortable__highlight"
 		>
 			释放鼠标将模块添加到此处
@@ -83,7 +83,7 @@ export default {
 		};
 	},
 	computed: {
-		
+
 	},
 	watch: {},
 	beforeCreate() {
@@ -91,7 +91,7 @@ export default {
 		this.eventOpts = !isPassiveSupported || { capture: true, passive: true };
 	},
 	mounted() {
-		
+
 	},
 	destroyed() {
 		this.operateDOMEvents('remove');
@@ -114,7 +114,7 @@ export default {
 		handleClick(e = {}) {
 			// 去除默认事件 todo: 匹配输入框
 			this.prevent
-				&& e.preventDefault 
+				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
@@ -144,8 +144,8 @@ export default {
 			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
 
 			if (
-				isInline 
-				&& !this.$el.contains(target) 
+				isInline
+				&& !this.$el.contains(target)
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
 				if (this.isActive) {
@@ -254,12 +254,12 @@ export default {
 }
 
 .vm-sortable__delete {
-	background: #5495F6; 
-	position: absolute; 
-	right: 0px; 
-	width: 20px; 
-	color: white; 
-	text-align: center; 
+	background: #5495F6;
+	position: absolute;
+	right: 0px;
+	width: 20px;
+	color: white;
+	text-align: center;
 	z-index: 300;
 	top: 0;
 	right: 0px;
@@ -275,5 +275,5 @@ export default {
 	justify-content: center;
 	border: 1px dotted #5495F6;
 }
- 
+
 </style>
