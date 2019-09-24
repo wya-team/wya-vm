@@ -7,24 +7,24 @@
 				<span @click="showTip = !showTip">✕</span>
 			</div>
 			<div class="vm-widget__tabs">
-				<p 
-					v-for="(item, key) in toolsList" 
+				<p
+					v-for="(item, key) in toolsList"
 					v-if="key !== 'undefined'"
 					:key="key"
 					:class="{ 'is-active': currentTab == key}"
 					@click="currentTab = key"
-				>{{ key }}</p>		
+				>{{ key }}</p>
 			</div>
 			<div :style="contentStyle" class="vm-widget__content">
 				<vm-widget-item
-					v-for="(it) in toolsList[currentTab]" 
-					:key="it.module" 
+					v-for="(it) in toolsList[currentTab]"
+					:key="it.module"
 					:draggable="it.draggable"
 					:module="it.module"
 				>
 					<!-- 组件标题 -->
-					<div 
-						:class="{ 'is-active': it.active, 'is-draggable': it.draggable, 'is-click': it.widgets }" 
+					<div
+						:class="{ 'is-active': it.active, 'is-draggable': it.draggable, 'is-click': it.widgets }"
 						class="vm-widget__title"
 						@click="it.widgets && (it.active = !it.active)"
 					>
@@ -34,17 +34,17 @@
 					</div>
 					<!-- 子元素 -->
 					<div v-if="it.active" class="vm-widget__combo">
-						<vm-widget-item 
-							v-for="(widget, index) in it.widgets" 
-							:key="index" 
+						<vm-widget-item
+							v-for="(widget, index) in it.widgets"
+							:key="index"
 							:module="it.module"
 							:index="index"
 							draggable
 							class="vm-widget__item"
-						>	
+						>
 							<template v-if="widget.render">
-								<vm-assist-customer 
-									:render="widget.render" 
+								<vm-assist-customer
+									:render="widget.render"
 									:index="index"
 								/>
 							</template>
@@ -96,7 +96,7 @@ export default {
 					toolsList[type].push({
 						module: item.module,
 						component: item.Widget || item.name,
-						widgets: item.widgets, 
+						widgets: item.widgets,
 						// 最外层拖拽
 						draggable: !!(!item.widgets && item.Viewer && item.Editor),
 
