@@ -1,19 +1,19 @@
 <template>
 	<div :style="style" :class="classes" class="vm-combo">
-		<vm-widget 
+		<vm-widget
 			v-if="showWidget"
-			:style="widgetStyle" 
-			:content-style="widgetContentStyle" 
+			:style="widgetStyle"
+			:content-style="widgetContentStyle"
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
-		<vm-frame 
+		<vm-frame
 			ref="frame"
-			:style="frameStyle" 
-			:width="frameW" 
-			:height="frameH" 
-			:data-source="rebuildData" 
-			:editor="editor" 
+			:style="frameStyle"
+			:width="frameW"
+			:height="frameH"
+			:data-source="rebuildData"
+			:editor="editor"
 			:show-lines="showLines"
 			v-bind="frameOpts"
 			@activated="handleActivated"
@@ -25,8 +25,8 @@
 			<slot name="frame-footer" />
 		</vm-frame>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
-		<vm-editor 
-			v-if="showEditor && editor" 
+		<vm-editor
+			v-if="showEditor && editor"
 			:data-source="editor"
 			@change="handleChange"
 		/>
@@ -196,7 +196,7 @@ export default {
 		 * 目前只支持以下几种数据
 		 * current, total
 		 */
-		sync(opts) {	
+		sync(opts) {
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
 					this.$emit(`update:${key}`, opts[key]);
@@ -241,21 +241,21 @@ export default {
 				id,
 				old,
 				sort,
-				index: id && typeof index === 'undefined' 
-					? this.rebuildData.findIndex(item => item.id === id) 
+				index: id && typeof index === 'undefined'
+					? this.rebuildData.findIndex(item => item.id === id)
 					: index,
 				data: cloneDeep(this.rebuildData.find(item => item.id === id)),
 			};
 
 			// 继续插入，还是以当前停留位置插入
-			current === total 
+			current === total
 				? this.historyData.push(target)
 				: this.historyData.splice(current, total - current, target);
 
 			let { length } = this.historyData;
 			this.current = length;
 			this.total = length;
-			
+
 			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
 
 			this.syncData();
@@ -291,9 +291,9 @@ export default {
 		delete(id) {
 			id = id || (this.editor || {}).id;
 			if (!id) {
-				this.$emit('error', { 
-					type: 'id', 
-					msg: "请先选择操作对象" 
+				this.$emit('error', {
+					type: 'id',
+					msg: "请先选择操作对象"
 				});
 				return;
 			}
@@ -303,9 +303,9 @@ export default {
 		undo() {
 			let current = this.current - 1;
 			if (current < 0) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是初始状态" 
+				this.$emit('error', {
+					type: 'undo',
+					msg: "目前已经是初始状态"
 				});
 				return;
 			}
@@ -320,10 +320,10 @@ export default {
 				case 'delete':
 					this.rebuildData.splice(index, 0, data);
 					break;
-				case 'update':	
+				case 'update':
 					this.rebuildData.splice(index, 1, cloneDeep({ ...data, ...old }));
 					break;
-				case 'sort':	
+				case 'sort':
 					this.$refs.frame.sortData(sort);
 					break;
 				default:
@@ -339,9 +339,9 @@ export default {
 		redo() {
 			let current = this.current + 1;
 			if (current > this.total) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是最终状态" 
+				this.$emit('error', {
+					type: 'undo',
+					msg: "目前已经是最终状态"
 				});
 				return;
 			}
@@ -356,10 +356,10 @@ export default {
 				case 'delete':
 					this.rebuildData.splice(index, 1);
 					break;
-				case 'update':	
+				case 'update':
 					this.rebuildData.splice(index, 1, data);
 					break;
-				case 'sort':	
+				case 'sort':
 					this.$refs.frame.sortData(sort);
 					break;
 				default:
@@ -379,9 +379,9 @@ export default {
 			const data = cloneDeep(this.rebuildData) || [];
 
 			if (data.length === 0) {
-				this.$emit('error', { 
-					type: 'save', 
-					msg: `保存对象不能为空` 
+				this.$emit('error', {
+					type: 'save',
+					msg: `保存对象不能为空`
 				});
 				return false;
 			}
@@ -391,10 +391,10 @@ export default {
 				if (modules[mod].dataValidity) {
 					let error = modules[mod].dataValidity(data[i]);
 					if (error) {
-						this.$emit('error', { 
-							type: 'save', 
-							msg: `第${i + 1}个 - ${error.error}`, 
-							index: i 
+						this.$emit('error', {
+							type: 'save',
+							msg: `第${i + 1}个 - ${error.error}`,
+							index: i
 						});
 						// 错误元素激活
 						this.$refs.frame.setActived(i);
@@ -411,9 +411,9 @@ export default {
 
 		preview() {
 			if (this.rebuildData.length === 0) {
-				this.$emit('error', { 
-					type: 'preview', 
-					msg: `预览数据对象不能为空` 
+				this.$emit('error', {
+					type: 'preview',
+					msg: `预览数据对象不能为空`
 				});
 				return false;
 			}

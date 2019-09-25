@@ -1,9 +1,13 @@
 $border: #d9d9d9;
 $primary: #5495F6;
 $assit: #666;
+$acitved: #EFEFEF;
+$black: #000000;
+$white: #fff;
 
 .vm-combo__theme--default {
 	display: flex;
+	justify-content: space-between;
 }
 
 /**
@@ -11,12 +15,16 @@ $assit: #666;
  */
 .vm-combo__theme--default {
 	.vm-widget {
-		flex: 0 0 296px;
-		width: 296px;
+		flex: 0 0 354px;
+		width: 354px;
 	}
 	.vm-widget__wrapper {
 		background: white;
-		padding: 10px 0;
+		padding: 10px 0 0;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
 	}
 	.vm-widget__header {
 		font-size: 15px;
@@ -27,12 +35,13 @@ $assit: #666;
 	.vm-widget__tip {
 		background: #FDF5E8;
 		height: 40px;
-		border-top: 1px solid $border;
 		margin: 0 8px;
 		display: flex;
 		align-items: center;
 		padding: 0 10px;
 		color: $assit;
+		border-radius: 4px;
+		border:none;
 		p {
 			flex: 1;
 		}
@@ -41,27 +50,43 @@ $assit: #666;
 			cursor: pointer;
 		}
 	}
-	.vm-widget__tabs {
-		padding: 12px 18px;
-		color: $assit;
+	.vm-widget__menu {
+		margin-top: 10px;
+		border-top: 1px solid $border;
+		overflow-y: auto;
 		display: flex;
-		line-height: 24px;
-		font-size: 12px;
-		border-bottom: 1px solid $border;
-		p {
-			&:not(:first-child){
-				margin-left: 40px;
-			}
-			&.is-active {
-				color: $primary;
-				border-bottom: 2px solid $primary;
+		flex:1;
+		justify-content: space-between;
+		align-items: stretch;
+		flex-wrap: nowrap;
+		.vm-widget__tabs {
+			width: 56px;
+			height: 100%;
+			padding:0;
+			color: $assit;
+			display: flex;
+			line-height: 24px;
+			font-size: 12px;
+			border-right: 1px solid $border;
+			justify-content: flex-start;
+			flex-direction: column;
+			p {
+				text-align: center;
+				height: 49px;
+				line-height: 49px;
+				&.is-active {
+					color: $black;
+					background-color: $acitved;
+				}
 			}
 		}
+		.vm-widget__content {
+			width: 297px;
+			overflow: auto;
+			height:100%;
+		}
 	}
-	.vm-widget__content {
-		overflow: auto;
-		max-height: 600px
-	}
+
 	.vm-widget__title {
 		padding: 15px 20px;
 		font-size: 12px;
@@ -78,7 +103,7 @@ $assit: #666;
 			cursor: pointer;
 		}
 		&.is-active {
-			border-left: 2px solid $primary;
+			// border-left: 2px solid $primary;
 			color: $primary;
 			.vm-widget__arrow {
 				transform: rotate(-135deg);
