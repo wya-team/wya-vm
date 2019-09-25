@@ -38,7 +38,7 @@ export const getUid = () => `vm-${now}-${++index}`;
  * 判断是否是NaN
  */
 /* eslint-disable no-self-compare */
-export const valueIsNaN = v => v !== v; 
+export const valueIsNaN = v => v !== v;
 
 /**
  * 是否符合条件
@@ -56,4 +56,21 @@ export const eleInRegExp = (el, exceptions) => {
 		}
 	}
 	return false;
+};
+
+/**
+ * 判断是否有指定类名
+ * @param {*} el
+ * @param {*} cls
+ */
+export const hasClass = (el, cls) => {
+	if (!el || !cls) return false;
+	if (cls.includes(' ')) {
+		throw new Error('@wya/utils: 类名不应该包含空格');
+	}
+	if (el.classList) {
+		return el.classList.contains(cls);
+	} else {
+		return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') > -1;
+	}
 };

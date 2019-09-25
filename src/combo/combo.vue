@@ -7,23 +7,28 @@
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
-		<vm-frame
-			ref="frame"
-			:style="frameStyle"
-			:width="frameW"
-			:height="frameH"
-			:data-source="rebuildData"
-			:editor="editor"
-			:show-lines="showLines"
-			v-bind="frameOpts"
-			@activated="handleActivated"
-			@deactivated="handleDeactivated"
-			@change="handleChange"
-			@error="$emit('error', arguments[0])"
+		<div
+			class="vm-frame__wrap"
+			@click="handleClick"
 		>
-			<slot name="frame-header" />
-			<slot name="frame-footer" />
-		</vm-frame>
+			<vm-frame
+				ref="frame"
+				:style="frameStyle"
+				:width="frameW"
+				:height="frameH"
+				:data-source="rebuildData"
+				:editor="editor"
+				:show-lines="showLines"
+				v-bind="frameOpts"
+				@activated="handleActivated"
+				@deactivated="handleDeactivated"
+				@change="handleChange"
+				@error="$emit('error', arguments[0])"
+			>
+				<slot name="frame-header" />
+				<slot name="frame-footer" />
+			</vm-frame>
+		</div>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor
 			v-if="showEditor && editor"
@@ -49,7 +54,7 @@
 
 <script>
 import Assist from './assist';
-import { cloneDeep, isEqualWith } from '../utils/helper';
+import { cloneDeep, isEqualWith, hasClass, getUid } from '../utils/helper';
 import './combo-defaut.scss';
 
 export default {
@@ -428,6 +433,24 @@ export default {
 			});
 
 			return true;
+		},
+
+		handleClick(e) {
+			let path = e.path || (e.composedPath && e.composedPath()) || [];
+			let isExtra = ['vm-frame__wrap', 'vm-frame-draggable', 'vm-frame-sortable']
+				.some(item => hasClass(path[0], item));
+			if (isExtra) {
+				let setting = this.$options.modules['bar-echart'];
+				this.editor = {
+					...cloneDeep(
+						typeof setting.data === 'function'
+							? setting.data(0, this.$options.modules)
+							: setting.data
+					),
+					module: setting.module,
+					id: getUid()
+				};
+			}
 		}
 	},
 };
