@@ -3,7 +3,7 @@
 		<div class="vm-widget__wrapper">
 			<p class="vm-widget__header">组件库</p>
 			<div v-if="showTip" class="vm-widget__tip">
-				<span />
+				<span class="vm-widget__icon-warn">!</span>
 				<p>可拖动数据组件到指定位置</p>
 				<span @click="showTip = !showTip">✕</span>
 			</div>

@@ -7,7 +7,7 @@ $white: #fff;
 
 .vm-combo__theme--default {
 	display: flex;
-	justify-content: space-between;
+	// justify-content: space-between;
 }
 
 /**
@@ -35,7 +35,7 @@ $white: #fff;
 	.vm-widget__tip {
 		background: #FDF5E8;
 		height: 40px;
-		margin: 0 8px;
+		margin: 2px 9px 15px;
 		display: flex;
 		align-items: center;
 		padding: 0 10px;
@@ -49,9 +49,19 @@ $white: #fff;
 			color: $assit;
 			cursor: pointer;
 		}
+		.vm-widget__icon-warn{
+			width: 14px;
+			height: 14px;
+			background: #EC9C39;
+			border-radius: 100%;
+			color: $white;
+			font-size: 12px;
+			line-height: 15x;
+			text-align: center;
+			margin-right: 7px;
+		}
 	}
 	.vm-widget__menu {
-		margin-top: 10px;
 		border-top: 1px solid $border;
 		overflow-y: auto;
 		display: flex;
@@ -73,6 +83,7 @@ $white: #fff;
 			p {
 				text-align: center;
 				height: 49px;
+				cursor: pointer;
 				line-height: 49px;
 				&.is-active {
 					color: $black;
@@ -95,6 +106,7 @@ $white: #fff;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		cursor: pointer;
 		border-bottom: 1px solid $border;
 		&.is-draggable {
 			cursor: move;
@@ -169,6 +181,13 @@ $white: #fff;
 		overflow: hidden;
 	}
 }
+/**
+ * draggable-frame
+ */
+.vm-frame__wrap{
+	flex: 1;
+}
+
 
 /**
  * editor
@@ -177,8 +196,9 @@ $white: #fff;
 	.vm-editor {
 		flex-shrink: 0;
 		margin-left: 20px;
-		min-width: 446px; // 暂时写死
-		max-width: 446px;
+		// min-width: 446px; // 暂时写死
+		// max-width: 446px;
+		// flex: 0 0 354px;
 	}
 	.vm-editor-wrapper {
 		position: relative;

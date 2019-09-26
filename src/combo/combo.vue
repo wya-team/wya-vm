@@ -32,6 +32,7 @@
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor
 			v-if="showEditor && editor"
+			:width ="editorW"
 			:data-source="editor"
 			@change="handleChange"
 		/>
@@ -90,7 +91,10 @@ export default {
 		widgetW: Number,
 		widgetH: Number,
 		widgetOpts: Object,
-
+		/**
+		 * editor
+		 */
+		editorW: Number,
 		/**
 		 * combo
 		 */
