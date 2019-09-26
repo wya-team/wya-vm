@@ -1,6 +1,7 @@
 <template>
-	<div 
-		:style="coord" 
+	<div
+		:style="coord"
+		:class="!draggable ? 'vm-draggable-disabled' : ''"
 		class="vm-draggable"
 		@mousedown.stop="handleContainerDown"
 		@touchstart.stop="handleContainerDown"
@@ -9,9 +10,9 @@
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
-		<div 
-			v-if="(active || isActive) && (closeable || realHandles.length > 0)" 
-			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }" 
+		<div
+			v-if="(active || isActive) && (closeable || realHandles.length > 0)"
+			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }"
 			:style="style"
 			class="vm-draggable__handles"
 		>
@@ -92,17 +93,17 @@ export default {
 			validator: val => val > 0
 		},
 		// 距父元素左上角X轴偏移量
-		x: { 
+		x: {
 			type: Number,
 			default: 0
 		},
 		// 距父元素左上角Y轴偏移量
-		y: { 
+		y: {
 			type: Number,
 			default: 0
 		},
 		// zIndex
-		z: { 
+		z: {
 			type: Number,
 			default: 1
 		},
@@ -118,17 +119,17 @@ export default {
 		},
 		// 约束组件大小
 		restrain: {
-			type: Number, 
+			type: Number,
 			default: 0
 		},
 		parent: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
 
 		// 在入口文件下，才会去判断editorRegExp，如弹层不会判断让其失去激活状态（除非配置）
 		entryRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				className: /vm-hack-entry/,
 				id: /^(app|pages)$/
@@ -136,7 +137,7 @@ export default {
 		},
 
 		editorRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				className: /vm-hack-editor/
 			})
@@ -146,11 +147,11 @@ export default {
 		 * 是否屏蔽默认事件
 		 */
 		prevent: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 		preventRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/,
 				className: /vm-hack-pevent/,
@@ -158,33 +159,33 @@ export default {
 		},
 
 		disabled: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
-		
+
 		closeable: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
 
 		draggable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		resizable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		rotatable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		// 激活状态， 特殊需求
 		active: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		}
 	},
@@ -282,7 +283,7 @@ export default {
 			if (!width || !height) {
 				throw new Error('@wya/vm: 父层容器宽度计算异常');
 			}
-			
+
 			this.parentW = width;
 			this.parentH = height; // this.$el.parentNode.clientHeight
 
@@ -299,7 +300,7 @@ export default {
 				this.sync({ y: this.parentH - this.h });
 			}
 		},
-		sync(opts) {			
+		sync(opts) {
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
 					!this.beforeStatus && (this.beforeStatus = {
@@ -339,7 +340,7 @@ export default {
 		 */
 		handleContainerDown(e = {}) {
 			this.prevent
-				&& e.preventDefault 
+				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
@@ -384,10 +385,10 @@ export default {
 
 			// 是否是入口下的元素，如果不是，就意味着可能是弹层（避免销毁）
 			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
-			
+
 			if (
-				isInline 
-				&& !this.$el.contains(target) 
+				isInline
+				&& !this.$el.contains(target)
 				&& !eleInRegExp(target, regex)
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
@@ -396,7 +397,7 @@ export default {
 					this.operateDOMEvents('remove');
 
 					this.isActive = false;
-					this.$emit('deactivated');
+					this.$emit('deactivated', e);
 				}
 			}
 		},
@@ -405,7 +406,7 @@ export default {
 		 */
 		handleDown(e, handle) {
 			this.prevent
-				&& e.preventDefault 
+				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
@@ -449,7 +450,7 @@ export default {
 					if (elmH - diffY < this.minH) { // 向下移动
 						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
 						this.mouseOffY = (diffY - (diffY = elmH - this.minH));
-					} else if (this.parent && elmY + diffY < 0) { // 向上移动 
+					} else if (this.parent && elmY + diffY < 0) { // 向上移动
 						// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
 						this.mouseOffY = (diffY - (diffY = -elmY));
 					}
@@ -497,7 +498,7 @@ export default {
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
 				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
 
-				!this.disabled && this.sync({ 
+				!this.disabled && this.sync({
 					r: angle === 360 ? 0 : angle
 				});
 				this.$emit('rotating');
@@ -526,10 +527,10 @@ export default {
 			}
 
 			// 正在改变
-			!this.isChanging 
+			!this.isChanging
 				&& (this.isRotating || this.isDraging || this.isResizing)
 				&& (this.isChanging = true);
-				
+
 		},
 		getAngle(center, last) {
 			let diffX = last[0] - center[0];
@@ -539,7 +540,7 @@ export default {
 			 * -180 <= c < 180
 			 */
 			let c = 360 * Math.atan2(diffY, diffX) / (2 * Math.PI);
-			c = c > 90 
+			c = c > 90
 				? (450 - c) // 第4
 				: 90 - c; // 第1，2，3象限
 			return Math.floor(c);
@@ -618,6 +619,11 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		color: white;
 		text-align: center;
 		z-index: 300
+	}
+}
+.vm-draggable-disabled {
+	&:hover {
+		cursor: default;
 	}
 }
 .vm-draggable__handles {
@@ -794,12 +800,12 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 }
 
 .vm-draggable__delete {
-	background: #5495F6; 
-	position: absolute; 
-	right: 0px; 
-	width: 20px; 
-	color: white; 
-	text-align: center; 
+	background: #5495F6;
+	position: absolute;
+	right: 0px;
+	width: 20px;
+	color: white;
+	text-align: center;
 	z-index: 300;
 	top: 0;
 	right: 0px;

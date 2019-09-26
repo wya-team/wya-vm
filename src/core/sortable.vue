@@ -1,6 +1,7 @@
 <template>
 	<div
 		:draggable="draggable && !disabled"
+		:class="!draggable ? 'vm-sortable-disabled' : ''"
 		class="vm-sortable"
 		@click="handleClick"
 		@dragstart="handleDragStart"
@@ -252,7 +253,11 @@ export default {
 		cursor: no-drop;
 	}
 }
-
+.vm-sortable-disabled {
+	&:hover {
+		cursor: default;
+	}
+}
 .vm-sortable__delete {
 	background: #5495F6;
 	position: absolute;

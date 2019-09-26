@@ -1,9 +1,9 @@
 <template>
-	<div 
-		:style="style" 
+	<div
+		:style="style"
 		class="vm-frame-draggable"
-		style="position: relative;" 
-		@dragover.prevent="handleDragOver" 
+		style="position: relative;"
+		@dragover.prevent="handleDragOver"
 		@dragend="handleDragEnd"
 		@drop="handleDrop"
 	>
@@ -34,7 +34,7 @@
 			:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 			:resizable="it.resizable || typeof it.resizable === 'undefined'"
 			@activated="$emit('activated', it)"
-			@deactivated="$emit('deactivated', it)"
+			@deactivated="$emit('deactivated', arguments[0], it)"
 			@dragging="$emit('dragging', it)"
 			@resizing="$emit('resizing', it)"
 			@rotating="$emit('rotating', it)"
@@ -44,10 +44,10 @@
 			@end="handleEnd(arguments[0], it.id, index)"
 		>
 			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
-			<component 
-				:is="`vm-${it.module}-viewer`" 
-				:index="index" 
-				:vm="vm"  
+			<component
+				:is="`vm-${it.module}-viewer`"
+				:index="index"
+				:vm="vm"
 				v-bind="it"
 			/>
 		</vm-draggable>
@@ -115,7 +115,7 @@ export default {
 				});
 				return;
 			}
-			
+
 			let { x, y } = this.$el.getBoundingClientRect();
 
 			let mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft || 0;
@@ -126,8 +126,8 @@ export default {
 
 			let data = {
 				...cloneDeep(
-					typeof result.data === 'function' 
-						? result.data(index, this.dataSource) 
+					typeof result.data === 'function'
+						? result.data(index, this.dataSource)
 						: result.data
 				),
 				module,
@@ -146,8 +146,8 @@ export default {
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push(data);
 
-			this.$emit('change', { 
-				type: 'create', 
+			this.$emit('change', {
+				type: 'create',
 				index: rowIndex,
 				id
 			});
@@ -156,9 +156,9 @@ export default {
 			this.setActived(rowIndex);
 		},
 		handleEnd(old, id, index) {
-			this.$emit('change', { 
-				type: 'update', 
-				id, 
+			this.$emit('change', {
+				type: 'update',
+				id,
 				index,
 				old
 			});

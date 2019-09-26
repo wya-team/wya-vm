@@ -91,7 +91,8 @@ export default {
 		const { modules } = this.$parent.$options;
 		let toolsList = {};
 		for (let key in modules) {
-			if (hasOwn(modules, key)) {
+			// 过滤页面设置
+			if (hasOwn(modules, key) && modules[key].type !== 'basic') {
 				let item = modules[key];
 				let type = item.type || 'undefined';
 				if (!toolsList[type]) {

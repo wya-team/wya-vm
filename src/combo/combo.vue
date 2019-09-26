@@ -11,9 +11,9 @@
 			class="vm-frame__wrap"
 			@click="handleClick"
 		>
+			<!-- 暂时关闭属性frameStyle -->
 			<vm-frame
 				ref="frame"
-				:style="frameStyle"
 				:width="frameW"
 				:height="frameH"
 				:data-source="rebuildData"
@@ -79,9 +79,9 @@ export default {
 		/**
 		 * frame
 		 */
-		frameStyle: Object,
-		frameW: Number,
-		frameH: Number,
+		// frameStyle: Object, // 该属性暂时关闭
+		// frameW: Number, // 该属性暂时由页面设置控制
+		// frameH: Number, // 该属性暂时由页面设置控制
 		frameOpts: Object,
 		/**
 		 * widget
@@ -128,8 +128,10 @@ export default {
 			 */
 			current: 0,
 			total: 0,
-
-			rebuildData: []
+			protectedClasses: ['vm-frame__wrap', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
+			rebuildData: [],
+			frameW: 0,
+			frameH: 0
 		};
 	},
 	computed: {
@@ -146,6 +148,18 @@ export default {
 			return {
 				[`vm-combo__theme--${this.theme}`]: !!this.theme
 			};
+		},
+		settingEditor() { // 页面设置editor
+			let setting = this.$options.modules.page;
+			if (!setting) {
+				console.error(`请注入页面设置基础组件`);
+				return {};
+			}
+			return {
+				...setting.data,
+				module: setting.module,
+				id: getUid()
+			};
 		}
 	},
 	watch: {
@@ -153,16 +167,23 @@ export default {
 			deep: true,
 			immediate: true,
 			handler(v) {
+				// 重新渲染frame的宽高
+				v.length && this.frameW !== v[0].w && (this.frameW = v[0].w);
+				v.length && this.frameH !== v[0].h && (this.frameH = v[0].h);
 				if (isEqualWith(v, this.rebuildData)) {
 					return;
 				}
 				// todo, 是否重写
 				this.rebuildData = this.makeRebuildData(this.dataSource);
 			}
-		}
+		},
 	},
 	created() {
 		this.historyData = [];
+		this.rebuildData.push(this.settingEditor);
+		this.editor = this.settingEditor;
+		this.frameW = this.settingEditor.w;
+		this.frameH = this.settingEditor.h;
 	},
 	destroyed() {
 		this.$options.previewManager.hide();
@@ -225,8 +246,8 @@ export default {
 			this.editor = it;
 		},
 
-		handleDeactivated(it) {
-			this.editor = null;
+		handleDeactivated(e, it) {
+			this.editor = this.settingEditor;
 		},
 
 		/**
@@ -265,7 +286,7 @@ export default {
 			this.current = length;
 			this.total = length;
 
-			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
+			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = this.settingEditor);
 
 			this.syncData();
 		},
@@ -440,21 +461,17 @@ export default {
 		},
 
 		handleClick(e) {
-			let path = e.path || (e.composedPath && e.composedPath()) || [];
-			let isExtra = ['vm-frame__wrap', 'vm-frame-draggable', 'vm-frame-sortable']
-				.some(item => hasClass(path[0], item));
-			if (isExtra) {
-				let setting = this.$options.modules['bar-echart'];
-				this.editor = {
-					...cloneDeep(
-						typeof setting.data === 'function'
-							? setting.data(0, this.$options.modules)
-							: setting.data
-					),
-					module: setting.module,
-					id: getUid()
-				};
+			if (this.isProtectArea(e)) {
+				this.editor = this.settingEditor;
 			}
+		},
+
+		/**
+		 * 判断是否为组件外的有效操作区域
+		 */
+		isProtectArea(e) {
+			let path = e.path || (e.composedPath && e.composedPath()) || [];
+			return this.protectedClasses.some(item => hasClass(path[0], item));
 		}
 	},
 };
