@@ -185,7 +185,7 @@ export default {
 	},
 	created() {
 		this.historyData = [];
-		this.rebuildData.push(this.settingEditor);
+		!this.rebuildData.find(item => item.module === 'page') && this.rebuildData.push(this.settingEditor);
 		this.editor = this.settingEditor;
 		this.frameW = this.settingEditor.w;
 		this.frameH = this.settingEditor.h;
