@@ -7,6 +7,7 @@
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
+		<!-- <vm-ruler style="flex: 1;"> -->
 		<div
 			class="vm-frame__wrap"
 			@click="handleClick"
@@ -29,6 +30,7 @@
 				<slot name="frame-footer" />
 			</vm-frame>
 		</div>
+		<!-- </vm-ruler> -->
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor
 			v-if="showEditor && editor"
@@ -55,6 +57,7 @@
 
 <script>
 import Assist from './assist';
+import Ruler from './ruler';
 import { cloneDeep, isEqualWith, hasClass, getUid } from '../utils/helper';
 import './combo-defaut.scss';
 
@@ -64,6 +67,7 @@ export default {
 		// 会被注入vm-frame, vm-widget, vm-editor,
 		'vm-assist-operation': Assist.Operation,
 		'vm-assist-save': Assist.Save,
+		'vm-ruler': Ruler
 	},
 	model: {
 		prop: 'data-source',
@@ -155,7 +159,7 @@ export default {
 				console.error(`请注入页面设置基础组件`);
 				return {};
 			}
-			return {
+			return this.rebuildData.find(item => item.module === 'page') || {
 				...setting.data,
 				module: setting.module,
 				id: getUid()
@@ -175,6 +179,7 @@ export default {
 				}
 				// todo, 是否重写
 				this.rebuildData = this.makeRebuildData(this.dataSource);
+				this.editor = this.rebuildData.find(item => item.module === 'page');
 			}
 		},
 	},
@@ -192,6 +197,7 @@ export default {
 		makeRebuildData(source) {
 			let { modules } = this.$options;
 			let result = cloneDeep(source).map((it) => {
+
 				let { data = {}, rebuilder = {} } = modules[it.module] || {};
 
 				typeof data === 'function' && (data = data());

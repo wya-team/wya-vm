@@ -246,7 +246,7 @@ export default {
 			position: absolute;
 			z-index: 2;
 			border: 1px dotted #5495F6;
-			cursor: move;
+			// cursor: move;
 		}
 	}
 	&.is-disabled {
