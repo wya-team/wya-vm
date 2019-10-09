@@ -11,6 +11,7 @@
 		<div
 			class="vm-frame__wrap"
 			@click="handleClick"
+			@contextmenu.prevent="e => e.preventDefault()"
 		>
 			<!-- 暂时关闭属性frameStyle -->
 			<vm-frame
@@ -172,8 +173,9 @@ export default {
 			immediate: true,
 			handler(v) {
 				// 重新渲染frame的宽高
-				v.length && this.frameW !== v[0].w && (this.frameW = v[0].w);
-				v.length && this.frameH !== v[0].h && (this.frameH = v[0].h);
+				let page = v.find(item => item.module === 'page');
+				v.length && this.frameW !== page.w && (this.frameW = page.w);
+				v.length && this.frameH !== page.h && (this.frameH = page.h);
 				if (isEqualWith(v, this.rebuildData)) {
 					return;
 				}
