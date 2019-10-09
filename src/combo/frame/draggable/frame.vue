@@ -20,6 +20,7 @@
 			:w.sync="it.w"
 			:h.sync="it.h"
 			:r.sync="it.r"
+			:module="it.module"
 			:parent="it.parent"
 			:disabled="it.disabled"
 			:handles="it.handles"
@@ -42,6 +43,7 @@
 			@drag-end="$emit('drag-end', it)"
 			@delete="$emit('change', { type: 'delete', id: it.id })"
 			@end="handleEnd(arguments[0], it.id, index)"
+			@contextmenu.prevent.native="handleShowMenu($event, it)"
 		>
 			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
 			<component
@@ -96,8 +98,15 @@ export default {
 		}
 	},
 	created() {
+		window.addEventListener('mousedown', this.handleHideRightMenu);
+	},
+	destroyed() {
+		window.removeEventListener('mousedown', this.handleHideRightMenu);
 	},
 	methods: {
+		handleHideRightMenu(e) {
+			this.$parent.$options.menuManager.hide();
+		},
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
@@ -173,6 +182,55 @@ export default {
 					this.$refs.draggable[index].setActived();
 				} catch (e) {
 					console.error(e);
+				}
+			});
+		},
+		handleShowMenu(e, it) {
+			// 根据z降序，相等则后面的z放在前面
+			let sortList = [...this.dataSource.filter(v => v.module !== 'page')].reverse().sort((a, b) => b.z - a.z);
+			let index = sortList.findIndex(v => v.id === it.id);
+			it.module !== 'page' && this.$parent.$options.menuManager.show({
+				event: e,
+			}).then(res => {
+				// 1 置顶 2 置底 3 上移一层 4 下移一层 5 删除
+				let changeItem;
+				switch (res.value) {
+					case 1:
+						if (index > 0) {
+							changeItem = sortList[0];
+							it.z = changeItem.z;
+						}
+						break;
+					case 2:
+						if (index < sortList.length - 1) {
+							changeItem = sortList[sortList.length - 1];
+							it.z = changeItem.z;
+						}
+						break;
+					case 3:
+						if (index > 0) {
+							changeItem = sortList[index - 1];
+							[changeItem.z, it.z] = [it.z, changeItem.z];
+						}
+						break;
+					case 4:
+						if (index < sortList.length - 1) {
+							changeItem = sortList[index + 1];
+							[changeItem.z, it.z] = [it.z, changeItem.z];
+						}
+						break;
+					case 5:
+						this.$emit('change', { type: 'delete', id: it.id });
+						break;
+					default:
+						break;
+				}
+				if (res.value !== 5 && changeItem) {
+					let curIndex = this.dataSource.findIndex(v => v.id === it.id);
+					this.dataSource.splice(curIndex, 1);
+					let nextIndex = this.dataSource.findIndex(v => v.id === changeItem.id) + ([1, 3].includes(res.value)
+						? 1 : 0);
+					this.dataSource.splice(nextIndex, 0, it);
 				}
 			});
 		}

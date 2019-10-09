@@ -3,7 +3,7 @@
 		:style="coord"
 		:class="!draggable ? 'vm-draggable-disabled' : ''"
 		class="vm-draggable"
-		@mousedown.stop="handleContainerDown"
+		@mousedown="handleContainerDown"
 		@touchstart.stop="handleContainerDown"
 	>
 		<div :style="style" :class="{ 'is-events-none': isChanging }" >
@@ -45,6 +45,7 @@
 
 <script>
 import { isPassiveSupported, eleInRegExp } from '../utils/helper';
+import { MenuManager } from '../combo/right-menu';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
@@ -158,6 +159,10 @@ export default {
 			})
 		},
 
+		module: {
+			type: String,
+		},
+
 		disabled: {
 			type: Boolean,
 			default: false
@@ -203,7 +208,7 @@ export default {
 			return {
 				left: this.x + 'px',
 				top: this.y + 'px',
-				zIndex: this.z
+				zIndex: this.isActive && this.module !== 'page' ? 999 : this.z
 			};
 		},
 		style() {

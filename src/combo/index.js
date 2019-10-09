@@ -5,6 +5,8 @@ import Frame from './frame';
 import Widget from './widget';
 import Editor from './editor';
 import Preview, { PreviewManager } from './preview';
+import { MenuManager } from './right-menu';
+
 
 export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
@@ -78,6 +80,9 @@ export default (modules = defaultModules, opts = {}) => {
 		let rebuildPreview = cloneDeep(newPreview);
 
 		let manager = new PreviewManager(newPreview, mode);
+
+		// 右键菜单
+		rebuildCombo.menuManager = new MenuManager();
 
 		rebuildCombo.previewManager = manager;
 
