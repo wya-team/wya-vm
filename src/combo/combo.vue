@@ -7,12 +7,14 @@
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
-		<!-- <vm-ruler style="flex: 1;"> -->
 		<div
 			class="vm-frame__wrap"
 			@click="handleClick"
 			@contextmenu.prevent="e => e.preventDefault()"
 		>
+			<vm-ruler
+				v-if="showRuler"
+			/>
 			<!-- 暂时关闭属性frameStyle -->
 			<vm-frame
 				ref="frame"
@@ -22,6 +24,11 @@
 				:editor="editor"
 				:show-lines="showLines"
 				v-bind="frameOpts"
+				:style="{
+					left: `${showRuler ? 20 : 0}px`,
+					top: `${showRuler ? 40 : 0}px`,
+					'z-index': 0
+				}"
 				@activated="handleActivated"
 				@deactivated="handleDeactivated"
 				@change="handleChange"
@@ -31,7 +38,6 @@
 				<slot name="frame-footer" />
 			</vm-frame>
 		</div>
-		<!-- </vm-ruler> -->
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor
 			v-if="showEditor && editor"
@@ -120,6 +126,10 @@ export default {
 			default: true
 		},
 		showLines: {
+			type: Boolean,
+			default: true
+		},
+		showRuler: {
 			type: Boolean,
 			default: true
 		}
