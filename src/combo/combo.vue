@@ -14,6 +14,7 @@
 		>
 			<vm-ruler
 				v-if="showRuler"
+				:scale="scale"
 			/>
 			<!-- 暂时关闭属性frameStyle -->
 			<vm-frame
@@ -146,7 +147,8 @@ export default {
 			protectedClasses: ['vm-frame__wrap', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
 			rebuildData: [],
 			frameW: 0,
-			frameH: 0
+			frameH: 0,
+			scale: 1
 		};
 	},
 	computed: {
@@ -201,6 +203,9 @@ export default {
 		this.editor = this.settingEditor;
 		this.frameW = this.settingEditor.w;
 		this.frameH = this.settingEditor.h;
+		// setInterval(() => {
+		// 	this.scale = Math.random(0, 1) + 1;
+		// }, 100);
 	},
 	destroyed() {
 		this.$options.previewManager.hide();
