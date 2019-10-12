@@ -16,6 +16,7 @@ $white: #fff;
 	.vm-widget {
 		flex: 0 0 354px;
 		width: 354px;
+		z-index: 10;
 	}
 	.vm-widget__wrapper {
 		background: white;
@@ -185,6 +186,7 @@ $white: #fff;
  */
 .vm-frame__wrap {
 	flex: 1;
+	overflow: scroll;
 }
 
 
@@ -238,7 +240,6 @@ $white: #fff;
 	}
 	.vm-ruler__v-container {
 		position:absolute;
-		transform: rotate(90deg) translateX(0px);
 		transform-origin: 0% 100% 0%;
 		cursor: ns-resize;
 	}
@@ -291,7 +292,7 @@ $white: #fff;
 					transform: rotate(90deg);
 					transform-origin: 0 0 0;
 					position: absolute;
-					left: 25px;
+					left: 20px;
 					top: 5px;
 					user-select: none;
 					color: #fff;

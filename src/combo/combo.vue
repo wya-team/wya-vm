@@ -1,5 +1,9 @@
 <template>
-	<div :style="style" :class="classes" class="vm-combo">
+	<div
+		:style="style"
+		:class="classes"
+		class="vm-combo"
+	>
 		<vm-widget
 			v-if="showWidget"
 			:style="widgetStyle"
@@ -12,10 +16,15 @@
 			@click="handleClick"
 			@contextmenu.prevent="e => e.preventDefault()"
 		>
-			<vm-ruler
-				v-if="showRuler"
-				:scale="scale"
-			/>
+			<div style="flex: 1; overflow: hidden;">
+				<vm-ruler
+					v-if="showRuler"
+					:scale="scale"
+					:scroll-left="scrollLeft"
+					:scroll-top="scrollTop"
+					@change="handleLineChange"
+				/>
+			</div>
 			<!-- 暂时关闭属性frameStyle -->
 			<vm-frame
 				ref="frame"
@@ -24,12 +33,17 @@
 				:data-source="rebuildData"
 				:editor="editor"
 				:show-lines="showLines"
-				v-bind="frameOpts"
+				:x-rule-lines="xRuleLines"
+				:y-rule-lines="yRuleLines"
 				:style="{
 					left: `${showRuler ? 20 : 0}px`,
 					top: `${showRuler ? 40 : 0}px`,
-					'z-index': 0
+					transform: `scale(${scale})`,
+					'transform-origin': '0 0',
+					'z-index': 0,
 				}"
+				:scale="scale"
+				v-bind="frameOpts"
 				@activated="handleActivated"
 				@deactivated="handleDeactivated"
 				@change="handleChange"
@@ -148,7 +162,11 @@ export default {
 			rebuildData: [],
 			frameW: 0,
 			frameH: 0,
-			scale: 1
+			scale: 1, // 建议 0.5 - 1.75
+			xRuleLines: [], // x轴辅助线
+			yRuleLines: [], // y轴辅助线
+			scrollLeft: 0, // frame左滚动距离
+			scrollTop: 0, // frame上滚动距离
 		};
 	},
 	computed: {
@@ -195,7 +213,7 @@ export default {
 				this.rebuildData = this.makeRebuildData(this.dataSource);
 				this.editor = this.rebuildData.find(item => item.module === 'page');
 			}
-		},
+		}
 	},
 	created() {
 		this.historyData = [];
@@ -203,11 +221,15 @@ export default {
 		this.editor = this.settingEditor;
 		this.frameW = this.settingEditor.w;
 		this.frameH = this.settingEditor.h;
-		// setInterval(() => {
-		// 	this.scale = Math.random(0, 1) + 1;
-		// }, 100);
+		this.$nextTick(() => {
+			document.querySelector('.vm-frame__wrap').addEventListener('scroll', this.handleFrameScroll);
+		});
+		setTimeout(() => {
+			this.scale = 1.5;
+		}, 1000);
 	},
 	destroyed() {
+		document.querySelector('.vm-frame__wrap').removeEventListener('scroll', this.handleFrameScroll);
 		this.$options.previewManager.hide();
 	},
 	methods: {
@@ -270,7 +292,7 @@ export default {
 		},
 
 		handleDeactivated(e, it) {
-			this.editor = this.settingEditor;
+			// this.editor = this.settingEditor;
 		},
 
 		/**
@@ -495,6 +517,16 @@ export default {
 		isProtectArea(e) {
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
 			return this.protectedClasses.some(item => hasClass(path[0], item));
+		},
+
+		handleLineChange(guide) {
+			this.xRuleLines = guide.x;
+			this.yRuleLines = guide.y;
+		},
+
+		handleFrameScroll(e) {
+			this.scrollLeft = e.target.scrollLeft;
+			this.scrollTop = e.target.scrollTop;
 		}
 	},
 };

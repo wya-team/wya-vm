@@ -192,6 +192,25 @@ export default {
 		active: {
 			type: Boolean,
 			default: false
+		},
+
+		xRuleLines: {
+			type: Array,
+			default() {
+				return [];
+			}
+		},
+
+		yRuleLines: {
+			type: Array,
+			default() {
+				return [];
+			}
+		},
+
+		scale: {
+			type: Number,
+			default: 1
 		}
 	},
 	data() {

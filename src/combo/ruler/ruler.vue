@@ -2,7 +2,8 @@
 	<div class="vm-ruler">
 		<div
 			:style="{
-				left: `${guideWrapH}px`
+				left: `${guideWrapH}px`,
+				transform: `translateX(${-scrollLeft}px)`
 			}"
 			class="vm-ruler__h-container"
 			@mousemove="handleShowHGuide"
@@ -49,6 +50,9 @@
 			</div>
 		</div>
 		<div
+			:style="{
+				transform: `rotate(90deg) translateX(${-scrollTop}px)`
+			}"
 			class="vm-ruler__v-container"
 			@mousemove="handleShowVGuide"
 			@mouseleave="showVGuide = false"
@@ -114,6 +118,14 @@ export default {
 		scale: {
 			type: Number,
 			default: 1
+		},
+		scrollLeft: {
+			type: Number,
+			default: 0
+		},
+		scrollTop: {
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
@@ -155,6 +167,7 @@ export default {
 				ctx.height = ctx.height;
 				this.repaint(ctx.getContext('2d'));
 			}));
+			this.exportLines();
 		}
 	},
 	mounted() {
@@ -217,7 +230,7 @@ export default {
 		handleShowHGuide(e) {
 			if (this.isCanvasArea(e, 'x')) {
 				this.showHGuide = true;
-				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW) / this.scale).toFixed(0);
+				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(0);
 			} else {
 				this.showHGuide = false;
 			}
@@ -225,7 +238,7 @@ export default {
 		handleShowVGuide(e) {
 			if (this.isCanvasArea(e, 'y')) {
 				this.showVGuide = true;
-				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW) / this.scale).toFixed(0);
+				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(0);
 			} else {
 				this.showVGuide = false;
 			}
@@ -240,34 +253,37 @@ export default {
 				return false;
 			}
 			if (direction === 'x') {
-				return e.x > this.wrapX
-					&& e.x < this.wrapX + this.width
+				return e.x + this.scrollLeft > this.wrapX
+					&& e.x + this.scrollLeft < this.wrapX + this.width
 					&& e.y > this.wrapY - this.placeholderW
 					&& e.y < this.wrapY;
 			} else if (direction === 'y') {
 				return e.x > this.wrapX - this.placeholderW
 					&& e.x < this.wrapX
-					&& e.y > this.wrapY
-					&& e.y < this.wrapY + this.width;
+					&& e.y + this.scrollTop > this.wrapY
+					&& e.y + this.scrollTop < this.wrapY + this.width;
 			}
 		},
 		handleAddxAxiasLine() {
 			this.xLines.push(this.mouseX);
+			this.exportLines();
 		},
 		handleAddyAxiasLine() {
 			this.yLines.push(this.mouseY);
+			this.exportLines();
 		},
 		handleMouseMove(e) {
 			if (!this.isMousePress) return;
 			if (this.moveLine.axias === 'x') {
 				this.xLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientX - this.wrapX - this.placeholderW) / this.scale).toFixed(0);
+				let value = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(0);
 				this.xLines.splice(this.moveLine.index, 0, value);
 			} else if (this.moveLine.axias === 'y') {
 				this.yLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientY - this.wrapY - this.placeholderW) / this.scale).toFixed(0);
+				let value = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(0);
 				this.yLines.splice(this.moveLine.index, 0, value);
 			}
+			this.exportLines();
 		},
 		handleMouseUp() {
 			this.isMousePress = false;
@@ -278,6 +294,12 @@ export default {
 				axias,
 				index
 			};
+		},
+		exportLines() {
+			this.$emit('change', {
+				x: this.xLines.map(v => v * this.scale + this.placeholderW + this.wrapX),
+				y: this.yLines.map(v => v * this.scale + this.placeholderW + this.wrapY)
+			});
 		}
 	}
 };
