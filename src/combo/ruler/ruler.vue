@@ -16,7 +16,7 @@
 			<div
 				v-show="showHGuide"
 				class="vm-ruler__h-indicator"
-				@click="handleAddxAxiasLine"
+				@click.stop="handleAddxAxiasLine"
 			>
 				<div
 					:style="{
@@ -62,7 +62,7 @@
 				<div
 					v-show="showVGuide"
 					class="vm-ruler__v-indicator"
-					@click="handleAddyAxiasLine"
+					@click.stop="handleAddyAxiasLine"
 				>
 					<div
 						:style="{
@@ -130,8 +130,8 @@ export default {
 			showGuide: true, // 显示固定的辅助线开关 (实线)
 			showHGuide: false, // 是否显示鼠标移动的x轴辅助线 (虚线)
 			showVGuide: false, // 是否显示鼠标移动的y轴辅助线 (虚线)
-			xLines: [50, 150], // x轴辅助线 (实线)
-			yLines: [50, 150], // y轴辅助线 (实线)
+			xLines: [50], // x轴辅助线 (实线)
+			yLines: [50], // y轴辅助线 (实线)
 			isMousePress: false, // 鼠标是否按住
 			moveLine: { // 被鼠标按住的辅助线 (实线)
 				axias: 'x',
@@ -158,17 +158,19 @@ export default {
 		}
 	},
 	mounted() {
-		let xAxias = document.querySelector('.vm-ruler__h-container').getBoundingClientRect();
-		let yAxias = document.querySelector('.vm-ruler__v-container').getBoundingClientRect();
-		this.wrapX = xAxias.x;
-		this.wrapY = yAxias.y;
-		Array.prototype.forEach.call(document.getElementsByClassName('vm-ruler__canvas'), (ctx => {
-			this.repaint(ctx.getContext('2d'));
-		}));
-		// 辅助线被鼠标按下事件
-		window.addEventListener('mouseup', this.handleMouseUp);
-		// 辅助线被移动事件
-		window.addEventListener('mousemove', this.handleMouseMove);
+		this.$nextTick(() => {
+			let xAxias = document.querySelector('.vm-ruler__h-container').getBoundingClientRect();
+			let yAxias = document.querySelector('.vm-ruler__v-container').getBoundingClientRect();
+			this.wrapX = xAxias.x;
+			this.wrapY = yAxias.y;
+			Array.prototype.forEach.call(document.getElementsByClassName('vm-ruler__canvas'), (ctx => {
+				this.repaint(ctx.getContext('2d'));
+			}));
+			// 辅助线被鼠标按下事件
+			window.addEventListener('mouseup', this.handleMouseUp);
+			// 辅助线被移动事件
+			window.addEventListener('mousemove', this.handleMouseMove);
+		});
 	},
 	destroyed() {
 		window.removeEventListener('mouseup', this.handleMouseUp);
