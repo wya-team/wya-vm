@@ -231,7 +231,8 @@ export default {
 		}, 1000);
 	},
 	destroyed() {
-		document.querySelector('.vm-frame__wrap').removeEventListener('scroll', this.handleFrameScroll);
+		let dom = document.querySelector('.vm-frame__wrap');
+		dom && dom.removeEventListener('scroll', this.handleFrameScroll);
 		this.$options.previewManager.hide();
 	},
 	methods: {

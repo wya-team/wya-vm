@@ -104,6 +104,7 @@
 				width: `${guideWrapH}px`,
 				height: `${guideWrapH}px`,
 			}"
+			:title="`单击${showGuide ? '隐藏' : '显示'}辅助线`"
 			class="vm-guide-line"
 			@click="showGuide = !showGuide"
 		/>
