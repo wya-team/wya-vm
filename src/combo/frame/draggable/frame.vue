@@ -26,7 +26,7 @@
 			:handles="it.handles"
 			:min-w="it.minW"
 			:min-h="it.minH"
-			:zoom="it.zoom"
+			:zoom="scale"
 			:grid="it.grid"
 			:active="it.active"
 			:restrain="it.restrain"
@@ -36,7 +36,8 @@
 			:resizable="it.resizable || typeof it.resizable === 'undefined'"
 			:x-rule-lines="xRuleLines"
 			:y-rule-lines="yRuleLines"
-			:scale="scale"
+			:scroll-left="scrollLeft"
+			:scroll-top="scrollTop"
 			@activated="$emit('activated', it)"
 			@deactivated="$emit('deactivated', arguments[0], it)"
 			@dragging="$emit('dragging', it)"
@@ -84,7 +85,9 @@ export default {
 		},
 		xRuleLines: Array,
 		yRuleLines: Array,
-		scale: Number
+		scale: Number,
+		scrollLeft: Number,
+		scrollTop: Number
 	},
 	data() {
 		return {

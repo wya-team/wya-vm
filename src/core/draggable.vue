@@ -208,10 +208,16 @@ export default {
 			}
 		},
 
-		scale: {
+		scrollLeft: {
 			type: Number,
-			default: 1
+			default: 0
+		},
+
+		scrollTop: {
+			type: Number,
+			default: 0
 		}
+
 	},
 	data() {
 		return {
@@ -447,12 +453,8 @@ export default {
 			this.preMouseX = mousePositionX + doc.scrollLeft;
 			this.preMouseY = mousePositionY + doc.scrollTop;
 		},
-		/**
-		 * 鼠标在页面上的坐标
-		 */
 		handleMove(e) {
 			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
-
 			this.mouseX = mousePositionX + doc.scrollLeft;
 			this.mouseY = mousePositionY + doc.scrollTop;
 
@@ -462,49 +464,48 @@ export default {
 			let elmW = parseInt(this.w, 10);
 			let elmH = parseInt(this.h, 10);
 
-			// diffX =  当前鼠标位置 - 上次鼠标位置 + ？？
-			let diffX = (this.mouseX - this.lastMouseX + this.mouseOffX) / this.zoom;
-			let diffY = (this.mouseY - this.lastMouseY + this.mouseOffY) / this.zoom;
-			this.mouseOffX = 0;
-			this.mouseOffY = 0;
+			// 鼠标所在的轴xy坐标值
+			let zoomX = Math.round((this.mouseX - this.parentX + this.scrollLeft) / this.zoom);
+			let zoomY = Math.round((this.mouseY - this.parentY + this.scrollTop) / this.zoom);
+			let diffX = zoomX - Math.round((this.lastMouseX - this.parentX + this.scrollLeft) / this.zoom);
+			let diffY = zoomY - Math.round((this.lastMouseY - this.parentY + this.scrollTop) / this.zoom);
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
+
 			if (this.isResizing) {
 				if (this.handle.includes('top')) {
-					if (elmH - diffY < this.minH) { // 向下移动
-						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
-						this.mouseOffY = (diffY - (diffY = elmH - this.minH));
-					} else if (this.parent && elmY + diffY < 0) { // 向上移动
-						// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
-						this.mouseOffY = (diffY - (diffY = -elmY));
+					if (elmY - zoomY + elmH < this.minH) {
+						zoomY = elmY + elmH - this.minH;
+					} else if (this.parent && zoomY < 0) {
+						zoomY = 0;
 					}
-					elmY += diffY;
-					elmH -= diffY;
+					elmH = elmY + elmH - zoomY;
+					elmY = zoomY;
 				}
 				if (this.handle.includes('bottom')) {
-					if (elmH + diffY < this.minH) { // 向上移动
-						this.mouseOffY = (diffY - (diffY = this.minH - elmH));
-					} else if (elmY + elmH + diffY > this.parentH) { // 向下移动
-						this.mouseOffY = (diffY - (diffY = this.parentH - elmY - elmH));
+					if (zoomY - elmY < this.minH) {
+						zoomY = elmY + this.minH;
+					} else if (this.parent && zoomY > this.parentH / this.zoom) {
+						zoomY = Math.round(this.parentH / this.zoom);
 					}
-					elmH += diffY;
+					elmH = zoomY - elmY;
 				}
 				if (this.handle.includes('left')) {
-					if (elmW - diffX < this.minW) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = elmW - this.minW));
-					} else if (this.parent && elmX + diffX < 0) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = -elmX));
+					if (elmX - zoomX + elmW < this.minW) {
+						zoomX = elmX + elmW - this.minW;
+					} else if (this.parent && zoomX < 0) {
+						zoomX = 0;
 					}
-					elmX += diffX;
-					elmW -= diffX;
+					elmW = elmX + elmW - zoomX;
+					elmX = zoomX;
 				}
 				if (this.handle.includes('right')) {
-					if (elmW + diffX < this.minW) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = this.minW - elmW));
-					} else if (elmX + elmW + diffX > this.parentW) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = this.parentW - elmX - elmW));
+					if (zoomX - elmX < this.minW) {
+						zoomX = elmX + this.minW;
+					} else if (this.parent && zoomX > this.parentW / this.zoom) {
+						zoomX = Math.round(this.parentW / this.zoom);
 					}
-					elmW += diffX;
+					elmW = zoomX - elmX;
 				}
 				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
@@ -527,19 +528,34 @@ export default {
 				});
 				this.$emit('rotating');
 			} else if (this.isDraging) {
+
+				// 找出可吸附的辅助线
+				let leftline = this.xRuleLines.find(item => {
+					return Math.abs(elmX + diffX - item) < 3;
+				});
+				let rightline = this.xRuleLines.find(item => {
+					return Math.abs(elmX + diffX + elmW - item) < 2;
+				});
+				let topline = this.yRuleLines.find(item => {
+					return Math.abs(elmY + diffY - item) < 3;
+				});
+				let bottomline = this.yRuleLines.find(item => {
+					return Math.abs(elmY + diffY + elmH - item) < 2;
+				});
+
+				leftline && (diffX = leftline - elmX);
+				rightline && (diffX = rightline - elmX - elmW);
+				topline && (diffY = topline - elmY);
+				bottomline && (diffY = bottomline - elmY - elmH);
+
 				if (this.parent) {
-					if (elmX + diffX < 0) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
-					} else if (elmX + elmW + diffX > this.parentW) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = this.parentW - elmX - elmW));
+					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW / this.zoom) {
+						diffX = 0;
 					}
-					if (elmY + diffY < 0) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = -elmY));
-					} else if (elmY + elmH + diffY > this.parentH) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = this.parentH - elmY - elmH));
+					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH / this.zoom) {
+						diffY = 0;
 					}
 				}
-
 				elmX += diffX;
 				elmY += diffY;
 
@@ -556,6 +572,115 @@ export default {
 				&& (this.isChanging = true);
 
 		},
+		/**
+		 * 上面方法重写，该方法暂时废弃
+		 * 鼠标在页面上的坐标
+		 */
+		// handleOldMove(e) {
+		// 	const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
+		// 	this.mouseX = mousePositionX + doc.scrollLeft;
+		// 	this.mouseY = mousePositionY + doc.scrollTop;
+
+		// 	// x, y, w, h
+		// 	let elmX = parseInt(this.x, 10);
+		// 	let elmY = parseInt(this.y, 10);
+		// 	let elmW = parseInt(this.w, 10);
+		// 	let elmH = parseInt(this.h, 10);
+
+		// 	// diffX =  当前鼠标位置 - 上次鼠标位置 + ？？
+		// 	let diffX = (this.mouseX - this.lastMouseX + this.mouseOffX) / this.zoom;
+		// 	let diffY = (this.mouseY - this.lastMouseY + this.mouseOffY) / this.zoom;
+		// 	this.mouseOffX = 0;
+		// 	this.mouseOffY = 0;
+		// 	this.lastMouseX = this.mouseX;
+		// 	this.lastMouseY = this.mouseY;
+		// 	if (this.isResizing) {
+		// 		if (this.handle.includes('top')) {
+		// 			if (elmH - diffY < this.minH) { // 向下移动
+		// 				// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
+		// 				this.mouseOffY = (diffY - (diffY = elmH - this.minH));
+		// 			} else if (this.parent && elmY + diffY < 0) { // 向上移动
+		// 				// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
+		// 				this.mouseOffY = (diffY - (diffY = -elmY));
+		// 			}
+		// 			elmY += diffY;
+		// 			elmH -= diffY;
+		// 		}
+		// 		if (this.handle.includes('bottom')) {
+		// 			if (elmH + diffY < this.minH) { // 向上移动
+		// 				this.mouseOffY = (diffY - (diffY = this.minH - elmH));
+		// 			} else if (elmY + elmH + diffY > this.parentH) { // 向下移动
+		// 				this.mouseOffY = (diffY - (diffY = this.parentH - elmY - elmH));
+		// 			}
+		// 			elmH += diffY;
+		// 		}
+		// 		if (this.handle.includes('left')) {
+		// 			if (elmW - diffX < this.minW) { // 向右移动
+		// 				this.mouseOffX = (diffX - (diffX = elmW - this.minW));
+		// 			} else if (this.parent && elmX + diffX < 0) { // 向左移动
+		// 				this.mouseOffX = (diffX - (diffX = -elmX));
+		// 			}
+		// 			elmX += diffX;
+		// 			elmW -= diffX;
+		// 		}
+		// 		if (this.handle.includes('right')) {
+		// 			if (elmW + diffX < this.minW) { // 向左移动
+		// 				this.mouseOffX = (diffX - (diffX = this.minW - elmW));
+		// 			} else if (elmX + elmW + diffX > this.parentW) { // 向右移动
+		// 				this.mouseOffX = (diffX - (diffX = this.parentW - elmX - elmW));
+		// 			}
+		// 			elmW += diffX;
+		// 		}
+		// 		!this.disabled && this.sync({
+		// 			x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
+		// 			y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
+		// 			w: (Math.round(elmW / this.grid[0]) * this.grid[0]),
+		// 			h: (Math.round(elmH / this.grid[1]) * this.grid[1]),
+		// 		});
+		// 		this.$emit('resizing');
+		// 	} else if (this.isRotating) {
+		// 		let angle = this.getAngle(
+		// 			[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
+		// 			[this.lastMouseX, -this.lastMouseY],
+		// 		);
+
+		// 		let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
+		// 		angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
+
+		// 		!this.disabled && this.sync({
+		// 			r: angle === 360 ? 0 : angle
+		// 		});
+		// 		this.$emit('rotating');
+		// 	} else if (this.isDraging) {
+		// 		if (this.parent) {
+		// 			if (elmX + diffX < 0) {
+		// 				this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
+		// 			} else if (elmX + elmW + diffX > this.parentW) {
+		// 				this.mouseOffX = (diffX * this.zoom - (diffX = this.parentW - elmX - elmW));
+		// 			}
+		// 			if (elmY + diffY < 0) {
+		// 				this.mouseOffY = (diffY * this.zoom - (diffY = -elmY));
+		// 			} else if (elmY + elmH + diffY > this.parentH) {
+		// 				this.mouseOffY = (diffY * this.zoom - (diffY = this.parentH - elmY - elmH));
+		// 			}
+		// 		}
+
+		// 		elmX += diffX;
+		// 		elmY += diffY;
+
+		// 		!this.disabled && this.sync({
+		// 			x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
+		// 			y: (Math.round(elmY / this.grid[1]) * this.grid[1]),
+		// 		});
+		// 		this.$emit('dragging');
+		// 	}
+
+		// 	// 正在改变
+		// 	!this.isChanging
+		// 		&& (this.isRotating || this.isDraging || this.isResizing)
+		// 		&& (this.isChanging = true);
+
+		// },
 		getAngle(center, last) {
 			let diffX = last[0] - center[0];
 			let diffY = last[1] - center[1];

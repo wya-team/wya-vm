@@ -26,7 +26,7 @@
 					class="vm-ruler__hline-action"
 				>
 					<span class="vm-ruler__hline-value">
-						{{ mouseX }}
+						{{ Math.round(mouseX) }}
 					</span>
 				</div>
 			</div>
@@ -44,7 +44,7 @@
 					@dblclick="xLines.splice(index, 1)"
 				>
 					<span class="vm-ruler__hline-value">
-						{{ item }}
+						{{ Math.round(item) }}
 					</span>
 				</div>
 			</div>
@@ -75,7 +75,7 @@
 						class="vm-ruler__vline-action"
 					>
 						<span class="vm-ruler__vline-value">
-							{{ mouseY }}
+							{{ Math.round(mouseY) }}
 						</span>
 					</div>
 				</div>
@@ -93,7 +93,7 @@
 						@dblclick="yLines.splice(index, 1)"
 					>
 						<span class="vm-ruler__vline-value">
-							{{ item }}
+							{{ Math.round(item) }}
 						</span>
 					</div>
 				</div>
@@ -142,7 +142,7 @@ export default {
 			showGuide: true, // 显示固定的辅助线开关 (实线)
 			showHGuide: false, // 是否显示鼠标移动的x轴辅助线 (虚线)
 			showVGuide: false, // 是否显示鼠标移动的y轴辅助线 (虚线)
-			xLines: [50], // x轴辅助线 (实线)
+			xLines: [100], // x轴辅助线 (实线)
 			yLines: [50], // y轴辅助线 (实线)
 			isMousePress: false, // 鼠标是否按住
 			moveLine: { // 被鼠标按住的辅助线 (实线)
@@ -168,6 +168,12 @@ export default {
 				this.repaint(ctx.getContext('2d'));
 			}));
 			this.exportLines();
+		},
+		scrollLeft() {
+			this.exportLines();
+		},
+		scrollTop() {
+			this.exportLines();
 		}
 	},
 	mounted() {
@@ -183,6 +189,7 @@ export default {
 			window.addEventListener('mouseup', this.handleMouseUp);
 			// 辅助线被移动事件
 			window.addEventListener('mousemove', this.handleMouseMove);
+			this.exportLines();
 		});
 	},
 	destroyed() {
@@ -230,7 +237,7 @@ export default {
 		handleShowHGuide(e) {
 			if (this.isCanvasArea(e, 'x')) {
 				this.showHGuide = true;
-				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(0);
+				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(1);
 			} else {
 				this.showHGuide = false;
 			}
@@ -238,7 +245,7 @@ export default {
 		handleShowVGuide(e) {
 			if (this.isCanvasArea(e, 'y')) {
 				this.showVGuide = true;
-				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(0);
+				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(1);
 			} else {
 				this.showVGuide = false;
 			}
@@ -276,11 +283,11 @@ export default {
 			if (!this.isMousePress) return;
 			if (this.moveLine.axias === 'x') {
 				this.xLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(0);
+				let value = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(1);
 				this.xLines.splice(this.moveLine.index, 0, value);
 			} else if (this.moveLine.axias === 'y') {
 				this.yLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(0);
+				let value = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(1);
 				this.yLines.splice(this.moveLine.index, 0, value);
 			}
 			this.exportLines();
@@ -297,8 +304,8 @@ export default {
 		},
 		exportLines() {
 			this.$emit('change', {
-				x: this.xLines.map(v => v * this.scale + this.placeholderW + this.wrapX),
-				y: this.yLines.map(v => v * this.scale + this.placeholderW + this.wrapY)
+				x: this.xLines,
+				y: this.yLines
 			});
 		}
 	}

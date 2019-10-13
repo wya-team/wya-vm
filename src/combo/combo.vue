@@ -43,6 +43,8 @@
 					'z-index': 0,
 				}"
 				:scale="scale"
+				:scroll-left="scrollLeft"
+				:scroll-top="scrollTop"
 				v-bind="frameOpts"
 				@activated="handleActivated"
 				@deactivated="handleDeactivated"

@@ -186,7 +186,7 @@ $white: #fff;
  */
 .vm-frame__wrap {
 	flex: 1;
-	overflow: scroll;
+	overflow: auto;
 }
 
 
@@ -196,7 +196,7 @@ $white: #fff;
 .vm-combo__theme--default {
 	.vm-editor {
 		flex-shrink: 0;
-		margin-left: 20px;
+		// margin-left: 20px;
 		// min-width: 446px; // 暂时写死
 		// max-width: 446px;
 		// flex: 0 0 354px;
