@@ -35,7 +35,7 @@
 					v-for="(item, index) in xLines"
 					:key="index"
 					:style="{
-						left: `${placeholderW + item * zoom}px`,
+						left: `${placeholderW + item * scale}px`,
 						'z-index': moveLine.axias === 'x' && index === moveLine.index ? 1 : 0
 					}"
 					class="vm-ruler__hline-action"
@@ -84,7 +84,7 @@
 						v-for="(item, index) in yLines"
 						:key="index"
 						:style="{
-							top: `${placeholderW + item * zoom}px`,
+							top: `${placeholderW + item * scale}px`,
 							'z-index': moveLine.axias === 'y' && index === moveLine.index ? 1 : 0
 						}"
 						class="vm-ruler__vline-action"
@@ -116,7 +116,7 @@ import { hasClass } from '../../utils/helper';
 export default {
 	name: 'vm-ruler',
 	props: {
-		zoom: {
+		scale: {
 			type: Number,
 			default: 1
 		},
@@ -154,14 +154,14 @@ export default {
 	},
 	computed: {
 		hGuidePos() { // 距离x轴左端的实际像素
-			return this.mouseX * this.zoom + this.placeholderW;
+			return this.mouseX * this.scale + this.placeholderW;
 		},
 		vGuidePos() { // 距离y轴上端的实际像素
-			return this.mouseY * this.zoom + this.placeholderW;
+			return this.mouseY * this.scale + this.placeholderW;
 		}
 	},
 	watch: {
-		zoom(v) {
+		scale(v) {
 			this.interval = this.initInterval;
 			this.interval = this.interval * v;
 			Array.prototype.forEach.call(document.getElementsByClassName('vm-ruler__canvas'), (ctx => {
@@ -238,7 +238,7 @@ export default {
 		handleShowHGuide(e) {
 			if (this.isCanvasArea(e, 'x')) {
 				this.showHGuide = true;
-				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.zoom).toFixed(1);
+				this.mouseX = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(1);
 			} else {
 				this.showHGuide = false;
 			}
@@ -246,7 +246,7 @@ export default {
 		handleShowVGuide(e) {
 			if (this.isCanvasArea(e, 'y')) {
 				this.showVGuide = true;
-				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.zoom).toFixed(1);
+				this.mouseY = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(1);
 			} else {
 				this.showVGuide = false;
 			}
@@ -284,11 +284,11 @@ export default {
 			if (!this.isMousePress) return;
 			if (this.moveLine.axias === 'x') {
 				this.xLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.zoom).toFixed(1);
+				let value = +((e.clientX - this.wrapX - this.placeholderW + this.scrollLeft) / this.scale).toFixed(1);
 				this.xLines.splice(this.moveLine.index, 0, value);
 			} else if (this.moveLine.axias === 'y') {
 				this.yLines.splice(this.moveLine.index, 1);
-				let value = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.zoom).toFixed(1);
+				let value = +((e.clientY - this.wrapY - this.placeholderW + this.scrollTop) / this.scale).toFixed(1);
 				this.yLines.splice(this.moveLine.index, 0, value);
 			}
 			this.exportLines();

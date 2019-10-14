@@ -19,7 +19,7 @@
 			<div style="flex: 1; overflow: hidden;">
 				<vm-ruler
 					v-if="showRuler"
-					:zoom="zoom"
+					:scale="scale"
 					:scroll-left="scrollLeft"
 					:scroll-top="scrollTop"
 					@change="handleLineChange"
@@ -38,11 +38,11 @@
 				:style="{
 					left: `${showRuler ? 20 : 0}px`,
 					top: `${showRuler ? 40 : 0}px`,
-					transform: `scale(${zoom})`,
+					transform: `scale(${scale})`,
 					'transform-origin': '0 0',
 					'z-index': 0,
 				}"
-				:zoom="zoom"
+				:scale="scale"
 				:scroll-left="scrollLeft"
 				:scroll-top="scrollTop"
 				v-bind="frameOpts"
@@ -150,7 +150,7 @@ export default {
 			type: Boolean,
 			default: false
 		},
-		zoom: {
+		scale: {
 			type: Number,
 			default: 1
 		}

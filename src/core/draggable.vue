@@ -108,7 +108,7 @@ export default {
 			type: Number,
 			default: 1
 		},
-		zoom: {
+		scale: {
 			type: Number,
 			default: 1
 		},
@@ -465,47 +465,47 @@ export default {
 			let elmH = parseInt(this.h, 10);
 
 			// 鼠标所在的轴xy坐标值
-			let zoomX = Math.round((this.mouseX - this.parentX + this.scrollLeft) / this.zoom);
-			let zoomY = Math.round((this.mouseY - this.parentY + this.scrollTop) / this.zoom);
-			let diffX = zoomX - Math.round((this.lastMouseX - this.parentX + this.scrollLeft) / this.zoom);
-			let diffY = zoomY - Math.round((this.lastMouseY - this.parentY + this.scrollTop) / this.zoom);
+			let ruleX = Math.round((this.mouseX - this.parentX + this.scrollLeft) / this.scale);
+			let ruleY = Math.round((this.mouseY - this.parentY + this.scrollTop) / this.scale);
+			let diffX = ruleX - Math.round((this.lastMouseX - this.parentX + this.scrollLeft) / this.scale);
+			let diffY = ruleY - Math.round((this.lastMouseY - this.parentY + this.scrollTop) / this.scale);
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
 
 			if (this.isResizing) {
 				if (this.handle.includes('top')) {
-					if (elmY - zoomY + elmH < this.minH) {
-						zoomY = elmY + elmH - this.minH;
-					} else if (this.parent && zoomY < 0) {
-						zoomY = 0;
+					if (elmY - ruleY + elmH < this.minH) {
+						ruleY = elmY + elmH - this.minH;
+					} else if (this.parent && ruleY < 0) {
+						ruleY = 0;
 					}
-					elmH = elmY + elmH - zoomY;
-					elmY = zoomY;
+					elmH = elmY + elmH - ruleY;
+					elmY = ruleY;
 				}
 				if (this.handle.includes('bottom')) {
-					if (zoomY - elmY < this.minH) {
-						zoomY = elmY + this.minH;
-					} else if (this.parent && zoomY > this.parentH / this.zoom) {
-						zoomY = Math.round(this.parentH / this.zoom);
+					if (ruleY - elmY < this.minH) {
+						ruleY = elmY + this.minH;
+					} else if (this.parent && ruleY > this.parentH / this.scale) {
+						ruleY = Math.round(this.parentH / this.scale);
 					}
-					elmH = zoomY - elmY;
+					elmH = ruleY - elmY;
 				}
 				if (this.handle.includes('left')) {
-					if (elmX - zoomX + elmW < this.minW) {
-						zoomX = elmX + elmW - this.minW;
-					} else if (this.parent && zoomX < 0) {
-						zoomX = 0;
+					if (elmX - ruleX + elmW < this.minW) {
+						ruleX = elmX + elmW - this.minW;
+					} else if (this.parent && ruleX < 0) {
+						ruleX = 0;
 					}
-					elmW = elmX + elmW - zoomX;
-					elmX = zoomX;
+					elmW = elmX + elmW - ruleX;
+					elmX = ruleX;
 				}
 				if (this.handle.includes('right')) {
-					if (zoomX - elmX < this.minW) {
-						zoomX = elmX + this.minW;
-					} else if (this.parent && zoomX > this.parentW / this.zoom) {
-						zoomX = Math.round(this.parentW / this.zoom);
+					if (ruleX - elmX < this.minW) {
+						ruleX = elmX + this.minW;
+					} else if (this.parent && ruleX > this.parentW / this.scale) {
+						ruleX = Math.round(this.parentW / this.scale);
 					}
-					elmW = zoomX - elmX;
+					elmW = ruleX - elmX;
 				}
 				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
@@ -549,10 +549,10 @@ export default {
 				bottomline && (diffY = bottomline - elmY - elmH);
 
 				if (this.parent) {
-					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW / this.zoom) {
+					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW / this.scale) {
 						diffX = 0;
 					}
-					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH / this.zoom) {
+					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH / this.scale) {
 						diffY = 0;
 					}
 				}
