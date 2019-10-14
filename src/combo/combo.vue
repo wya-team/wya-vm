@@ -148,7 +148,11 @@ export default {
 		},
 		showRuler: {
 			type: Boolean,
-			default: true
+			default: false
+		},
+		zoom: {
+			type: Number,
+			default: 1
 		}
 
 	},
@@ -164,7 +168,6 @@ export default {
 			rebuildData: [],
 			frameW: 0,
 			frameH: 0,
-			zoom: 0.6, // 建议 0.5 - 1.75
 			xRuleLines: [], // x轴辅助线
 			yRuleLines: [], // y轴辅助线
 			scrollLeft: 0, // frame左滚动距离
