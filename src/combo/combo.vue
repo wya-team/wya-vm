@@ -227,7 +227,7 @@ export default {
 			document.querySelector('.vm-frame__wrap').addEventListener('scroll', this.handleFrameScroll);
 		});
 		setTimeout(() => {
-			this.scale = 1.5;
+			this.scale = 0.60;
 		}, 1000);
 	},
 	destroyed() {
