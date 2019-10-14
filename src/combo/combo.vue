@@ -19,7 +19,7 @@
 			<div style="flex: 1; overflow: hidden;">
 				<vm-ruler
 					v-if="showRuler"
-					:scale="scale"
+					:zoom="zoom"
 					:scroll-left="scrollLeft"
 					:scroll-top="scrollTop"
 					@change="handleLineChange"
@@ -38,11 +38,11 @@
 				:style="{
 					left: `${showRuler ? 20 : 0}px`,
 					top: `${showRuler ? 40 : 0}px`,
-					transform: `scale(${scale})`,
+					transform: `scale(${zoom})`,
 					'transform-origin': '0 0',
 					'z-index': 0,
 				}"
-				:scale="scale"
+				:zoom="zoom"
 				:scroll-left="scrollLeft"
 				:scroll-top="scrollTop"
 				v-bind="frameOpts"
@@ -164,7 +164,7 @@ export default {
 			rebuildData: [],
 			frameW: 0,
 			frameH: 0,
-			scale: 1, // 建议 0.5 - 1.75
+			zoom: 0.6, // 建议 0.5 - 1.75
 			xRuleLines: [], // x轴辅助线
 			yRuleLines: [], // y轴辅助线
 			scrollLeft: 0, // frame左滚动距离
@@ -226,9 +226,6 @@ export default {
 		this.$nextTick(() => {
 			document.querySelector('.vm-frame__wrap').addEventListener('scroll', this.handleFrameScroll);
 		});
-		setTimeout(() => {
-			this.scale = 0.60;
-		}, 1000);
 	},
 	destroyed() {
 		let dom = document.querySelector('.vm-frame__wrap');

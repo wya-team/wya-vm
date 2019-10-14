@@ -26,7 +26,7 @@
 			:handles="it.handles"
 			:min-w="it.minW"
 			:min-h="it.minH"
-			:zoom="scale"
+			:zoom="zoom"
 			:grid="it.grid"
 			:active="it.active"
 			:restrain="it.restrain"
@@ -85,7 +85,7 @@ export default {
 		},
 		xRuleLines: Array,
 		yRuleLines: Array,
-		scale: Number,
+		zoom: Number,
 		scrollLeft: Number,
 		scrollTop: Number
 	},
@@ -154,8 +154,8 @@ export default {
 
 			// 不可拖拽的情况下
 			if (!e.fake && (data.draggable || typeof data.draggable === 'undefined')) {
-				data.x = mouseX - x;
-				data.y = mouseY - y;
+				data.x = Math.round((mouseX - x) / this.zoom);
+				data.y = Math.round((mouseY - y) / this.zoom);
 			} else {
 				data.x = 0;
 				data.y = 0;
