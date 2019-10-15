@@ -127,11 +127,15 @@ export default {
 		scrollTop: {
 			type: Number,
 			default: 0
+		},
+		frameW: {
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
 		return {
-			width: 2000, // 轴长
+			width: 5000, // 轴长
 			initInterval: 100, // 10刻度间隔(缩放前)
 			interval: 100, // 10刻度间隔(缩放后)
 			wrapX: 0, // 横轴起始x位置
@@ -164,6 +168,9 @@ export default {
 		scale(v) {
 			this.interval = this.initInterval;
 			this.interval = this.interval * v;
+			if (this.frameW * this.scale > this.width / 2) {
+				this.width += 1000;
+			}
 			Array.prototype.forEach.call(document.getElementsByClassName('vm-ruler__canvas'), (ctx => {
 				ctx.height = ctx.height;
 				this.repaint(ctx.getContext('2d'));

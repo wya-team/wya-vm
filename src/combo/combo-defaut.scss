@@ -184,9 +184,9 @@ $white: #fff;
 /**
  * draggable-frame
  */
-.vm-frame__wrap {
-	flex: 1;
-	overflow: auto;
+.vm-frame__inner {
+	white-space: nowrap;
+	display: inline-block;
 }
 
 

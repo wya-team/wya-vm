@@ -13,47 +13,58 @@
 		/>
 		<div
 			class="vm-frame__wrap"
-			@click="handleClick"
-			@contextmenu.prevent="e => e.preventDefault()"
+			style="flex: 1; overflow: auto;"
 		>
-			<div style="flex: 1; overflow: hidden;">
-				<vm-ruler
-					v-if="showRuler"
+			<div
+				:style="{
+					width: `${showRuler ? Math.max(frameWrapWidth, (frameW + 200) * scale) + 'px' : '100%'}`,
+					height: `${showRuler ? Math.max(frameWrapHeight, (frameH + 200) * scale) + 'px' : '100%'}`
+				}"
+				class="vm-frame__inner"
+				@click="handleClick"
+				@contextmenu.prevent="e => e.preventDefault()"
+			>
+				<div style="flex: 1; overflow: hidden;">
+					<vm-ruler
+						v-if="showRuler"
+						:scale="scale"
+						:scroll-left="scrollLeft"
+						:scroll-top="scrollTop"
+						:frame-width="frameW"
+						@change="handleLineChange"
+					/>
+				</div>
+				<!-- 暂时关闭属性frameStyle -->
+				<vm-frame
+					ref="frame"
+					:width="frameW"
+					:height="frameH"
+					:data-source="rebuildData"
+					:editor="editor"
+					:show-lines="showLines"
+					:x-rule-lines="xRuleLines"
+					:y-rule-lines="yRuleLines"
+					:style="{
+						left: `${showRuler ? 20 : 0}px`,
+						top: `${showRuler ? 40 : 0}px`,
+						transform: `scale(${scale})`,
+						'transform-origin': '0 0',
+						'z-index': 0,
+					}"
 					:scale="scale"
 					:scroll-left="scrollLeft"
 					:scroll-top="scrollTop"
-					@change="handleLineChange"
-				/>
+					v-bind="frameOpts"
+					@activated="handleActivated"
+					@deactivated="handleDeactivated"
+					@change="handleChange"
+					@error="$emit('error', arguments[0])"
+				>
+					<slot name="frame-header" />
+					<slot name="frame-footer" />
+				</vm-frame>
 			</div>
-			<!-- 暂时关闭属性frameStyle -->
-			<vm-frame
-				ref="frame"
-				:width="frameW"
-				:height="frameH"
-				:data-source="rebuildData"
-				:editor="editor"
-				:show-lines="showLines"
-				:x-rule-lines="xRuleLines"
-				:y-rule-lines="yRuleLines"
-				:style="{
-					left: `${showRuler ? 20 : 0}px`,
-					top: `${showRuler ? 40 : 0}px`,
-					transform: `scale(${scale})`,
-					'transform-origin': '0 0',
-					'z-index': 0,
-				}"
-				:scale="scale"
-				:scroll-left="scrollLeft"
-				:scroll-top="scrollTop"
-				v-bind="frameOpts"
-				@activated="handleActivated"
-				@deactivated="handleDeactivated"
-				@change="handleChange"
-				@error="$emit('error', arguments[0])"
-			>
-				<slot name="frame-header" />
-				<slot name="frame-footer" />
-			</vm-frame>
+			<slot name="frame-wrap-footer"/>
 		</div>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor
@@ -164,10 +175,12 @@ export default {
 			 */
 			current: 0,
 			total: 0,
-			protectedClasses: ['vm-frame__wrap', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
+			protectedClasses: ['vm-frame__inner', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
 			rebuildData: [],
 			frameW: 0,
 			frameH: 0,
+			frameWrapWidth: 0,
+			frameWrapHeight: 0,
 			xRuleLines: [], // x轴辅助线
 			yRuleLines: [], // y轴辅助线
 			scrollLeft: 0, // frame左滚动距离
@@ -227,7 +240,10 @@ export default {
 		this.frameW = this.settingEditor.w;
 		this.frameH = this.settingEditor.h;
 		this.$nextTick(() => {
-			document.querySelector('.vm-frame__wrap').addEventListener('scroll', this.handleFrameScroll);
+			let dom = document.querySelector('.vm-frame__wrap');
+			this.frameWrapWidth = dom.getBoundingClientRect().width;
+			this.frameWrapHeight = dom.getBoundingClientRect().height;
+			dom.addEventListener('scroll', this.handleFrameScroll);
 		});
 	},
 	destroyed() {
