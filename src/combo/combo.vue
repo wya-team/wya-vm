@@ -1,32 +1,75 @@
 <template>
-	<div :style="style" :class="classes" class="vm-combo">
-		<vm-widget 
+	<div
+		:style="style"
+		:class="classes"
+		class="vm-combo"
+	>
+		<vm-widget
 			v-if="showWidget"
-			:style="widgetStyle" 
-			:content-style="widgetContentStyle" 
+			:style="widgetStyle"
+			:content-style="widgetContentStyle"
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
-		<vm-frame 
-			ref="frame"
-			:style="frameStyle" 
-			:width="frameW" 
-			:height="frameH" 
-			:data-source="rebuildData" 
-			:editor="editor" 
-			:show-lines="showLines"
-			v-bind="frameOpts"
-			@activated="handleActivated"
-			@deactivated="handleDeactivated"
-			@change="handleChange"
-			@error="$emit('error', arguments[0])"
+		<div
+			class="vm-frame__wrap"
+			style="flex: 1; overflow: auto;"
 		>
-			<slot name="frame-header" />
-			<slot name="frame-footer" />
-		</vm-frame>
+			<div
+				:style="{
+					width: `${showRuler ? Math.max(frameWrapWidth, (frameW + 200) * scale) + 'px' : '100%'}`,
+					height: `${showRuler ? Math.max(frameWrapHeight, (frameH + 200) * scale) + 'px' : '100%'}`
+				}"
+				class="vm-frame__inner"
+				@click="handleClick"
+				@contextmenu.prevent="e => e.preventDefault()"
+			>
+				<div style="flex: 1; overflow: hidden;">
+					<vm-ruler
+						v-if="showRuler"
+						:scale="scale"
+						:scroll-left="scrollLeft"
+						:scroll-top="scrollTop"
+						:frame-width="frameW"
+						@change="handleLineChange"
+					/>
+				</div>
+				<!-- 暂时关闭属性frameStyle -->
+				<vm-frame
+					ref="frame"
+					:width="frameW"
+					:height="frameH"
+					:data-source="rebuildData"
+					:editor="editor"
+					:show-lines="showLines"
+					:x-rule-lines="xRuleLines"
+					:y-rule-lines="yRuleLines"
+					:style="{
+						left: `${showRuler ? 20 : 0}px`,
+						top: `${showRuler ? 40 : 0}px`,
+						transform: `scale(${scale})`,
+						'transform-origin': '0 0',
+						'z-index': 0,
+					}"
+					:scale="scale"
+					:scroll-left="scrollLeft"
+					:scroll-top="scrollTop"
+					v-bind="frameOpts"
+					@activated="handleActivated"
+					@deactivated="handleDeactivated"
+					@change="handleChange"
+					@error="$emit('error', arguments[0])"
+				>
+					<slot name="frame-header" />
+					<slot name="frame-footer" />
+				</vm-frame>
+			</div>
+			<slot name="frame-wrap-footer"/>
+		</div>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
-		<vm-editor 
-			v-if="showEditor && editor" 
+		<vm-editor
+			v-if="showEditor && editor"
+			:width ="editorW"
 			:data-source="editor"
 			@change="handleChange"
 		/>
@@ -49,7 +92,8 @@
 
 <script>
 import Assist from './assist';
-import { cloneDeep, isEqualWith } from '../utils/helper';
+import Ruler from './ruler';
+import { cloneDeep, isEqualWith, hasClass, getUid } from '../utils/helper';
 import './combo-defaut.scss';
 
 export default {
@@ -58,6 +102,7 @@ export default {
 		// 会被注入vm-frame, vm-widget, vm-editor,
 		'vm-assist-operation': Assist.Operation,
 		'vm-assist-save': Assist.Save,
+		'vm-ruler': Ruler
 	},
 	model: {
 		prop: 'data-source',
@@ -73,9 +118,9 @@ export default {
 		/**
 		 * frame
 		 */
-		frameStyle: Object,
-		frameW: Number,
-		frameH: Number,
+		// frameStyle: Object, // 该属性暂时关闭
+		// frameW: Number, // 该属性暂时由页面设置控制
+		// frameH: Number, // 该属性暂时由页面设置控制
 		frameOpts: Object,
 		/**
 		 * widget
@@ -85,7 +130,10 @@ export default {
 		widgetW: Number,
 		widgetH: Number,
 		widgetOpts: Object,
-
+		/**
+		 * editor
+		 */
+		editorW: Number,
 		/**
 		 * combo
 		 */
@@ -108,6 +156,14 @@ export default {
 		showLines: {
 			type: Boolean,
 			default: true
+		},
+		showRuler: {
+			type: Boolean,
+			default: false
+		},
+		scale: {
+			type: Number,
+			default: 1
 		}
 
 	},
@@ -119,8 +175,16 @@ export default {
 			 */
 			current: 0,
 			total: 0,
-
-			rebuildData: []
+			protectedClasses: ['vm-frame__inner', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
+			rebuildData: [],
+			frameW: 0,
+			frameH: 0,
+			frameWrapWidth: 0,
+			frameWrapHeight: 0,
+			xRuleLines: [], // x轴辅助线
+			yRuleLines: [], // y轴辅助线
+			scrollLeft: 0, // frame左滚动距离
+			scrollTop: 0, // frame上滚动距离
 		};
 	},
 	computed: {
@@ -137,6 +201,18 @@ export default {
 			return {
 				[`vm-combo__theme--${this.theme}`]: !!this.theme
 			};
+		},
+		settingEditor() { // 页面设置editor
+			let setting = this.$options.modules.page;
+			if (!setting) {
+				console.error(`请注入页面设置基础组件`);
+				return {};
+			}
+			return this.rebuildData.find(item => item.module === 'page') || {
+				...setting.data,
+				module: setting.module,
+				id: getUid()
+			};
 		}
 	},
 	watch: {
@@ -144,24 +220,42 @@ export default {
 			deep: true,
 			immediate: true,
 			handler(v) {
+				// 重新渲染frame的宽高
+				let page = v.find(item => item.module === 'page');
+				v.length && this.frameW !== page.w && (this.frameW = page.w);
+				v.length && this.frameH !== page.h && (this.frameH = page.h);
 				if (isEqualWith(v, this.rebuildData)) {
 					return;
 				}
 				// todo, 是否重写
 				this.rebuildData = this.makeRebuildData(this.dataSource);
+				this.editor = this.rebuildData.find(item => item.module === 'page');
 			}
 		}
 	},
 	created() {
 		this.historyData = [];
+		!this.rebuildData.find(item => item.module === 'page') && this.rebuildData.push(this.settingEditor);
+		this.editor = this.settingEditor;
+		this.frameW = this.settingEditor.w;
+		this.frameH = this.settingEditor.h;
+		this.$nextTick(() => {
+			let dom = document.querySelector('.vm-frame__wrap');
+			this.frameWrapWidth = dom.getBoundingClientRect().width;
+			this.frameWrapHeight = dom.getBoundingClientRect().height;
+			dom.addEventListener('scroll', this.handleFrameScroll);
+		});
 	},
 	destroyed() {
+		let dom = document.querySelector('.vm-frame__wrap');
+		dom && dom.removeEventListener('scroll', this.handleFrameScroll);
 		this.$options.previewManager.hide();
 	},
 	methods: {
 		makeRebuildData(source) {
 			let { modules } = this.$options;
 			let result = cloneDeep(source).map((it) => {
+
 				let { data = {}, rebuilder = {} } = modules[it.module] || {};
 
 				typeof data === 'function' && (data = data());
@@ -196,7 +290,7 @@ export default {
 		 * 目前只支持以下几种数据
 		 * current, total
 		 */
-		sync(opts) {	
+		sync(opts) {
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
 					this.$emit(`update:${key}`, opts[key]);
@@ -216,8 +310,8 @@ export default {
 			this.editor = it;
 		},
 
-		handleDeactivated(it) {
-			this.editor = null;
+		handleDeactivated(e, it) {
+			// this.editor = this.settingEditor;
 		},
 
 		/**
@@ -241,22 +335,22 @@ export default {
 				id,
 				old,
 				sort,
-				index: id && typeof index === 'undefined' 
-					? this.rebuildData.findIndex(item => item.id === id) 
+				index: id && typeof index === 'undefined'
+					? this.rebuildData.findIndex(item => item.id === id)
 					: index,
 				data: cloneDeep(this.rebuildData.find(item => item.id === id)),
 			};
 
 			// 继续插入，还是以当前停留位置插入
-			current === total 
+			current === total
 				? this.historyData.push(target)
 				: this.historyData.splice(current, total - current, target);
 
 			let { length } = this.historyData;
 			this.current = length;
 			this.total = length;
-			
-			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
+
+			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = this.settingEditor);
 
 			this.syncData();
 		},
@@ -291,9 +385,9 @@ export default {
 		delete(id) {
 			id = id || (this.editor || {}).id;
 			if (!id) {
-				this.$emit('error', { 
-					type: 'id', 
-					msg: "请先选择操作对象" 
+				this.$emit('error', {
+					type: 'id',
+					msg: "请先选择操作对象"
 				});
 				return;
 			}
@@ -303,9 +397,9 @@ export default {
 		undo() {
 			let current = this.current - 1;
 			if (current < 0) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是初始状态" 
+				this.$emit('error', {
+					type: 'undo',
+					msg: "目前已经是初始状态"
 				});
 				return;
 			}
@@ -320,10 +414,10 @@ export default {
 				case 'delete':
 					this.rebuildData.splice(index, 0, data);
 					break;
-				case 'update':	
+				case 'update':
 					this.rebuildData.splice(index, 1, cloneDeep({ ...data, ...old }));
 					break;
-				case 'sort':	
+				case 'sort':
 					this.$refs.frame.sortData(sort);
 					break;
 				default:
@@ -339,9 +433,9 @@ export default {
 		redo() {
 			let current = this.current + 1;
 			if (current > this.total) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是最终状态" 
+				this.$emit('error', {
+					type: 'undo',
+					msg: "目前已经是最终状态"
 				});
 				return;
 			}
@@ -356,10 +450,10 @@ export default {
 				case 'delete':
 					this.rebuildData.splice(index, 1);
 					break;
-				case 'update':	
+				case 'update':
 					this.rebuildData.splice(index, 1, data);
 					break;
-				case 'sort':	
+				case 'sort':
 					this.$refs.frame.sortData(sort);
 					break;
 				default:
@@ -379,9 +473,9 @@ export default {
 			const data = cloneDeep(this.rebuildData) || [];
 
 			if (data.length === 0) {
-				this.$emit('error', { 
-					type: 'save', 
-					msg: `保存对象不能为空` 
+				this.$emit('error', {
+					type: 'save',
+					msg: `保存对象不能为空`
 				});
 				return false;
 			}
@@ -391,10 +485,10 @@ export default {
 				if (modules[mod].dataValidity) {
 					let error = modules[mod].dataValidity(data[i]);
 					if (error) {
-						this.$emit('error', { 
-							type: 'save', 
-							msg: `第${i + 1}个 - ${error.error}`, 
-							index: i 
+						this.$emit('error', {
+							type: 'save',
+							msg: `第${i + 1}个 - ${error.error}`,
+							index: i
 						});
 						// 错误元素激活
 						this.$refs.frame.setActived(i);
@@ -411,9 +505,9 @@ export default {
 
 		preview() {
 			if (this.rebuildData.length === 0) {
-				this.$emit('error', { 
-					type: 'preview', 
-					msg: `预览数据对象不能为空` 
+				this.$emit('error', {
+					type: 'preview',
+					msg: `预览数据对象不能为空`
 				});
 				return false;
 			}
@@ -428,6 +522,30 @@ export default {
 			});
 
 			return true;
+		},
+
+		handleClick(e) {
+			if (this.isProtectArea(e)) {
+				this.editor = this.settingEditor;
+			}
+		},
+
+		/**
+		 * 判断是否为组件外的有效操作区域
+		 */
+		isProtectArea(e) {
+			let path = e.path || (e.composedPath && e.composedPath()) || [];
+			return this.protectedClasses.some(item => hasClass(path[0], item));
+		},
+
+		handleLineChange(guide) {
+			this.xRuleLines = guide.x;
+			this.yRuleLines = guide.y;
+		},
+
+		handleFrameScroll(e) {
+			this.scrollLeft = e.target.scrollLeft;
+			this.scrollTop = e.target.scrollTop;
 		}
 	},
 };
