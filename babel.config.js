@@ -15,7 +15,7 @@ module.exports = (api) => {
 			"@babel/plugin-proposal-export-default-from",
 			"@babel/plugin-proposal-function-bind",
 			"@babel/plugin-syntax-dynamic-import",
-			// 多了很多无用代码
+			// node-resolve中modulesOnly为true, 否者会存在无用代码
 			[
 				"@babel/plugin-transform-runtime", {
 					"corejs": false,
