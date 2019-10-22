@@ -4,7 +4,7 @@ import { cloneDeep } from '../../utils/helper';
 
 let Dom = document.body;
 
-export default class PreviewManageer {
+export default class PreviewManager {
 	constructor(ToolsPreview, mode) {
 		this.ToolsPreview = ToolsPreview;
 		this.mode = mode;
@@ -45,4 +45,4 @@ export default class PreviewManageer {
 	}
 }
 
-export const PreviewManager = Manager;
+export { PreviewManager };

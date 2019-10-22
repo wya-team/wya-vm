@@ -3,7 +3,7 @@ import Wrapper from './menu.vue';
 import { cloneDeep } from '../../utils/helper';
 
 let Dom = document.body;
-export default class PreviewManageer {
+export default class MenuManager {
 	constructor() {
 		this.vm = null;
 		this.show = ::this.show;
@@ -42,4 +42,4 @@ export default class PreviewManageer {
 	}
 }
 
-export const MenuManager = Manager;
+export { MenuManager };
