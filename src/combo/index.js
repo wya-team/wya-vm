@@ -12,7 +12,7 @@ export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
 	try {
 		Object.keys(modules).forEach(item => {
-			if (modules[item].type === 'basic') {
+			if (modules[item].module === 'page') {
 				modules[item].data = {
 					...cloneDeep(
 						typeof modules[item].data === 'function'
