@@ -17,8 +17,8 @@
 		>
 			<div
 				:style="{
-					width: `${showRuler ? Math.max(frameWrapWidth, (frameW + 200) * scale) + 'px' : '100%'}`,
-					height: `${showRuler ? Math.max(frameWrapHeight, (frameH + 200) * scale) + 'px' : '100%'}`
+					width: `${showRuler ? Math.max(frameWrapWidth, (rebuildFrameStyle.width + 200) * scale) + 'px' : '100%'}`,
+					height: `${showRuler ? Math.max(frameWrapHeight, (rebuildFrameStyle.height + 200) * scale) + 'px' : '100%'}`
 				}"
 				class="vm-frame__inner"
 				@click="handleClick"
@@ -30,21 +30,21 @@
 						:scale="scale"
 						:scroll-left="scrollLeft"
 						:scroll-top="scrollTop"
-						:frame-width="frameW"
+						:frame-width="rebuildFrameStyle.width"
 						@change="handleLineChange"
 					/>
 				</div>
-				<!-- 暂时关闭属性frameStyle -->
 				<vm-frame
 					ref="frame"
-					:width="frameW"
-					:height="frameH"
+					:width="rebuildFrameStyle.width"
+					:height="rebuildFrameStyle.height"
 					:data-source="rebuildData"
 					:editor="editor"
 					:show-lines="showLines"
 					:x-rule-lines="xRuleLines"
 					:y-rule-lines="yRuleLines"
 					:style="{
+						...frameStyle,
 						left: `${showRuler ? 20 : 0}px`,
 						top: `${showRuler ? 40 : 0}px`,
 						transform: `scale(${scale})`,
@@ -118,9 +118,9 @@ export default {
 		/**
 		 * frame
 		 */
-		// frameStyle: Object, // 该属性暂时关闭
-		// frameW: Number, // 该属性暂时由页面设置控制
-		// frameH: Number, // 该属性暂时由页面设置控制
+		frameStyle: Object,
+		frameW: Number, // 页面设置存在则该属性不生效
+		frameH: Number, // 页面设置存在则该属性不生效
 		frameOpts: Object,
 		/**
 		 * widget
@@ -177,8 +177,8 @@ export default {
 			total: 0,
 			protectedClasses: ['vm-frame__inner', 'vm-frame-draggable', 'vm-frame-sortable'], // 触发页面设置所需的顶级类名
 			rebuildData: [],
-			frameW: 0,
-			frameH: 0,
+			pageW: 0,
+			pageH: 0,
 			frameWrapWidth: 0,
 			frameWrapHeight: 0,
 			xRuleLines: [], // x轴辅助线
@@ -202,11 +202,16 @@ export default {
 				[`vm-combo__theme--${this.theme}`]: !!this.theme
 			};
 		},
+		rebuildFrameStyle() {
+			return {
+				width: this.settingEditor ? this.pageW : (this.frameW || 800),
+				height: this.settingEditor ? this.pageH : (this.frameH || 600)
+			};
+		},
 		settingEditor() { // 页面设置editor
 			let setting = this.$options.modules.page;
 			if (!setting) {
-				console.error(`请注入页面设置基础组件`);
-				return {};
+				return null;
 			}
 			return this.rebuildData.find(item => item.module === 'page') || {
 				...setting.data,
@@ -222,8 +227,8 @@ export default {
 			handler(v) {
 				// 重新渲染frame的宽高
 				let page = v.find(item => item.module === 'page');
-				v.length && this.frameW !== page.w && (this.frameW = page.w);
-				v.length && this.frameH !== page.h && (this.frameH = page.h);
+				page && v.length && this.frameW !== page.w && (this.pageW = page.w);
+				page && v.length && this.frameH !== page.h && (this.pageH = page.h);
 				if (isEqualWith(v, this.rebuildData)) {
 					return;
 				}
@@ -235,10 +240,14 @@ export default {
 	},
 	created() {
 		this.historyData = [];
-		!this.rebuildData.find(item => item.module === 'page') && this.rebuildData.push(this.settingEditor);
+		if (!this.rebuildData.find(item => item.module === 'page') && this.settingEditor) {
+			this.rebuildData.push(this.settingEditor);
+		}
 		this.editor = this.settingEditor;
-		this.frameW = this.settingEditor.w;
-		this.frameH = this.settingEditor.h;
+		if (this.editor) {
+			this.pageW = this.settingEditor.w;
+			this.pageH = this.settingEditor.h;
+		}
 		this.$nextTick(() => {
 			let dom = document.querySelector('.vm-frame__wrap');
 			this.frameWrapWidth = dom.getBoundingClientRect().width;

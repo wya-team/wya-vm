@@ -147,8 +147,8 @@ export default {
 			showGuide: true, // 显示固定的辅助线开关 (实线)
 			showHGuide: false, // 是否显示鼠标移动的x轴辅助线 (虚线)
 			showVGuide: false, // 是否显示鼠标移动的y轴辅助线 (虚线)
-			xLines: [100], // x轴辅助线 (实线)
-			yLines: [50], // y轴辅助线 (实线)
+			xLines: [], // x轴辅助线 (实线)
+			yLines: [], // y轴辅助线 (实线)
 			isMousePress: false, // 鼠标是否按住
 			moveLine: { // 被鼠标按住的辅助线 (实线)
 				axias: 'x',
