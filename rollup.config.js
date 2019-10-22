@@ -19,12 +19,20 @@ import cssnano from 'cssnano';
 
 // import pkg from "./package.json";
 
-const external = [
-	'vue'
-	// ...Object.keys(pkg.devDependencies || {}),
-	// ...Object.keys(pkg.peerDependencies || {}),
-	// ...Object.keys(pkg.dependencies || {})
-];
+const external = filename => {
+	let regex = [
+		'^vue$',
+		'^lodash$',
+		'^@babel/runtime',
+		'^@wya/vc',
+		'^@wya/utils'
+		// ...Object.keys(pkg.devDependencies || {}),
+		// ...Object.keys(pkg.peerDependencies || {}),
+		// ...Object.keys(pkg.dependencies || {})
+	].join('|');
+
+	return new RegExp(`(${regex})`).test(filename);
+};
 
 
 // 添加前缀和其他处理
@@ -56,7 +64,8 @@ const mainConfig = {
 		// 使用amd模块引入，第三方模块支持
 		resolve({
 			mainFields: ['module', 'jsnext:main', 'main'],
-			browser: true,
+			modulesOnly: true,
+			browser: true
 		}),
 		// 使用cjs模块引入
 		commonjs({
@@ -85,12 +94,7 @@ const mainConfig = {
 		// 使用babel，结合.babelrc
 		babel({ 
 			exclude: 'node_modules/**',
-			runtimeHelpers: true,
-			/**
-			 * 移除@babel/runtime, 当增加了babelHelpers，暂时无法处理
-			 * @babel/plugin-external-helpers
-			 */
-			// externalHelpers: true
+			runtimeHelpers: true
 		}),
 		// 使用buble
 		buble(),

@@ -6,16 +6,24 @@ module.exports = (api) => {
 	api.cache.forever();
 
 	return {
-		compact: false,
+		// compact: false,
 		presets: [
-			"@babel/preset-env"
+			["@babel/preset-env", { "modules": false }]
 		],
 		plugins: [
 			"@babel/plugin-proposal-export-namespace-from",
 			"@babel/plugin-proposal-export-default-from",
 			"@babel/plugin-proposal-function-bind",
 			"@babel/plugin-syntax-dynamic-import",
-			// "@babel/plugin-transform-runtime", // 多了很多无用代码
+			// 多了很多无用代码
+			[
+				"@babel/plugin-transform-runtime", {
+					"corejs": false,
+					"helpers": true,
+					"regenerator": true,
+					"useESModules": false
+				}
+			], 
 			// "@babel/plugin-external-helpers",
 			["@babel/plugin-proposal-decorators", { legacy: true }],
 			["@babel/plugin-proposal-class-properties", { loose: true }],
