@@ -7,8 +7,10 @@
 			:handles="handles"
 		>
 			<div>
-				<div @click="handleClick">随意拖拽且可点击</div>
-				<input v-model="value" type="text" >
+				<div @click="handleClick">
+					随意拖拽且可点击
+				</div>
+				<input v-model="value" type="text">
 			</div>
 		</vm-draggable>
 	</div>

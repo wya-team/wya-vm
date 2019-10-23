@@ -26,12 +26,11 @@ npm install @wya/toolkit -g
 wya add
 ```
 
-
 ## Babel6 -> Babel7
 
 - 根据提示修改内容
 - `import { xxx } from 'wya'`, 其中`xxx`必须存在
-- `CreatePortal`中不使用`module.exports.default`
+- `new Portal(wrapperComponent, {})`中不使用`module.exports.default`
 
 ## TODO
 

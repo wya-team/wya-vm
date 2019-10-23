@@ -1,7 +1,7 @@
 <template>
 	<div @click="$emit('change', 1)">
 		Name: {{ name }}
-		<input type="text" >
+		<input type="text">
 	</div>
 </template>
 

@@ -1,13 +1,18 @@
 <template>
 	<div class="v-home-basic-main">
 		<ul>
-			<li v-for="(item, index) in list" v-if="String(index)" :key="index">
-				<router-link :to="item.path">{{ item.name }}</router-link>
-				<vc-clipboard :value="item.path" tag="span">复制</vc-clipboard>
-			</li>
+			<template v-for="(item, index) in list">
+				<li v-if="String(index)" :key="index">
+					<router-link :to="item.path">
+						{{ item.name }}
+					</router-link>
+					<vc-clipboard :value="item.path" tag="span">
+						复制
+					</vc-clipboard>
+				</li>
+			</template>
 		</ul>
 	</div>
-
 </template>
 
 <script>

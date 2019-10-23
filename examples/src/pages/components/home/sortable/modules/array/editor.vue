@@ -4,7 +4,9 @@
 			<span>Name: </span>
 			<input :value="$attrs.name" @input="handleChange($event, 'name')">
 		</div>
-		<div @click="handleClick">+ListItem</div>
+		<div @click="handleClick">
+			+ListItem
+		</div>
 	</div>
 </template>
 

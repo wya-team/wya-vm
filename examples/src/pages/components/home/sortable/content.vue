@@ -22,8 +22,7 @@ let { Combo, Preview } = createVMDrags(defaultModules, { mode: 'sortable' });
 export default {
 	name: 'tpl-links',
 	components: {
-		'vm-combo': Combo,
-		'vm-preview': Preview,
+		'vm-combo': Combo
 	},
 	data() {
 		return {

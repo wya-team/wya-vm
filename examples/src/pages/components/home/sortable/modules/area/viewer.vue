@@ -57,10 +57,10 @@ export default {
 			let arr = Utils.cloneDeep(this.list);
 			let screenW = this.vm.type === 'frame' ? 375 : this.$global.width;
 			return arr.map(item => {
-				item.w = item.w / 375 * screenW;
-				item.h = item.h / 375 * screenW;
-				item.x = item.x / 375 * screenW;
-				item.y = item.y / 375 * screenW;
+				item.w = (item.w / 375) * screenW;
+				item.h = (item.h / 375) * screenW;
+				item.x = (item.x / 375) * screenW;
+				item.y = (item.y / 375) * screenW;
 				return item;
 			});
 		}

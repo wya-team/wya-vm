@@ -23,7 +23,6 @@ export default {
 	name: 'tpl-links',
 	components: {
 		'vm-combo': Combo,
-		'vm-preview': Preview,
 	},
 	data() {
 		return {
