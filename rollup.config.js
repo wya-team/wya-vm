@@ -25,7 +25,10 @@ const external = filename => {
 		'^lodash$',
 		'^@babel/runtime',
 		'^@wya/vc',
-		'^@wya/utils'
+		// 用于测试用例?
+		'^@wya/utils$',
+		'^@wya/http$',
+		'^@wya/ps$'
 		// ...Object.keys(pkg.devDependencies || {}),
 		// ...Object.keys(pkg.peerDependencies || {}),
 		// ...Object.keys(pkg.dependencies || {})
@@ -47,10 +50,10 @@ const BASIC_POSTCSS_PLUGIN = [
 // import babelrc from 'babelrc-rollup';
 const mainConfig = {
 	// 输入
-	input: 'src/main.js',
+	input: 'src/index.js',
 	// 输出
 	output: {
-		file: `${ENV_IS_DEV ? `build` : `dist`}/vm.min.js`,
+		file: `${ENV_IS_DEV ? `examples/src/libs` : `dist`}/vm.min.js`,
 		format: 'cjs',
 		sourcemap: ENV_IS_DEV ? undefined : `inline`,
 		globals: {

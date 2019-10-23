@@ -4,9 +4,8 @@ import Combo from './combo.vue';
 import Frame from './frame';
 import Widget from './widget';
 import Editor from './editor';
-import Preview, { PreviewManager } from './preview';
-import { MenuManager } from './right-menu';
-
+import { Assist } from './assist';
+import { Portal } from '../vc';
 
 export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
@@ -29,7 +28,7 @@ export default (modules = defaultModules, opts = {}) => {
 		let newCombo = cloneDeep(opts.Combo || Combo);
 		let newFrame = cloneDeep(opts.Frame || (mode === 'draggable' ? Frame.Draggable : Frame.Sortable));
 		let newWidget = cloneDeep(opts.Widget || Widget);
-		let newPreview = cloneDeep(opts.Preview || Preview);
+		let newPreview = cloneDeep(opts.Preview || Assist.Preview);
 		let newEditor = cloneDeep(opts.Editor || Editor);
 
 		let viewers = {};
@@ -79,15 +78,17 @@ export default (modules = defaultModules, opts = {}) => {
 		let rebuildCombo = cloneDeep(newCombo);
 		let rebuildPreview = cloneDeep(newPreview);
 
-		let manager = new PreviewManager(newPreview, mode);
+		let previewManager = new Portal(Assist.PreviewPopup, {
+			mode,
+			promise: false,
+			components: {
+				'vm-preview': newPreview
+			}
+		});
 
-		// 右键菜单
-		rebuildCombo.menuManager = new MenuManager();
-
-		rebuildCombo.previewManager = manager;
-
-		rebuildPreview.show = manager.show;
-		rebuildPreview.hide = manager.hide;
+		rebuildPreview.popup = previewManager.popup;
+		rebuildPreview.destroy = previewManager.destroy;
+		rebuildCombo.previewManager = previewManager;
 
 		return {
 			Combo: rebuildCombo,

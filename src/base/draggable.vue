@@ -45,7 +45,6 @@
 
 <script>
 import { isPassiveSupported, eleInRegExp } from '../utils/helper';
-import { MenuManager } from '../combo/right-menu';
 
 const doc = document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];

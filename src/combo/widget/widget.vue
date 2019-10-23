@@ -45,7 +45,7 @@
 								class="vm-widget__item"
 							>
 								<template v-if="widget.render">
-									<vm-assist-customer
+									<vc-customer
 										:render="widget.render"
 										:index="index"
 									/>
@@ -66,15 +66,15 @@
 </template>
 
 <script>
-import Widget from '../../core/widget.vue';
+import Widget from '../../base/widget.vue';
 import { hasOwn } from '../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../utils/constants';
-import Assist from '../assist';
+import { Customer } from '../../vc';
 
 export default {
 	name: 'vm-widget',
 	components: {
-		'vm-assist-customer': Assist.Customer,
+		'vc-customer': Customer,
 		'vm-widget-item': Widget,
 	},
 	props: {

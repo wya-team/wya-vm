@@ -61,9 +61,10 @@
 </template>
 
 <script>
-import Draggable from '../../../core/draggable.vue';
+import Draggable from '../../../base/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
+import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../../utils/constants';
 
@@ -106,16 +107,7 @@ export default {
 			};
 		}
 	},
-	created() {
-		window.addEventListener('mousedown', this.handleHideRightMenu);
-	},
-	destroyed() {
-		window.removeEventListener('mousedown', this.handleHideRightMenu);
-	},
 	methods: {
-		handleHideRightMenu(e) {
-			this.$parent.$options.menuManager.hide();
-		},
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
@@ -198,46 +190,50 @@ export default {
 			// 根据z降序，相等则后面的z放在前面
 			let sortList = [...this.dataSource.filter(v => v.module !== 'page')].reverse().sort((a, b) => b.z - a.z);
 			let index = sortList.findIndex(v => v.id === it.id);
-			it.module !== 'page' && this.$parent.$options.menuManager.show({
+
+			if (it.module === 'page') return;
+			
+			const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
+
+			RightMenu.popup({
 				event: e,
-			}).then(res => {
-				// 1 置顶 2 置底 3 上移一层 4 下移一层 5 删除
+			}).then(type => {
 				let changeItem;
-				switch (res.value) {
-					case 1:
+				switch (type) {
+					case TOP:
 						if (index > 0) {
 							changeItem = sortList[0];
 							it.z = changeItem.z;
 						}
 						break;
-					case 2:
+					case BOTTOM:
 						if (index < sortList.length - 1) {
 							changeItem = sortList[sortList.length - 1];
 							it.z = changeItem.z;
 						}
 						break;
-					case 3:
+					case UP:
 						if (index > 0) {
 							changeItem = sortList[index - 1];
 							[changeItem.z, it.z] = [it.z, changeItem.z];
 						}
 						break;
-					case 4:
+					case DOWN:
 						if (index < sortList.length - 1) {
 							changeItem = sortList[index + 1];
 							[changeItem.z, it.z] = [it.z, changeItem.z];
 						}
 						break;
-					case 5:
+					case DELETE:
 						this.$emit('change', { type: 'delete', id: it.id });
 						break;
 					default:
 						break;
 				}
-				if (res.value !== 5 && changeItem) {
+				if (type !== DELETE && changeItem) {
 					let curIndex = this.dataSource.findIndex(v => v.id === it.id);
 					this.dataSource.splice(curIndex, 1);
-					let nextIndex = this.dataSource.findIndex(v => v.id === changeItem.id) + ([1, 3].includes(res.value)
+					let nextIndex = this.dataSource.findIndex(v => v.id === changeItem.id) + ([TOP, UP].includes(type)
 						? 1 : 0);
 					this.dataSource.splice(nextIndex, 0, it);
 				}

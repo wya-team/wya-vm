@@ -1,14 +1,17 @@
 <template>
-	<div class="vm-tools-preview-popup">
+	<div class="vm-assist-preview-popup">
 		<transition v-if="mask" :name="animate" >
-			<div v-show="visible" class="vm-tools-preview-popup__mask" @click="handleClose" />
+			<div v-show="visible" class="vm-assist-preview-popup__mask" @click="handleClose" />
 		</transition>
 		<transition v-if="mask" :name="animate" >
-			<div v-show="visible" class="vm-tools-preview-popup__close" @click="handleClose">&#10005;</div>
+			<div v-show="visible" class="vm-assist-preview-popup__close" @click="handleClose">&#10005;</div>
 		</transition>
 		<transition :name="animate">
-			<div v-show="visible" class="vm-tools-preview-popup__content">
-				<vm-tools-preview :data-source="dataSource" :mode="mode"/>
+			<div v-show="visible" class="vm-assist-preview-popup__content">
+				<vm-preview 
+					:data-source="dataSource" 
+					:mode="mode"
+				/>
 			</div>
 		</transition>
 	</div>
@@ -70,7 +73,7 @@ export default {
 </script>
 
 <style lang="scss">
-.vm-tools-preview-popup {
+.vm-assist-preview-popup {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -81,7 +84,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 }
-.vm-tools-preview-popup__mask {
+.vm-assist-preview-popup__mask {
 	position: absolute;
 	z-index: 997;
 	top: 0;
@@ -92,7 +95,7 @@ export default {
 	// opacity: 0;
 	transition: opacity 0.2s;
 }
-.vm-tools-preview-popup__content {
+.vm-assist-preview-popup__content {
 	position: relative;
 	z-index: 998;
 	overflow: auto; // 区域之外不形式
@@ -100,7 +103,7 @@ export default {
 	max-width: 100vw; 
 	transition: transform 0.2s, opacity 0.2s;
 }
-.vm-tools-preview-popup__close {
+.vm-assist-preview-popup__close {
 	position: absolute;
 	right: 30px; 
 	top: 30px;

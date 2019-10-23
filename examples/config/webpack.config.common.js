@@ -64,7 +64,7 @@ const webpackConfig = {
 			 * 而如果要使用 template 这个属性的话就一定要用 compiler.js，那么，引入 vue.js 是最恰当的
 			 */
 			'vue$': 'vue/dist/vue.esm.js',
-			'@wya/vm': path.resolve(APP_ROOT, '../build/vm.min.js'),
+			'@wya/vm': path.resolve(APP_ROOT, './src/libs/vm.min.js'),
 			'@components': path.resolve(APP_ROOT, './src/pages/components'),
 			'@constants': path.resolve(APP_ROOT, './src/pages/constants'),
 			'@extends': path.resolve(APP_ROOT, './src/pages/extends'),
@@ -115,6 +115,9 @@ const webpackConfig = {
 					},
 					{
 						loader: '@wya/vc-loader',
+						options: {
+							exclude: /(node_modules|vm.min.js)/
+						}
 					}
 				]
 			},

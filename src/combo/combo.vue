@@ -22,7 +22,7 @@
 				}"
 				class="vm-frame__inner"
 				@click="handleClick"
-				@contextmenu.prevent="e => e.preventDefault()"
+				@contextmenu.prevent
 			>
 				<div style="flex: 1; overflow: hidden;">
 					<vm-ruler
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import Assist from './assist';
+import { Assist } from './assist';
 import Ruler from './ruler';
 import { cloneDeep, isEqualWith, hasClass, getUid } from '../utils/helper';
 import './combo-defaut.scss';
@@ -258,7 +258,7 @@ export default {
 	destroyed() {
 		let dom = document.querySelector('.vm-frame__wrap');
 		dom && dom.removeEventListener('scroll', this.handleFrameScroll);
-		this.$options.previewManager.hide();
+		this.$options.previewManager.destroy();
 	},
 	methods: {
 		makeRebuildData(source) {
@@ -520,7 +520,7 @@ export default {
 				});
 				return false;
 			}
-			this.$options.previewManager.show({
+			this.$options.previewManager.popup({
 				dataSource: cloneDeep(this.rebuildData),
 				style: {
 					...this.frameStyle,

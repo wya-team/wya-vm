@@ -1,5 +1,6 @@
 <template>
 	<div
+		v-show="visible"
 		ref="vm-right-menu"
 		:style="{
 			left: `${event.clientX}px`,
@@ -7,24 +8,32 @@
 		}"
 		class="vm-right-menu"
 	>
-		<transition name="vm-fade">
-			<div v-show="visible" class="vm-right-menu__content">
-				<span
-					v-for="item in menu"
-					:key="item.value"
-					class="vm-right-menu__item"
-					@click="$emit('click', item)"
-					@mousedown.stop
-				>
-					{{ item.label }}
-				</span>
-			</div>
-		</transition>
+		<div class="vm-right-menu__content">
+			<span
+				v-for="item in menu"
+				:key="item"
+				class="vm-right-menu__item"
+				@click="handleClick(item)"
+				@mousedown.stop
+			>
+				{{ item }}
+			</span>
+		</div>
 	</div>
 </template>
 <script>
-export default {
-	name: 'right-menu',
+import { Portal } from '../../../vc';
+
+export const RIGHT_MENU_MAP = {
+	TOP: '置顶', 
+	BOTTOM: '置底', 
+	UP: '上移一层', 
+	DOWN: '下移一层', 
+	DELETE: '删除', 
+};
+
+export const config = {
+	name: 'vm-right-menu',
 	props: {
 		event: MouseEvent
 	},
@@ -32,22 +41,7 @@ export default {
 		return {
 			visible: false,
 			wrapHeight: 175,
-			menu: [{
-				label: '置顶',
-				value: 1
-			}, {
-				label: '置底',
-				value: 2
-			}, {
-				label: '上移一层',
-				value: 3
-			}, {
-				label: '下移一层',
-				value: 4
-			}, {
-				label: '删除',
-				value: 5
-			}]
+			menu: Object.keys(RIGHT_MENU_MAP).map((key) => RIGHT_MENU_MAP[key])
 		};
 	},
 	computed: {
@@ -60,9 +54,16 @@ export default {
 		this.visible = true;
 	},
 	methods: {
-
+		handleClick(item) {
+			this.visible = false;
+			this.$emit('sure', item);
+		}
 	},
 };
+
+export default config;
+export const RightMenu = new Portal(config);
+
 </script>
 <style lang="scss">
 .vm-right-menu {

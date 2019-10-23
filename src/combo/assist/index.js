@@ -1,12 +1,13 @@
 import Operation from './operation.vue';
 import Save from './save.vue';
-import Customer from './customer';
+import { Preview, PreviewPopup } from './preview/index';
 
 const Assist = {
-	Customer,
 	Operation,
-	Save
+	Save,
+	Preview,
+	PreviewPopup
 };
 
-export default Assist;
+export { Assist };
 

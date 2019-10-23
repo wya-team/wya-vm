@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-tools-preview">
+	<div class="vm-assist-preview">
 		<div style="position: relative;">
 			<div 
 				v-for="(it) in dataSource" 
@@ -25,7 +25,7 @@
 
 <script>
 export default {
-	name: 'vm-tools-preview',
+	name: 'vm-assist-preview',
 	components: {
 		
 	},
@@ -53,5 +53,4 @@ export default {
 		}
 	}
 };
-
 </script>
