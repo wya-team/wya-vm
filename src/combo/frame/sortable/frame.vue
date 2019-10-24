@@ -208,6 +208,16 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../../../style/index.scss";
+
+.vm-frame-sortable {
+	// 不可缩小
+	flex-shrink: 0;
+	border: 1px solid $border;
+	margin-left: 20px;
+	position: relative;
+	overflow: auto
+}
 .vm-frame-sortable__item {
 	transition: all .5s;
 }

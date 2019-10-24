@@ -1,71 +1,91 @@
 <template>
-	<div
-		:style="style"
-		class="vm-frame-draggable"
-		style="position: relative;"
-		@dragover.prevent="handleDragOver"
-		@dragend="handleDragEnd"
-		@drop="handleDrop"
+	<vm-inner 
+		:show-ruler="showRuler"
+		:scroll-left="scrollLeft"
+		:scroll-top="scrollTop"
+		:width="width"
+		:height="height"
+		class="vm-frame-draggable" 
 	>
-		<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
-		<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
-		<!-- TODO: 不操作引用修改 -->
-		<vm-draggable
-			v-for="(it, index) in dataSource"
-			ref="draggable"
-			:key="it.id"
-			:x.sync="it.x"
-			:y.sync="it.y"
-			:z.sync="it.z"
-			:w.sync="it.w"
-			:h.sync="it.h"
-			:r.sync="it.r"
-			:module="it.module"
-			:parent="it.parent"
-			:disabled="it.disabled"
-			:handles="it.handles"
-			:min-w="it.minW"
-			:min-h="it.minH"
-			:scale="scale"
-			:grid="it.grid"
-			:active="it.active"
-			:restrain="it.restrain"
-			:closeable="it.closeable || typeof it.closeable === 'undefined'"
-			:draggable="it.draggable || typeof it.draggable === 'undefined'"
-			:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
-			:resizable="it.resizable || typeof it.resizable === 'undefined'"
-			:x-rule-lines="xRuleLines"
-			:y-rule-lines="yRuleLines"
-			:scroll-left="scrollLeft"
-			:scroll-top="scrollTop"
-			@activated="$emit('activated', it)"
-			@deactivated="$emit('deactivated', arguments[0], it)"
-			@dragging="$emit('dragging', it)"
-			@resizing="$emit('resizing', it)"
-			@rotating="$emit('rotating', it)"
-			@resize-end="$emit('resize-end', it)"
-			@drag-end="$emit('drag-end', it)"
-			@delete="$emit('change', { type: 'delete', id: it.id })"
-			@end="handleEnd(arguments[0], it.id, index)"
-			@contextmenu.prevent.native="handleShowMenu($event, it)"
-		>
-			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
-			<component
-				:is="`vm-${it.module}-viewer`"
-				:index="index"
-				:vm="vm"
-				v-bind="it"
-			/>
-		</vm-draggable>
-	</div>
+		<template #content>
+			<div class="vm-frame-draggable__wrapper" @scroll="handleScroll">
+				<div :style="hackStyle">
+					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
+					<div
+						:style="[contentStyle, frameStyle]"
+						class="vm-frame-draggable__content"
+						style="position: relative;"
+						@dragover.prevent="handleDragOver"
+						@dragend="handleDragEnd"
+						@drop="handleDrop"
+					>
+						<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
+						<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
+						<!-- TODO: 不操作引用修改 -->
+						<vm-draggable
+							v-for="(it, index) in dataSource"
+							ref="draggable"
+							:key="it.id"
+							:x.sync="it.x"
+							:y.sync="it.y"
+							:z.sync="it.z"
+							:w.sync="it.w"
+							:h.sync="it.h"
+							:r.sync="it.r"
+							:module="it.module"
+							:parent="it.parent"
+							:disabled="it.disabled"
+							:handles="it.handles"
+							:min-w="it.minW"
+							:min-h="it.minH"
+							:scale="scale"
+							:grid="it.grid"
+							:active="it.active"
+							:restrain="it.restrain"
+							:closeable="it.closeable || typeof it.closeable === 'undefined'"
+							:draggable="it.draggable || typeof it.draggable === 'undefined'"
+							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
+							:resizable="it.resizable || typeof it.resizable === 'undefined'"
+							:x-rule-lines="xRuleLines"
+							:y-rule-lines="yRuleLines"
+							:scroll-left="scrollLeft"
+							:scroll-top="scrollTop"
+							@activated="$emit('activated', it)"
+							@deactivated="$emit('deactivated', arguments[0], it)"
+							@dragging="$emit('dragging', it)"
+							@resizing="$emit('resizing', it)"
+							@rotating="$emit('rotating', it)"
+							@resize-end="$emit('resize-end', it)"
+							@drag-end="$emit('drag-end', it)"
+							@delete="$emit('change', { type: 'delete', id: it.id })"
+							@end="handleEnd(arguments[0], it.id, index)"
+							@contextmenu.prevent.native="handleShowMenu($event, it)"
+						>
+							<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+							<component
+								:is="`vm-${it.module}-viewer`"
+								:index="index"
+								:vm="vm"
+								v-bind="it"
+							/>
+						</vm-draggable>
+					</div>
+				</div>
+			</div>
+		</template>	
+		<template #footer>
+			<div style="background: red; padding-top: 20px;" />
+		</template>
+	</vm-inner>
 </template>
 
 <script>
 import Draggable from '../../../base/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
+import Inner from './inner.vue';
 import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
-import { getUid, cloneDeep } from '../../../utils/helper';
+import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../../utils/constants';
 
 export default {
@@ -74,40 +94,62 @@ export default {
 		'vm-draggable': Draggable,
 		'vm-grid-lines': GridLines,
 		'vm-align-lines': AlignLines,
+		'vm-inner': Inner,
 	},
 	props: {
-		width: Number,
-		height: Number,
+		width: {
+			type: Number,
+			validator: v => v > 0,
+		},
+		height: {
+			type: Number,
+			validator: v => v > 0,
+		},
 		dataSource: Array,
 		editor: Object,
 		showLines: {
 			type: Boolean,
 			default: true
 		},
-		xRuleLines: Array,
-		yRuleLines: Array,
-		scale: Number,
-		scrollLeft: Number,
-		scrollTop: Number
+		showRuler: {
+			type: Boolean,
+			default: true
+		},
+		frameStyle: Object
 	},
 	data() {
 		return {
 			vm: {
 				type: 'frame'
-			}
+			},
+			scrollLeft: 0,
+			scrollTop: 0,
+			scale: 1,
+			xRuleLines: [],
+			yRuleLines: [],
 		};
 	},
 	computed: {
-		style() {
-			const w = this.width === 0 ? 'auto' : `${this.width}px`;
-			const h = this.height === 0 ? 'auto' : `${this.height}px`;
+		contentStyle() {
 			return {
-				width: w,
-				height: h
+				width: `${this.width}px`,
+				height: `${this.height}px`
+			};
+		},
+
+		hackStyle() {
+			return {
+				width: `${this.width + 20}px`,
+				height: `${this.height + 20}px`
 			};
 		}
 	},
 	methods: {
+		handleScroll: throttle(function (e) {
+			this.scrollLeft = e.target.scrollLeft;
+			this.scrollTop = e.target.scrollTop;
+		}, 50),
+
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
@@ -242,3 +284,24 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+@import "../../../style/index.scss";
+
+$block: vm-frame-draggable;
+
+@include block($block) {
+	@include element(wrapper) {
+		overflow: auto;
+		padding-top: 20px;
+		padding-left: 20px;
+	}
+	@include element(content) {
+		// 不可缩小
+		flex-shrink: 0;
+		border: 1px solid $border;
+		position: relative;
+		overflow: hidden;
+	}
+}
+</style>

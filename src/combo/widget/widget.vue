@@ -141,3 +141,151 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+@import "../../style/index.scss";
+
+$block: vm-widget;
+
+@include block($block) {
+	flex: 0 0 354px;
+	width: 354px;
+	z-index: 10;
+	@include element(wrapper) {
+		background: $white;
+		padding: 10px 0 0;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+	}
+	@include element(header) {
+		font-size: 15px;
+		color: #000;
+		padding: 8px 15px;
+		font-weight: 400;
+	}
+	@include element(tip) {
+		background: #FDF5E8;
+		height: 40px;
+		margin: 2px 9px 15px;
+		display: flex;
+		align-items: center;
+		padding: 0 10px;
+		color: $assit;
+		border-radius: 4px;
+		border:none;
+		p {
+			flex: 1;
+		}
+		span {
+			color: $assit;
+			cursor: pointer;
+		}
+	}
+	@include element(icon-warn) {
+		width: 14px;
+		height: 14px;
+		background: #EC9C39;
+		border-radius: 100%;
+		color: $white;
+		font-size: 12px;
+		line-height: 14px;
+		text-align: center;
+		margin-right: 7px;
+	}
+	@include element(menu) {
+		border-top: 1px solid $border;
+		overflow-y: auto;
+		display: flex;
+		flex:1;
+		justify-content: space-between;
+		align-items: stretch;
+		flex-wrap: nowrap;
+	}
+	@include element(tabs) {
+		width: 56px;
+		height: 100%;
+		padding:0;
+		color: $assit;
+		display: flex;
+		line-height: 24px;
+		font-size: 12px;
+		border-right: 1px solid $border;
+		justify-content: flex-start;
+		flex-direction: column;
+		p {
+			text-align: center;
+			height: 49px;
+			cursor: pointer;
+			line-height: 49px;
+			&.is-active {
+				color: $black;
+				background-color: $acitved;
+			}
+		}
+	}
+	@include element(content) {
+		width: 297px;
+		overflow: auto;
+		height: 100%;
+	}
+
+	@include element(title) {
+		padding: 15px 20px;
+		font-size: 12px;
+		color: #000;
+		// font-weight: bold;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		cursor: pointer;
+		border-bottom: 1px solid $border;
+		@include when(draggable) {
+			cursor: move;
+		}
+		@include when(click) {
+			cursor: pointer;
+		}
+		@include when(active) {
+			color: $primary;
+			.vm-widget__arrow {
+				transform: rotate(-135deg);
+			}
+		}
+	}
+	@include element(arrow) {
+		width: 8px;
+		height: 8px;
+		border: 2px solid $border;
+		border-top: 0;
+		border-left: 0;
+		transform: rotate(45deg);
+		transition: transform 0.2s ease-in-out;
+	}
+	@include element(combo) {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		border-bottom: 1px solid $border;
+		// justify-content: center;
+		padding: 12px;
+	}
+	@include element(item) {
+		flex: 0 0 50%;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		padding: 6px 12px;
+		cursor: move;
+		img {
+			width: 100%;
+			border: 1px dashed $border;
+		}
+		p {
+			padding-top: 8px;
+		}
+	}
+}
+
+</style>

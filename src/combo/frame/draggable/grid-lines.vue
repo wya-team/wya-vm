@@ -57,7 +57,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .vm-grid-lines {
 	position: absolute;
 	top: 0;
