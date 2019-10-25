@@ -27,8 +27,9 @@ minH | - | `any` | -
 x | - | `any` | -
 y | - | `any` | -
 z | - | `any` | -
-zoom | - | `any` | -
+scale | - | `any` | -
 grid | - | `any` | -
+guides | - | `any` | -
 restrain | - | `any` | -
 parent | - | `any` | -
 entryRegExp | - | `any` | -

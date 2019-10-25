@@ -3,8 +3,8 @@
 		<vm-combo 
 			v-model="list"
 			:frame-style="{ border: '1px solid red', margin: 100 }"
-			:frame-w="2000"
-			:frame-h="2000"
+			:frame-w="1920"
+			:frame-h="1080"
 			:style="style"
 			@save="handleSave"
 			@error="handleError"
@@ -30,8 +30,8 @@ export default {
 				{
 					id: Math.random(),
 					module: 'page',
-					w: 2000,
-					h: 2000,
+					w: 1920,
+					h: 1080,
 				}
 			],
 			style: {}

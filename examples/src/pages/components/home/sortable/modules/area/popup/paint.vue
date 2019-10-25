@@ -26,6 +26,9 @@
 				:show-widget="false"
 				:show-editor="false"
 				:show-lines="false"
+				:show-ruler="false"
+				:show-zoom-bar="false"
+				:show-thumbnail="false"
 				:frame-style="{
 					'background-image': `url(${src})`,
 					'background-size': '100%'

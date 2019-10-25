@@ -48,8 +48,4 @@ export default {
 </script>
 
 <style lang="scss">
-input {
-	border: 1px solid #000;
-	margin: 10px;
-}
 </style>

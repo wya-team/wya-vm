@@ -1,5 +1,5 @@
 <template>
-	<div style="display: flex; flex-direction: column;">
+	<div style="display: flex; flex-direction: column;" class="v-x">
 		<div>w: <input :value="$attrs.w" @input="handleChange($event, 'w')"></div>
 		<div>h: <input :value="$attrs.h" @input="handleChange($event, 'h')"></div>
 		<div>x: <input :value="$attrs.x" @input="handleChange($event, 'x')"></div>
@@ -47,8 +47,10 @@ export default {
 </script>
 
 <style lang="scss">
-input {
-	border: 1px solid #000;
-	margin: 10px;
+.v-x {
+	input {
+		border: 1px solid #000;
+		margin: 10px;
+	}
 }
 </style>
