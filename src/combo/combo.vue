@@ -16,6 +16,8 @@
 			:editor="editor" 
 			:show-lines="showLines"
 			:show-ruler="showRuler"
+			:show-zoom-bar="showZoomBar"
+			:show-thumbnail="showThumbnail"
 			v-bind="frameOpts"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
@@ -97,10 +99,6 @@ export default {
 			type: Boolean,
 			default: false
 		},
-		showRuler: {
-			type: Boolean,
-			default: true
-		},
 		showWidget: {
 			type: Boolean,
 			default: true
@@ -112,8 +110,19 @@ export default {
 		showLines: {
 			type: Boolean,
 			default: true
-		}
-
+		},
+		showRuler: {
+			type: Boolean,
+			default: true
+		},
+		showZoomBar: {
+			type: Boolean,
+			default: true
+		},
+		showThumbnail: {
+			type: Boolean,
+			default: true
+		},
 	},
 	data() {
 		return {

@@ -3,15 +3,24 @@
 		:show-ruler="showRuler"
 		:scroll-left="scrollLeft"
 		:scroll-top="scrollTop"
-		:width="width"
-		:height="height"
+		:frame-w="width"
+		:frame-h="height"
+		:scale="scale"
+		:border-size="borderSize"
+		:guides.sync="guides"
 		class="vm-frame-draggable" 
 	>
 		<template #content>
-			<div class="vm-frame-draggable__wrapper" @scroll="handleScroll">
+			<div 
+				ref="wrapper" 
+				:style="wrapperStyle"
+				class="vm-frame-draggable__wrapper" 
+				@scroll="handleScroll"
+			>
 				<div :style="hackStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
 					<div
+						ref="content"
 						:style="[contentStyle, frameStyle]"
 						class="vm-frame-draggable__content"
 						style="position: relative;"
@@ -40,16 +49,14 @@
 							:min-h="it.minH"
 							:scale="scale"
 							:grid="it.grid"
+							:guides="guides"
+							:offset="[scrollLeft || 0, scrollTop || 0]"
 							:active="it.active"
 							:restrain="it.restrain"
 							:closeable="it.closeable || typeof it.closeable === 'undefined'"
 							:draggable="it.draggable || typeof it.draggable === 'undefined'"
 							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 							:resizable="it.resizable || typeof it.resizable === 'undefined'"
-							:x-rule-lines="xRuleLines"
-							:y-rule-lines="yRuleLines"
-							:scroll-left="scrollLeft"
-							:scroll-top="scrollTop"
 							@activated="$emit('activated', it)"
 							@deactivated="$emit('deactivated', arguments[0], it)"
 							@dragging="$emit('dragging', it)"
@@ -72,9 +79,32 @@
 					</div>
 				</div>
 			</div>
+		</template>
+		<template #content-extra>
+			<vm-thumbnail
+				v-if="showThumbnail"
+				:data-source="dataSource"
+				:scale="scale"
+				:frame-w="width"
+				:frame-h="height"
+				:client-w="clientW"
+				:client-h="clientH"
+				:scroll-left="scrollLeft"
+				:scroll-top="scrollTop"
+				:border-size="borderSize"
+				@scroll="handleScrollThumbnail"
+			/>
 		</template>	
 		<template #footer>
-			<div style="background: red; padding-top: 20px;" />
+			<vm-zoom-bar
+				v-if="showZoomBar"
+				:scale.sync="scale"
+				:border-size="borderSize"
+				:frame-w="width"
+				:frame-h="height"
+				:client-w="clientW"
+				:client-h="clientH"
+			/>
 		</template>
 	</vm-inner>
 </template>
@@ -84,6 +114,8 @@ import Draggable from '../../../base/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
 import Inner from './inner.vue';
+import ZoomBar from './zoom-bar.vue';
+import Thumbnail from './thumbnail.vue';
 import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
 import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../../utils/constants';
@@ -95,6 +127,8 @@ export default {
 		'vm-grid-lines': GridLines,
 		'vm-align-lines': AlignLines,
 		'vm-inner': Inner,
+		'vm-zoom-bar': ZoomBar,
+		'vm-thumbnail': Thumbnail,
 	},
 	props: {
 		width: {
@@ -107,6 +141,7 @@ export default {
 		},
 		dataSource: Array,
 		editor: Object,
+		frameStyle: Object,
 		showLines: {
 			type: Boolean,
 			default: true
@@ -115,7 +150,14 @@ export default {
 			type: Boolean,
 			default: true
 		},
-		frameStyle: Object
+		showZoomBar: {
+			type: Boolean,
+			default: true
+		},
+		showThumbnail: {
+			type: Boolean,
+			default: true
+		},
 	},
 	data() {
 		return {
@@ -127,28 +169,64 @@ export default {
 			scale: 1,
 			xRuleLines: [],
 			yRuleLines: [],
+
+			// 容器的宽高
+			clientW: 0,
+			clientH: 0,
+
+			// 四周留白
+			borderSize: 20,
+
+			// 参考线
+			guides: [[], []]
 		};
 	},
 	computed: {
+		wrapperStyle() {
+			return {
+				paddingTop: `${this.borderSize}px`,
+				paddingLeft: `${this.borderSize}px`,
+			};
+		},
 		contentStyle() {
 			return {
 				width: `${this.width}px`,
-				height: `${this.height}px`
+				height: `${this.height}px`,
+				transform: `scale(${this.scale})`,
+				transformOrigin: `0 0`,
 			};
 		},
 
 		hackStyle() {
 			return {
-				width: `${this.width + 20}px`,
-				height: `${this.height + 20}px`
+				width: `${Math.max(this.clientW, this.width * this.scale) + this.borderSize}px`,
+				height: `${this.height * this.scale + this.borderSize}px`
 			};
 		}
+	},
+	mounted() {
+		this.$nextTick(() => {
+			/**
+			 * 1. 自适应布局
+			 * 2. 滚动条最右侧显示（hackStyle）
+			 */
+			this.clientW = this.$refs.wrapper.offsetWidth;
+			this.clientH = this.$refs.wrapper.offsetHeight;
+		});
 	},
 	methods: {
 		handleScroll: throttle(function (e) {
 			this.scrollLeft = e.target.scrollLeft;
 			this.scrollTop = e.target.scrollTop;
 		}, 50),
+
+		handleScrollThumbnail(x, y) {
+			this.scrollLeft = x;
+			this.$refs.wrapper.scrollLeft = x;
+
+			this.scrollTop = y;
+			this.$refs.wrapper.scrollTop = y;
+		},
 
 		handleDragOver(e) {
 		},
@@ -168,7 +246,7 @@ export default {
 				return;
 			}
 
-			let { x, y } = this.$el.getBoundingClientRect();
+			let { x, y } = this.$refs.content.getBoundingClientRect();
 
 			let mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft || 0;
 			let mouseY = e.pageY || e.clientY + document.documentElement.scrollTop || 0;
@@ -293,8 +371,6 @@ $block: vm-frame-draggable;
 @include block($block) {
 	@include element(wrapper) {
 		overflow: auto;
-		padding-top: 20px;
-		padding-left: 20px;
 	}
 	@include element(content) {
 		// 不可缩小
@@ -302,6 +378,7 @@ $block: vm-frame-draggable;
 		border: 1px solid $border;
 		position: relative;
 		overflow: hidden;
+		z-index: 1;
 	}
 }
 </style>

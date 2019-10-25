@@ -4,12 +4,17 @@
 			v-if="showRuler"
 			:scroll-left="scrollLeft"
 			:scroll-top="scrollTop"
-			:width="width"
-			:height="height"
+			:frame-w="frameW"
+			:frame-h="frameH"
+			:scale="scale"
+			:guides="guides"
+			:border-size="borderSize"
+			@guides-change="$emit('update:guides', arguments[0])"
 		>
 			<slot name="content" />
 		</vm-ruler>
 		<slot v-else name="content" />
+		<slot name="content-extra" />
 		<slot name="footer" />
 	</div>
 </template>
@@ -40,5 +45,7 @@ $block: vm-frame-draggable--inner;
 	
 	display: flex; 
 	flex-direction: column;
+
+	position: relative;
 }
 </style>
