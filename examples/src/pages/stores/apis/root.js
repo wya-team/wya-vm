@@ -22,7 +22,7 @@ if (__DEV__) {
 }
 for (let i in API) {
 	if (RegEx.URLScheme.test(API[i])) {
-		API[i] = API[i];
+		// API[i] = API[i];
 	} else {
 		API[i] = baseUrl + API[i];
 	}

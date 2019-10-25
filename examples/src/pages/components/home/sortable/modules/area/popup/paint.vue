@@ -8,8 +8,12 @@
 		@ok="handleOk"
 		@cancel="handleCancel"
 	>
-		<vc-button class="vm-hack-entry">测试：销毁editor</vc-button>
-		<vc-button class="vm-hack-entry vm-hack-editor">测试：无法销毁</vc-button>
+		<vc-button class="vm-hack-entry">
+			测试：销毁editor
+		</vc-button>
+		<vc-button class="vm-hack-entry vm-hack-editor">
+			测试：无法销毁
+		</vc-button>
 		<div>
 			<br>
 		</div>
@@ -22,6 +26,9 @@
 				:show-widget="false"
 				:show-editor="false"
 				:show-lines="false"
+				:show-ruler="false"
+				:show-zoom-bar="false"
+				:show-thumbnail="false"
 				:frame-style="{
 					'background-image': `url(${src})`,
 					'background-size': '100%'
@@ -30,7 +37,9 @@
 			<div class="vm-basic-area-paint__content">
 				<div class="vm-basic-area-paint__operation">
 					<vm-widget module="paint">
-						<vc-button @click="handleAdd">添加热区</vc-button>
+						<vc-button @click="handleAdd">
+							添加热区
+						</vc-button>
 					</vm-widget>
 					<span style="font-size: 12px; color: #999;">最多10个</span>
 				</div>
@@ -60,11 +69,11 @@
 								<template #list>
 									<vc-dropdown-menu>
 										<vc-dropdown-item
-											v-for="(item, index) in page"
-											:key="index"
-											:name="item.value"
+											v-for="($item, $index) in page"
+											:key="$index"
+											:name="$item.value"
 										>
-											{{ item.label }}
+											{{ $item.label }}
 										</vc-dropdown-item>
 									</vc-dropdown-menu>
 								</template>
@@ -157,7 +166,7 @@ export const Paint = new Portal(config, {
 				resolve({
 					data: {
 						frameW: 500,
-						frameH: 500 / img.naturalWidth * img.naturalHeight
+						frameH: (500 / img.naturalWidth) * img.naturalHeight
 					}
 				});
 			};

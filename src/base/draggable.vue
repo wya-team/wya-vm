@@ -1,17 +1,18 @@
 <template>
-	<div 
-		:style="coord" 
+	<div
+		:style="coord"
+		:class="!draggable ? 'vm-draggable-disabled' : ''"
 		class="vm-draggable"
-		@mousedown.stop="handleContainerDown"
+		@mousedown="handleContainerDown"
 		@touchstart.stop="handleContainerDown"
 	>
 		<div :style="style" :class="{ 'is-events-none': isChanging }" >
 			<slot :style="style"/>
 		</div>
 		<!-- handle -->
-		<div 
-			v-if="(active || isActive) && (closeable || realHandles.length > 0)" 
-			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }" 
+		<div
+			v-if="(active || isActive) && (closeable || realHandles.length > 0)"
+			:class="{ 'is-disabled': disabled, 'is-active': (active || isActive) }"
 			:style="style"
 			class="vm-draggable__handles"
 		>
@@ -92,21 +93,21 @@ export default {
 			validator: val => val > 0
 		},
 		// 距父元素左上角X轴偏移量
-		x: { 
+		x: {
 			type: Number,
 			default: 0
 		},
 		// 距父元素左上角Y轴偏移量
-		y: { 
+		y: {
 			type: Number,
 			default: 0
 		},
 		// zIndex
-		z: { 
+		z: {
 			type: Number,
 			default: 1
 		},
-		zoom: {
+		scale: {
 			type: Number,
 			default: 1
 		},
@@ -116,19 +117,27 @@ export default {
 				return [1, 1];
 			}
 		},
+
+		guides: {
+			type: Array,
+			default() {
+				return [[], []];
+			}
+		},
+
 		// 约束组件大小
 		restrain: {
-			type: Number, 
+			type: Number,
 			default: 0
 		},
 		parent: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
 
 		// 在入口文件下，才会去判断editorRegExp，如弹层不会判断让其失去激活状态（除非配置）
 		entryRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				className: /vm-hack-entry/,
 				id: /^(app|pages)$/
@@ -136,7 +145,7 @@ export default {
 		},
 
 		editorRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				className: /vm-hack-editor/
 			})
@@ -146,47 +155,59 @@ export default {
 		 * 是否屏蔽默认事件
 		 */
 		prevent: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 		preventRegExp: {
-			type: Object, 
+			type: Object,
 			default: () => ({
 				tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|OPTION)$/,
 				className: /vm-hack-pevent/,
 			})
 		},
 
+		module: {
+			type: String,
+		},
+
 		disabled: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
-		
+
 		closeable: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
 		},
 
 		draggable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		resizable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		rotatable: {
-			type: Boolean, 
+			type: Boolean,
 			default: true
 		},
 
 		// 激活状态， 特殊需求
 		active: {
-			type: Boolean, 
+			type: Boolean,
 			default: false
-		}
+		},
+
+		offset: {
+			type: Array,
+			default() {
+				return [0, 0];
+			}
+		},
+
 	},
 	data() {
 		return {
@@ -202,7 +223,7 @@ export default {
 			return {
 				left: this.x + 'px',
 				top: this.y + 'px',
-				zIndex: this.z
+				zIndex: this.isActive && this.module !== 'page' ? 999 : this.z
 			};
 		},
 		style() {
@@ -266,8 +287,9 @@ export default {
 
 		this.$nextTick(() => {
 			const { x, y } = this.$el.parentNode.getBoundingClientRect();
-			this.parentX = x;
-			this.parentY = y;
+			this.parentX = x + this.offset[0];
+			this.parentY = y + this.offset[1];
+
 			// 判断是否只能在父级元素中拖动
 			this.parent && this.calculation();
 			this.$emit('resizing');
@@ -282,7 +304,7 @@ export default {
 			if (!width || !height) {
 				throw new Error('@wya/vm: 父层容器宽度计算异常');
 			}
-			
+
 			this.parentW = width;
 			this.parentH = height; // this.$el.parentNode.clientHeight
 
@@ -299,7 +321,7 @@ export default {
 				this.sync({ y: this.parentH - this.h });
 			}
 		},
-		sync(opts) {			
+		sync(opts) {
 			for (let key in opts) {
 				if (this[key] != opts[key]) {
 					!this.beforeStatus && (this.beforeStatus = {
@@ -339,7 +361,7 @@ export default {
 		 */
 		handleContainerDown(e = {}) {
 			this.prevent
-				&& e.preventDefault 
+				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
@@ -384,10 +406,10 @@ export default {
 
 			// 是否是入口下的元素，如果不是，就意味着可能是弹层（避免销毁）
 			let isInline = path.some(item => eleInRegExp(item, this.entryRegExp));
-			
+
 			if (
-				isInline 
-				&& !this.$el.contains(target) 
+				isInline
+				&& !this.$el.contains(target)
 				&& !eleInRegExp(target, regex)
 				&& (!path.some(item => eleInRegExp(item, this.editorRegExp)))
 			) {
@@ -396,7 +418,7 @@ export default {
 					this.operateDOMEvents('remove');
 
 					this.isActive = false;
-					this.$emit('deactivated');
+					this.$emit('deactivated', e);
 				}
 			}
 		},
@@ -405,7 +427,7 @@ export default {
 		 */
 		handleDown(e, handle) {
 			this.prevent
-				&& e.preventDefault 
+				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)
 				&& e.preventDefault();
 
@@ -422,12 +444,8 @@ export default {
 			this.preMouseX = mousePositionX + doc.scrollLeft;
 			this.preMouseY = mousePositionY + doc.scrollTop;
 		},
-		/**
-		 * 鼠标在页面上的坐标
-		 */
 		handleMove(e) {
 			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
-
 			this.mouseX = mousePositionX + doc.scrollLeft;
 			this.mouseY = mousePositionY + doc.scrollTop;
 
@@ -437,49 +455,48 @@ export default {
 			let elmW = parseInt(this.w, 10);
 			let elmH = parseInt(this.h, 10);
 
-			// diffX =  当前鼠标位置 - 上次鼠标位置 + ？？
-			let diffX = (this.mouseX - this.lastMouseX + this.mouseOffX) / this.zoom;
-			let diffY = (this.mouseY - this.lastMouseY + this.mouseOffY) / this.zoom;
-			this.mouseOffX = 0;
-			this.mouseOffY = 0;
+			// 鼠标所在的轴xy坐标值
+			let axisX = Math.round((this.mouseX - this.parentX + this.offset[0]) / this.scale);
+			let axisY = Math.round((this.mouseY - this.parentY + this.offset[1]) / this.scale);
+			let diffX = axisX - Math.round((this.lastMouseX - this.parentX + this.offset[0]) / this.scale);
+			let diffY = axisY - Math.round((this.lastMouseY - this.parentY + this.offset[1]) / this.scale);
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
+
 			if (this.isResizing) {
 				if (this.handle.includes('top')) {
-					if (elmH - diffY < this.minH) { // 向下移动
-						// 变换后的高度小于最小高度，diffY -> 0 , this.mouseOffY为this.y -> 当前鼠标位置的距离（正数）
-						this.mouseOffY = (diffY - (diffY = elmH - this.minH));
-					} else if (this.parent && elmY + diffY < 0) { // 向上移动 
-						// 变换后this.y 超出父层顶部边界时， diffY -> 0, this.mouseOffY为this.y -> 当前鼠标位置的距离(负数)
-						this.mouseOffY = (diffY - (diffY = -elmY));
+					if (elmY - axisY + elmH < this.minH) {
+						axisY = elmY + elmH - this.minH;
+					} else if (this.parent && axisY < 0) {
+						axisY = 0;
 					}
-					elmY += diffY;
-					elmH -= diffY;
+					elmH = elmY + elmH - axisY;
+					elmY = axisY;
 				}
 				if (this.handle.includes('bottom')) {
-					if (elmH + diffY < this.minH) { // 向上移动
-						this.mouseOffY = (diffY - (diffY = this.minH - elmH));
-					} else if (elmY + elmH + diffY > this.parentH) { // 向下移动
-						this.mouseOffY = (diffY - (diffY = this.parentH - elmY - elmH));
+					if (axisY - elmY < this.minH) {
+						axisY = elmY + this.minH;
+					} else if (this.parent && axisY > this.parentH / this.scale) {
+						axisY = Math.round(this.parentH / this.scale);
 					}
-					elmH += diffY;
+					elmH = axisY - elmY;
 				}
 				if (this.handle.includes('left')) {
-					if (elmW - diffX < this.minW) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = elmW - this.minW));
-					} else if (this.parent && elmX + diffX < 0) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = -elmX));
+					if (elmX - axisX + elmW < this.minW) {
+						axisX = elmX + elmW - this.minW;
+					} else if (this.parent && axisX < 0) {
+						axisX = 0;
 					}
-					elmX += diffX;
-					elmW -= diffX;
+					elmW = elmX + elmW - axisX;
+					elmX = axisX;
 				}
 				if (this.handle.includes('right')) {
-					if (elmW + diffX < this.minW) { // 向左移动
-						this.mouseOffX = (diffX - (diffX = this.minW - elmW));
-					} else if (elmX + elmW + diffX > this.parentW) { // 向右移动
-						this.mouseOffX = (diffX - (diffX = this.parentW - elmX - elmW));
+					if (axisX - elmX < this.minW) {
+						axisX = elmX + this.minW;
+					} else if (this.parent && axisX > this.parentW / this.scale) {
+						axisX = Math.round(this.parentW / this.scale);
 					}
-					elmW += diffX;
+					elmW = axisX - elmX;
 				}
 				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
@@ -491,30 +508,45 @@ export default {
 			} else if (this.isRotating) {
 				let angle = this.getAngle(
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
-					[this.lastMouseX, -this.lastMouseY],
+					[this.lastMouseX + this.offset[0], -this.lastMouseY + this.offset[1]],
 				);
 
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
 				angle = typeof criticalAngle === 'number' ? criticalAngle : angle;
 
-				!this.disabled && this.sync({ 
+				!this.disabled && this.sync({
 					r: angle === 360 ? 0 : angle
 				});
 				this.$emit('rotating');
 			} else if (this.isDraging) {
+
+				// 找出可吸附的辅助线
+				let leftline = this.guides[0] && this.guides[0].find(item => {
+					return Math.abs(elmX + diffX - item) < 3;
+				});
+				let rightline = this.guides[0] && this.guides[0].find(item => {
+					return Math.abs(elmX + diffX + elmW - item) < 2;
+				});
+				let topline = this.guides[1] && this.guides[1].find(item => {
+					return Math.abs(elmY + diffY - item) < 3;
+				});
+				let bottomline = this.guides[1] && this.guides[1].find(item => {
+					return Math.abs(elmY + diffY + elmH - item) < 2;
+				});
+
+				leftline && (diffX = leftline - elmX);
+				rightline && (diffX = rightline - elmX - elmW);
+				topline && (diffY = topline - elmY);
+				bottomline && (diffY = bottomline - elmY - elmH);
+
 				if (this.parent) {
-					if (elmX + diffX < 0) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = -elmX));
-					} else if (elmX + elmW + diffX > this.parentW) {
-						this.mouseOffX = (diffX * this.zoom - (diffX = this.parentW - elmX - elmW));
+					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW / this.scale) {
+						diffX = 0;
 					}
-					if (elmY + diffY < 0) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = -elmY));
-					} else if (elmY + elmH + diffY > this.parentH) {
-						this.mouseOffY = (diffY * this.zoom - (diffY = this.parentH - elmY - elmH));
+					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH / this.scale) {
+						diffY = 0;
 					}
 				}
-
 				elmX += diffX;
 				elmY += diffY;
 
@@ -526,11 +558,12 @@ export default {
 			}
 
 			// 正在改变
-			!this.isChanging 
+			!this.isChanging
 				&& (this.isRotating || this.isDraging || this.isResizing)
 				&& (this.isChanging = true);
-				
+
 		},
+
 		getAngle(center, last) {
 			let diffX = last[0] - center[0];
 			let diffY = last[1] - center[1];
@@ -539,7 +572,7 @@ export default {
 			 * -180 <= c < 180
 			 */
 			let c = 360 * Math.atan2(diffY, diffX) / (2 * Math.PI);
-			c = c > 90 
+			c = c > 90
 				? (450 - c) // 第4
 				: 90 - c; // 第1，2，3象限
 			return Math.floor(c);
@@ -618,6 +651,11 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		color: white;
 		text-align: center;
 		z-index: 300
+	}
+}
+.vm-draggable-disabled {
+	&:hover {
+		cursor: default;
 	}
 }
 .vm-draggable__handles {
@@ -794,12 +832,12 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 }
 
 .vm-draggable__delete {
-	background: #5495F6; 
-	position: absolute; 
-	right: 0px; 
-	width: 20px; 
-	color: white; 
-	text-align: center; 
+	background: #5495F6;
+	position: absolute;
+	right: 0px;
+	width: 20px;
+	color: white;
+	text-align: center;
 	z-index: 300;
 	top: 0;
 	right: 0px;

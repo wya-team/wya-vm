@@ -9,12 +9,15 @@
 		/>
 		<vm-frame 
 			ref="frame"
-			:style="frameStyle" 
-			:width="frameW" 
-			:height="frameH" 
+			:frame-style="frameStyle" 
+			:width="rebuildFrameW" 
+			:height="rebuildFrameH" 
 			:data-source="rebuildData" 
 			:editor="editor" 
 			:show-lines="showLines"
+			:show-ruler="showRuler"
+			:show-zoom-bar="showZoomBar"
+			:show-thumbnail="showThumbnail"
 			v-bind="frameOpts"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
@@ -26,7 +29,7 @@
 		</vm-frame>
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor 
-			v-if="showEditor && editor" 
+			v-if="showEditor && editor"
 			:data-source="editor"
 			@change="handleChange"
 		/>
@@ -48,9 +51,8 @@
 </template>
 
 <script>
-import Assist from './assist';
+import { Assist } from './assist';
 import { cloneDeep, isEqualWith } from '../utils/helper';
-import './combo-defaut.scss';
 
 export default {
 	name: 'vm-combo',
@@ -108,19 +110,34 @@ export default {
 		showLines: {
 			type: Boolean,
 			default: true
-		}
-
+		},
+		showRuler: {
+			type: Boolean,
+			default: true
+		},
+		showZoomBar: {
+			type: Boolean,
+			default: true
+		},
+		showThumbnail: {
+			type: Boolean,
+			default: true
+		},
 	},
 	data() {
 		return {
 			editor: null,
+			pageEditor: null,
 			/**
 			 * vm-assist-operation
 			 */
 			current: 0,
 			total: 0,
 
-			rebuildData: []
+			rebuildData: [],
+
+			rebuildFrameW: 0,
+			rebuildFrameH: 0
 		};
 	},
 	computed: {
@@ -144,11 +161,27 @@ export default {
 			deep: true,
 			immediate: true,
 			handler(v) {
+
 				if (isEqualWith(v, this.rebuildData)) {
 					return;
 				}
+
 				// todo, 是否重写
 				this.rebuildData = this.makeRebuildData(this.dataSource);
+
+				// 特殊组件， 如页面设置, 设置PageEditor
+				this.rebuildSpecialComp(this.rebuildData);
+
+				// 初始化编辑状态
+				this.resetEditor(this.editor);
+			}
+		},
+		pageEditor: {
+			deep: true,
+			immediate: true,
+			handler(v) {
+				this.rebuildFrameW = v && v.w ? v.w : this.frameW;
+				this.rebuildFrameH = v && v.h ? v.h : this.frameH;
 			}
 		}
 	},
@@ -156,9 +189,27 @@ export default {
 		this.historyData = [];
 	},
 	destroyed() {
-		this.$options.previewManager.hide();
+		this.$options.previewManager.destroy();
 	},
 	methods: {
+		/**
+		 *  组件要具有唯一性，否者会异常
+		 * page组件处理（页面设置）,
+		 * 其他
+		 */
+		rebuildSpecialComp(source) {
+			if (!source.length) return {};
+			let kv = {};
+
+			source.forEach(item => {
+				// page组件
+				item.module === 'page' && (this.pageEditor = item);
+				kv[item.module] = item;
+			});
+
+			return kv;
+		},
+
 		makeRebuildData(source) {
 			let { modules } = this.$options;
 			let result = cloneDeep(source).map((it) => {
@@ -209,6 +260,9 @@ export default {
 			this.$emit('update:data-source', this.rebuildData);
 		},
 
+		resetEditor(it) {
+			this.editor = it || this.pageEditor || null;
+		},
 		/**
 		 * draggable
 		 */
@@ -216,8 +270,8 @@ export default {
 			this.editor = it;
 		},
 
-		handleDeactivated(it) {
-			this.editor = null;
+		handleDeactivated() {
+			this.editor = this.pageEditor || null;
 		},
 
 		/**
@@ -256,7 +310,10 @@ export default {
 			this.current = length;
 			this.total = length;
 			
-			type === 'delete' && (this.rebuildData.splice(target.index, 1), this.editor = null);
+			type === 'delete' && (
+				this.rebuildData.splice(target.index, 1), 
+				this.resetEditor()
+			);
 
 			this.syncData();
 		},
@@ -330,7 +387,7 @@ export default {
 					break;
 			}
 			if (this.editor && this.editor.id === id) {
-				this.editor = this.rebuildData[index];
+				this.resetEditor(this.rebuildData[index]);
 			}
 
 			this.syncData();
@@ -366,7 +423,7 @@ export default {
 					break;
 			}
 			if (this.editor && this.editor.id === id) {
-				this.editor = this.rebuildData[index];
+				this.resetEditor(this.rebuildData[index]);
 			}
 
 			this.syncData();
@@ -417,7 +474,7 @@ export default {
 				});
 				return false;
 			}
-			this.$options.previewManager.show({
+			this.$options.previewManager.popup({
 				dataSource: cloneDeep(this.rebuildData),
 				style: {
 					...this.frameStyle,
@@ -432,3 +489,9 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.vm-combo {
+	display: flex;
+}
+</style>

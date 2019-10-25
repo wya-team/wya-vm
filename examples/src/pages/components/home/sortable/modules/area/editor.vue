@@ -35,10 +35,10 @@ export default {
 		},
 		positionTransform(list, old = 500, now = 375) {
 			return cloneDeep(list).map(item => {
-				item.x = item.x / old * now;
-				item.y = item.y / old * now;
-				item.w = item.w / old * now;
-				item.h = item.h / old * now;
+				item.x = (item.x / old) * now;
+				item.y = (item.y / old) * now;
+				item.w = (item.w / old) * now;
+				item.h = (item.h / old) * now;
 				return item;
 			});
 		}

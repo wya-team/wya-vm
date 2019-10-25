@@ -1,5 +1,6 @@
 <template>
 	<div style="display: flex; flex-direction: column;">
+		{{ x }}
 		<div>w: <input :value="w" @input="handleChange($event, 'w')"></div>
 		<div>h: <input :value="h" @input="handleChange($event, 'h')"></div>
 		<div>x: <input :value="x" @input="handleChange($event, 'x')"></div>
@@ -19,18 +20,16 @@ export default {
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
 	props: {
-		// w: Number,
-		// h: Number,
-		// r: Number,
-		// x: Number,
-		// y: Number,
-		// z: Number,
-		// name: [Number, String],
+		w: Number,
+		h: Number,
+		r: Number,
+		x: Number,
+		y: Number,
+		z: Number,
+		name: [Number, String],
 	},
 	data() {
-		return {
-			...this.$attrs
-		};
+		return {};
 	},
 	computed: {
 	},
@@ -49,8 +48,4 @@ export default {
 </script>
 
 <style lang="scss">
-input {
-	border: 1px solid #000;
-	margin: 10px;
-}
 </style>

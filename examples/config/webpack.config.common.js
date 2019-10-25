@@ -45,11 +45,12 @@ const loaderPath = [
 	path.resolve(APP_ROOT, "node_modules/@wya/vc"),
 	path.resolve(APP_ROOT, "node_modules/iview"),
 	path.resolve(APP_ROOT, "node_modules/fast-xml-parser"), // 第三方库未编译，导致iOS8不兼容
-	path.resolve(APP_ROOT, "src")
+	path.resolve(APP_ROOT, "src"),
+	path.resolve(APP_ROOT, '../build/vm.min.js')
 ];
 const webpackConfig = {
 	target: "web", // <=== 默认是 'web'，可省略
-	resolve: {// 重定向路径
+	resolve: { // 重定向路径
 		mainFiles: ['index'],
 		modules: [path.resolve(APP_ROOT, 'src'), 'node_modules'],
 		extensions: ['.js', '.vue', '.json', '.scss', '.css'],
@@ -63,7 +64,7 @@ const webpackConfig = {
 			 * 而如果要使用 template 这个属性的话就一定要用 compiler.js，那么，引入 vue.js 是最恰当的
 			 */
 			'vue$': 'vue/dist/vue.esm.js',
-			'@wya/vm': path.resolve(APP_ROOT, '../build/vm.min.js'),
+			'@wya/vm': path.resolve(APP_ROOT, './src/libs/vm.min.js'),
 			'@components': path.resolve(APP_ROOT, './src/pages/components'),
 			'@constants': path.resolve(APP_ROOT, './src/pages/constants'),
 			'@extends': path.resolve(APP_ROOT, './src/pages/extends'),
@@ -114,6 +115,9 @@ const webpackConfig = {
 					},
 					{
 						loader: '@wya/vc-loader',
+						options: {
+							exclude: /(node_modules|vm.min.js)/
+						}
 					}
 				]
 			},

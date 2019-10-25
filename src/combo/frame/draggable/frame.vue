@@ -1,64 +1,123 @@
 <template>
-	<div 
-		:style="style" 
-		class="vm-frame-draggable"
-		style="position: relative;" 
-		@dragover.prevent="handleDragOver" 
-		@dragend="handleDragEnd"
-		@drop="handleDrop"
+	<vm-inner 
+		:show-ruler="showRuler"
+		:scroll-left="scrollLeft"
+		:scroll-top="scrollTop"
+		:frame-w="width"
+		:frame-h="height"
+		:scale="scale"
+		:border-size="borderSize"
+		:guides.sync="guides"
+		class="vm-frame-draggable" 
 	>
-		<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
-		<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
-		<!-- TODO: 不操作引用修改 -->
-		<vm-draggable
-			v-for="(it, index) in dataSource"
-			ref="draggable"
-			:key="it.id"
-			:x.sync="it.x"
-			:y.sync="it.y"
-			:z.sync="it.z"
-			:w.sync="it.w"
-			:h.sync="it.h"
-			:r.sync="it.r"
-			:parent="it.parent"
-			:disabled="it.disabled"
-			:handles="it.handles"
-			:min-w="it.minW"
-			:min-h="it.minH"
-			:zoom="it.zoom"
-			:grid="it.grid"
-			:active="it.active"
-			:restrain="it.restrain"
-			:closeable="it.closeable || typeof it.closeable === 'undefined'"
-			:draggable="it.draggable || typeof it.draggable === 'undefined'"
-			:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
-			:resizable="it.resizable || typeof it.resizable === 'undefined'"
-			@activated="$emit('activated', it)"
-			@deactivated="$emit('deactivated', it)"
-			@dragging="$emit('dragging', it)"
-			@resizing="$emit('resizing', it)"
-			@rotating="$emit('rotating', it)"
-			@resize-end="$emit('resize-end', it)"
-			@drag-end="$emit('drag-end', it)"
-			@delete="$emit('change', { type: 'delete', id: it.id })"
-			@end="handleEnd(arguments[0], it.id, index)"
-		>
-			<!-- vm-type让组件内部处理如何渲染或其他操作 -->
-			<component 
-				:is="`vm-${it.module}-viewer`" 
-				:index="index" 
-				:vm="vm"  
-				v-bind="it"
+		<template #content>
+			<div 
+				ref="wrapper" 
+				:style="wrapperStyle"
+				class="vm-frame-draggable__wrapper" 
+				@scroll="handleScroll"
+			>
+				<div :style="hackStyle">
+					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
+					<div
+						ref="content"
+						:style="[contentStyle, frameStyle]"
+						class="vm-frame-draggable__content"
+						style="position: relative;"
+						@dragover.prevent="handleDragOver"
+						@dragend="handleDragEnd"
+						@drop="handleDrop"
+					>
+						<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
+						<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
+						<!-- TODO: 不操作引用修改 -->
+						<vm-draggable
+							v-for="(it, index) in dataSource"
+							ref="draggable"
+							:key="it.id"
+							:x.sync="it.x"
+							:y.sync="it.y"
+							:z.sync="it.z"
+							:w.sync="it.w"
+							:h.sync="it.h"
+							:r.sync="it.r"
+							:module="it.module"
+							:parent="it.parent"
+							:disabled="it.disabled"
+							:handles="it.handles"
+							:min-w="it.minW"
+							:min-h="it.minH"
+							:scale="scale"
+							:grid="it.grid"
+							:guides="guides"
+							:offset="[scrollLeft || 0, scrollTop || 0]"
+							:active="it.active"
+							:restrain="it.restrain"
+							:closeable="it.closeable || typeof it.closeable === 'undefined'"
+							:draggable="it.draggable || typeof it.draggable === 'undefined'"
+							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
+							:resizable="it.resizable || typeof it.resizable === 'undefined'"
+							@activated="$emit('activated', it)"
+							@deactivated="$emit('deactivated', arguments[0], it)"
+							@dragging="$emit('dragging', it)"
+							@resizing="$emit('resizing', it)"
+							@rotating="$emit('rotating', it)"
+							@resize-end="$emit('resize-end', it)"
+							@drag-end="$emit('drag-end', it)"
+							@delete="$emit('change', { type: 'delete', id: it.id })"
+							@end="handleEnd(arguments[0], it.id, index)"
+							@contextmenu.prevent.native="handleShowMenu($event, it)"
+						>
+							<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+							<component
+								:is="`vm-${it.module}-viewer`"
+								:index="index"
+								:vm="vm"
+								v-bind="it"
+							/>
+						</vm-draggable>
+					</div>
+				</div>
+			</div>
+		</template>
+		<template #content-extra>
+			<vm-thumbnail
+				v-if="showThumbnail"
+				:data-source="dataSource"
+				:scale="scale"
+				:frame-w="width"
+				:frame-h="height"
+				:client-w="clientW"
+				:client-h="clientH"
+				:scroll-left="scrollLeft"
+				:scroll-top="scrollTop"
+				:border-size="borderSize"
+				@scroll="handleScrollThumbnail"
 			/>
-		</vm-draggable>
-	</div>
+		</template>	
+		<template #footer>
+			<vm-zoom-bar
+				v-if="showZoomBar"
+				:scale.sync="scale"
+				:border-size="borderSize"
+				:frame-w="width"
+				:frame-h="height"
+				:client-w="clientW"
+				:client-h="clientH"
+			/>
+		</template>
+	</vm-inner>
 </template>
 
 <script>
-import Draggable from '../../../core/draggable.vue';
+import Draggable from '../../../base/draggable.vue';
 import GridLines from './grid-lines.vue';
 import AlignLines from './align-lines.vue';
-import { getUid, cloneDeep } from '../../../utils/helper';
+import Inner from './inner.vue';
+import ZoomBar from './zoom-bar.vue';
+import Thumbnail from './thumbnail.vue';
+import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
+import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../../utils/constants';
 
 export default {
@@ -67,13 +126,35 @@ export default {
 		'vm-draggable': Draggable,
 		'vm-grid-lines': GridLines,
 		'vm-align-lines': AlignLines,
+		'vm-inner': Inner,
+		'vm-zoom-bar': ZoomBar,
+		'vm-thumbnail': Thumbnail,
 	},
 	props: {
-		width: Number,
-		height: Number,
+		width: {
+			type: Number,
+			validator: v => v > 0,
+		},
+		height: {
+			type: Number,
+			validator: v => v > 0,
+		},
 		dataSource: Array,
 		editor: Object,
+		frameStyle: Object,
 		showLines: {
+			type: Boolean,
+			default: true
+		},
+		showRuler: {
+			type: Boolean,
+			default: true
+		},
+		showZoomBar: {
+			type: Boolean,
+			default: true
+		},
+		showThumbnail: {
 			type: Boolean,
 			default: true
 		},
@@ -82,22 +163,71 @@ export default {
 		return {
 			vm: {
 				type: 'frame'
-			}
+			},
+			scrollLeft: 0,
+			scrollTop: 0,
+			scale: 1,
+			xRuleLines: [],
+			yRuleLines: [],
+
+			// 容器的宽高
+			clientW: 0,
+			clientH: 0,
+
+			// 四周留白
+			borderSize: 20,
+
+			// 参考线
+			guides: [[], []]
 		};
 	},
 	computed: {
-		style() {
-			const w = this.width === 0 ? 'auto' : `${this.width}px`;
-			const h = this.height === 0 ? 'auto' : `${this.height}px`;
+		wrapperStyle() {
 			return {
-				width: w,
-				height: h
+				paddingTop: `${this.borderSize}px`,
+				paddingLeft: `${this.borderSize}px`,
+			};
+		},
+		contentStyle() {
+			return {
+				width: `${this.width}px`,
+				height: `${this.height}px`,
+				transform: `scale(${this.scale})`,
+				transformOrigin: `0 0`,
+			};
+		},
+
+		hackStyle() {
+			return {
+				width: `${Math.max(this.clientW, this.width * this.scale) + this.borderSize}px`,
+				height: `${this.height * this.scale + this.borderSize}px`
 			};
 		}
 	},
-	created() {
+	mounted() {
+		this.$nextTick(() => {
+			/**
+			 * 1. 自适应布局
+			 * 2. 滚动条最右侧显示（hackStyle）
+			 */
+			this.clientW = this.$refs.wrapper.offsetWidth;
+			this.clientH = this.$refs.wrapper.offsetHeight;
+		});
 	},
 	methods: {
+		handleScroll: throttle(function (e) {
+			this.scrollLeft = e.target.scrollLeft;
+			this.scrollTop = e.target.scrollTop;
+		}, 50),
+
+		handleScrollThumbnail(x, y) {
+			this.scrollLeft = x;
+			this.$refs.wrapper.scrollLeft = x;
+
+			this.scrollTop = y;
+			this.$refs.wrapper.scrollTop = y;
+		},
+
 		handleDragOver(e) {
 		},
 		handleDragEnd(e) {
@@ -115,8 +245,8 @@ export default {
 				});
 				return;
 			}
-			
-			let { x, y } = this.$el.getBoundingClientRect();
+
+			let { x, y } = this.$refs.content.getBoundingClientRect();
 
 			let mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft || 0;
 			let mouseY = e.pageY || e.clientY + document.documentElement.scrollTop || 0;
@@ -126,8 +256,8 @@ export default {
 
 			let data = {
 				...cloneDeep(
-					typeof result.data === 'function' 
-						? result.data(index, this.dataSource) 
+					typeof result.data === 'function'
+						? result.data(index, this.dataSource)
 						: result.data
 				),
 				module,
@@ -136,8 +266,8 @@ export default {
 
 			// 不可拖拽的情况下
 			if (!e.fake && (data.draggable || typeof data.draggable === 'undefined')) {
-				data.x = mouseX - x;
-				data.y = mouseY - y;
+				data.x = Math.round((mouseX - x) / this.scale);
+				data.y = Math.round((mouseY - y) / this.scale);
 			} else {
 				data.x = 0;
 				data.y = 0;
@@ -146,8 +276,8 @@ export default {
 			// 会同步到上级 这里不用this.$emit("update:sync")
 			this.dataSource.push(data);
 
-			this.$emit('change', { 
-				type: 'create', 
+			this.$emit('change', {
+				type: 'create',
 				index: rowIndex,
 				id
 			});
@@ -156,9 +286,9 @@ export default {
 			this.setActived(rowIndex);
 		},
 		handleEnd(old, id, index) {
-			this.$emit('change', { 
-				type: 'update', 
-				id, 
+			this.$emit('change', {
+				type: 'update',
+				id,
 				index,
 				old
 			});
@@ -175,7 +305,80 @@ export default {
 					console.error(e);
 				}
 			});
+		},
+		handleShowMenu(e, it) {
+			// 根据z降序，相等则后面的z放在前面
+			let sortList = [...this.dataSource.filter(v => v.module !== 'page')].reverse().sort((a, b) => b.z - a.z);
+			let index = sortList.findIndex(v => v.id === it.id);
+
+			if (it.module === 'page') return;
+			
+			const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
+
+			RightMenu.popup({
+				event: e,
+			}).then(type => {
+				let changeItem;
+				switch (type) {
+					case TOP:
+						if (index > 0) {
+							changeItem = sortList[0];
+							it.z = changeItem.z;
+						}
+						break;
+					case BOTTOM:
+						if (index < sortList.length - 1) {
+							changeItem = sortList[sortList.length - 1];
+							it.z = changeItem.z;
+						}
+						break;
+					case UP:
+						if (index > 0) {
+							changeItem = sortList[index - 1];
+							[changeItem.z, it.z] = [it.z, changeItem.z];
+						}
+						break;
+					case DOWN:
+						if (index < sortList.length - 1) {
+							changeItem = sortList[index + 1];
+							[changeItem.z, it.z] = [it.z, changeItem.z];
+						}
+						break;
+					case DELETE:
+						this.$emit('change', { type: 'delete', id: it.id });
+						break;
+					default:
+						break;
+				}
+				if (type !== DELETE && changeItem) {
+					let curIndex = this.dataSource.findIndex(v => v.id === it.id);
+					this.dataSource.splice(curIndex, 1);
+					let nextIndex = this.dataSource.findIndex(v => v.id === changeItem.id) + ([TOP, UP].includes(type)
+						? 1 : 0);
+					this.dataSource.splice(nextIndex, 0, it);
+				}
+			});
 		}
 	},
 };
 </script>
+
+<style lang="scss">
+@import "../../../style/index.scss";
+
+$block: vm-frame-draggable;
+
+@include block($block) {
+	@include element(wrapper) {
+		overflow: auto;
+	}
+	@include element(content) {
+		// 不可缩小
+		flex-shrink: 0;
+		border: 1px solid $border;
+		position: relative;
+		overflow: hidden;
+		z-index: 1;
+	}
+}
+</style>

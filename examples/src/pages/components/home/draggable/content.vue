@@ -3,9 +3,9 @@
 		<vm-combo 
 			v-model="list"
 			:frame-style="{ border: '1px solid red', margin: 100 }"
-			:frame-w="500"
-			:frame-h="500"
-			style="height: 1000px; width: 1000px;"
+			:frame-w="1920"
+			:frame-h="1080"
+			:style="style"
 			@save="handleSave"
 			@error="handleError"
 		/>
@@ -23,16 +23,29 @@ export default {
 	name: 'tpl-links',
 	components: {
 		'vm-combo': Combo,
-		'vm-preview': Preview,
 	},
 	data() {
 		return {
-			list: []
+			list: [
+				{
+					id: Math.random(),
+					module: 'page',
+					w: 1920,
+					h: 1080,
+				}
+			],
+			style: {}
 		};
 	},
 	computed: {
+
 	},
-	created() {
+	mounted() {
+		// 需要减去padding值
+		this.style = {
+			width: window.innerWidth - 40 + 'px',
+			height: window.innerHeight - 40 + 'px',
+		};
 	},
 	methods: {
 		handleSave(response) {

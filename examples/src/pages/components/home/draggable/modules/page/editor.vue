@@ -1,24 +1,24 @@
 <template>
 	<div style="display: flex; flex-direction: column;">
-		<div>name: <input :value="name" @input="handleChange($event, 'name')"></div>
+		<div>w: <input :value="w" @input="handleChange($event, 'w')"></div>
+		<div>h: <input :value="h" @input="handleChange($event, 'h')"></div>
 	</div>
 </template>
 
 <script>
 
 export default {
-	name: 'vm-tpl-editor',
+	name: 'vm-page-editor',
 	components: {
 	},
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
 	props: {
-		// name: [Number, String],
+		w: Number,
+		h: Number,
 	},
 	data() {
-		return {
-			...this.$attrs
-		};
+		return {};
 	},
 	computed: {
 	},

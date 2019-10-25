@@ -4,7 +4,9 @@
 			<span>Name: </span>
 			<input :value="$attrs.name" @input="handleChange($event, 'name')">
 		</div>
-		<div @click="handleClick">+ListItem</div>
+		<div @click="handleClick">
+			+ListItem
+		</div>
 	</div>
 </template>
 
@@ -42,8 +44,4 @@ export default {
 </script>
 
 <style lang="scss">
-input {
-	border: 1px solid #000;
-	margin: 10px;
-}
 </style>

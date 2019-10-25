@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Sortable from '../../../core/sortable.vue';
+import Sortable from '../../../base/sortable.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
 import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../../utils/constants';
 
@@ -208,6 +208,16 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../../../style/index.scss";
+
+.vm-frame-sortable {
+	// 不可缩小
+	flex-shrink: 0;
+	border: 1px solid $border;
+	margin-left: 20px;
+	position: relative;
+	overflow: auto
+}
 .vm-frame-sortable__item {
 	transition: all .5s;
 }

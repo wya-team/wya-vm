@@ -19,12 +19,23 @@ import cssnano from 'cssnano';
 
 // import pkg from "./package.json";
 
-const external = [
-	'vue'
-	// ...Object.keys(pkg.devDependencies || {}),
-	// ...Object.keys(pkg.peerDependencies || {}),
-	// ...Object.keys(pkg.dependencies || {})
-];
+const external = filename => {
+	let regex = [
+		'^vue$',
+		'^lodash$',
+		'^@babel/runtime',
+		'^@wya/vc',
+		// 用于测试用例?
+		'^@wya/utils$',
+		'^@wya/http$',
+		'^@wya/ps$'
+		// ...Object.keys(pkg.devDependencies || {}),
+		// ...Object.keys(pkg.peerDependencies || {}),
+		// ...Object.keys(pkg.dependencies || {})
+	].join('|');
+
+	return new RegExp(`(${regex})`).test(filename);
+};
 
 
 // 添加前缀和其他处理
@@ -39,10 +50,10 @@ const BASIC_POSTCSS_PLUGIN = [
 // import babelrc from 'babelrc-rollup';
 const mainConfig = {
 	// 输入
-	input: 'src/main.js',
+	input: 'src/index.js',
 	// 输出
 	output: {
-		file: `${ENV_IS_DEV ? `build` : `dist`}/vm.min.js`,
+		file: `${ENV_IS_DEV ? `examples/src/libs` : `dist`}/vm.min.js`,
 		format: 'cjs',
 		sourcemap: ENV_IS_DEV ? undefined : `inline`,
 		globals: {
@@ -56,7 +67,8 @@ const mainConfig = {
 		// 使用amd模块引入，第三方模块支持
 		resolve({
 			mainFields: ['module', 'jsnext:main', 'main'],
-			browser: true,
+			modulesOnly: true,
+			browser: true
 		}),
 		// 使用cjs模块引入
 		commonjs({
@@ -85,12 +97,7 @@ const mainConfig = {
 		// 使用babel，结合.babelrc
 		babel({ 
 			exclude: 'node_modules/**',
-			runtimeHelpers: true,
-			/**
-			 * 移除@babel/runtime, 当增加了babelHelpers，暂时无法处理
-			 * @babel/plugin-external-helpers
-			 */
-			// externalHelpers: true
+			runtimeHelpers: true
 		}),
 		// 使用buble
 		buble(),
