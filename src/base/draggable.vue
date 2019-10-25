@@ -117,6 +117,14 @@ export default {
 				return [1, 1];
 			}
 		},
+
+		guides: {
+			type: Array,
+			default() {
+				return [[], []];
+			}
+		},
+
 		// 约束组件大小
 		restrain: {
 			type: Number,
@@ -193,29 +201,12 @@ export default {
 			default: false
 		},
 
-		xRuleLines: {
+		offset: {
 			type: Array,
 			default() {
-				return [];
+				return [0, 0];
 			}
 		},
-
-		yRuleLines: {
-			type: Array,
-			default() {
-				return [];
-			}
-		},
-
-		scrollLeft: {
-			type: Number,
-			default: 0
-		},
-
-		scrollTop: {
-			type: Number,
-			default: 0
-		}
 
 	},
 	data() {
@@ -296,8 +287,9 @@ export default {
 
 		this.$nextTick(() => {
 			const { x, y } = this.$el.parentNode.getBoundingClientRect();
-			this.parentX = x;
-			this.parentY = y;
+			this.parentX = x + this.offset[0];
+			this.parentY = y + this.offset[1];
+
 			// 判断是否只能在父级元素中拖动
 			this.parent && this.calculation();
 			this.$emit('resizing');
@@ -464,47 +456,47 @@ export default {
 			let elmH = parseInt(this.h, 10);
 
 			// 鼠标所在的轴xy坐标值
-			let ruleX = Math.round((this.mouseX - this.parentX + this.scrollLeft) / this.scale);
-			let ruleY = Math.round((this.mouseY - this.parentY + this.scrollTop) / this.scale);
-			let diffX = ruleX - Math.round((this.lastMouseX - this.parentX + this.scrollLeft) / this.scale);
-			let diffY = ruleY - Math.round((this.lastMouseY - this.parentY + this.scrollTop) / this.scale);
+			let axisX = Math.round((this.mouseX - this.parentX + this.offset[0]) / this.scale);
+			let axisY = Math.round((this.mouseY - this.parentY + this.offset[1]) / this.scale);
+			let diffX = axisX - Math.round((this.lastMouseX - this.parentX + this.offset[0]) / this.scale);
+			let diffY = axisY - Math.round((this.lastMouseY - this.parentY + this.offset[1]) / this.scale);
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
 
 			if (this.isResizing) {
 				if (this.handle.includes('top')) {
-					if (elmY - ruleY + elmH < this.minH) {
-						ruleY = elmY + elmH - this.minH;
-					} else if (this.parent && ruleY < 0) {
-						ruleY = 0;
+					if (elmY - axisY + elmH < this.minH) {
+						axisY = elmY + elmH - this.minH;
+					} else if (this.parent && axisY < 0) {
+						axisY = 0;
 					}
-					elmH = elmY + elmH - ruleY;
-					elmY = ruleY;
+					elmH = elmY + elmH - axisY;
+					elmY = axisY;
 				}
 				if (this.handle.includes('bottom')) {
-					if (ruleY - elmY < this.minH) {
-						ruleY = elmY + this.minH;
-					} else if (this.parent && ruleY > this.parentH / this.scale) {
-						ruleY = Math.round(this.parentH / this.scale);
+					if (axisY - elmY < this.minH) {
+						axisY = elmY + this.minH;
+					} else if (this.parent && axisY > this.parentH / this.scale) {
+						axisY = Math.round(this.parentH / this.scale);
 					}
-					elmH = ruleY - elmY;
+					elmH = axisY - elmY;
 				}
 				if (this.handle.includes('left')) {
-					if (elmX - ruleX + elmW < this.minW) {
-						ruleX = elmX + elmW - this.minW;
-					} else if (this.parent && ruleX < 0) {
-						ruleX = 0;
+					if (elmX - axisX + elmW < this.minW) {
+						axisX = elmX + elmW - this.minW;
+					} else if (this.parent && axisX < 0) {
+						axisX = 0;
 					}
-					elmW = elmX + elmW - ruleX;
-					elmX = ruleX;
+					elmW = elmX + elmW - axisX;
+					elmX = axisX;
 				}
 				if (this.handle.includes('right')) {
-					if (ruleX - elmX < this.minW) {
-						ruleX = elmX + this.minW;
-					} else if (this.parent && ruleX > this.parentW / this.scale) {
-						ruleX = Math.round(this.parentW / this.scale);
+					if (axisX - elmX < this.minW) {
+						axisX = elmX + this.minW;
+					} else if (this.parent && axisX > this.parentW / this.scale) {
+						axisX = Math.round(this.parentW / this.scale);
 					}
-					elmW = ruleX - elmX;
+					elmW = axisX - elmX;
 				}
 				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
@@ -516,7 +508,7 @@ export default {
 			} else if (this.isRotating) {
 				let angle = this.getAngle(
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
-					[this.lastMouseX, -this.lastMouseY],
+					[this.lastMouseX + this.offset[0], -this.lastMouseY + this.offset[1]],
 				);
 
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
@@ -529,16 +521,16 @@ export default {
 			} else if (this.isDraging) {
 
 				// 找出可吸附的辅助线
-				let leftline = this.xRuleLines.find(item => {
+				let leftline = this.guides[0] && this.guides[0].find(item => {
 					return Math.abs(elmX + diffX - item) < 3;
 				});
-				let rightline = this.xRuleLines.find(item => {
+				let rightline = this.guides[0] && this.guides[0].find(item => {
 					return Math.abs(elmX + diffX + elmW - item) < 2;
 				});
-				let topline = this.yRuleLines.find(item => {
+				let topline = this.guides[1] && this.guides[1].find(item => {
 					return Math.abs(elmY + diffY - item) < 3;
 				});
-				let bottomline = this.yRuleLines.find(item => {
+				let bottomline = this.guides[1] && this.guides[1].find(item => {
 					return Math.abs(elmY + diffY + elmH - item) < 2;
 				});
 
