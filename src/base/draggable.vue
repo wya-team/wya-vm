@@ -508,7 +508,7 @@ export default {
 			} else if (this.isRotating) {
 				let angle = this.getAngle(
 					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
-					[this.lastMouseX + this.offset[0], -this.lastMouseY + this.offset[1]],
+					[this.lastMouseX + this.offset[0], -(this.lastMouseY + this.offset[1])],
 				);
 
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
