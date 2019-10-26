@@ -79,7 +79,7 @@ export default {
 	},
 	computed: {
 		shrink() {
-			const { width, height, frameW, frameH, borderSize } = this;
+			const { width, height, frameW, frameH, borderSize, scale } = this;
 			return Math.min(
 				(frameW + borderSize * 2) / width,
 				(frameH + borderSize * 2) / height
@@ -101,12 +101,12 @@ export default {
 			};
 		},
 		maxScrollLeft() {
-			const { frameW, clientW, borderSize } = this;
-			return frameW - clientW + borderSize * 2;
+			const { frameW, clientW, borderSize, scale } = this;
+			return frameW * scale - clientW + borderSize * 2;
 		},
 		maxScrollTop() {
-			const { frameH, clientH, borderSize } = this;
-			return frameH - clientH + borderSize * 2;
+			const { frameH, clientH, borderSize, scale } = this;
+			return frameH * scale - clientH + borderSize * 2;
 		}
 	},
 
