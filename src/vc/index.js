@@ -9,4 +9,8 @@ export { default as Portal } from '@wya/vc/lib/portal';
 export { default as Slider } from '@wya/vc/lib/slider';
 export { default as Select } from '@wya/vc/lib/select';
 export { default as Option } from '@wya/vc/lib/option';
-export { toggleSelection } from '@wya/vc/lib/clipboard/utils';
+export { default as Clipboard } from '@wya/vc/lib/clipboard';
+export { default as Utils } from '@wya/vc/lib/utils';
+
+const { Resize } = Utils;
+export { Resize };

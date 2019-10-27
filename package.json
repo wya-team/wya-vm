@@ -1,6 +1,6 @@
 {
   "name": "@wya/vm",
-  "version": "2.0.0-alpha.4",
+  "version": "2.0.0-alpha.9",
   "description": "",
   "main": "dist/vm.min.js",
   "files": [
@@ -50,7 +50,7 @@
     "@wya/ps": "^1.0.2",
     "@wya/sass": "^1.1.10",
     "@wya/utils": "^1.5.1",
-    "@wya/vc": "^1.8.4",
+    "@wya/vc": "^1.8.6",
     "babel-eslint": "^8.2.6",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",

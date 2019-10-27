@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import { toggleSelection } from '../../../vc';
+import { Clipboard } from '../../../vc';
+import { debounce } from '../../../utils/helper';
 
 export default {
 	name: 'vm-thumbnail',
@@ -110,31 +111,26 @@ export default {
 		}
 	},
 
-	watch: {
-		dataSource: {
-			deep: true,
-			handler() {
-				this.repaint();
-			}
-		},
-		frameW() {
-			this.repaint();
-		},
-		frameH() {
-			this.repaint();
-		},
+	created() {
+		let watchArr = [
+			'dataSource',
+			'frameW', 
+			'frameH', 
+			'scale', 
+			'clientW', 
+			'clientH'
+		];
+		let hook = debounce(this.repaint, 50);
+		
+		watchArr.forEach(item => this.$watch(item, hook, { deep: true }));
 	},
-	
+
 	mounted() {
 		this.repaint();
-
-		window.addEventListener('mouseup', this.handleMouseUp);
-		window.addEventListener('mousemove', this.handleMouseMove);
 	},
 
 	destroyed() {
-		window.removeEventListener('mouseup', this.handleMouseUp);
-		window.removeEventListener('mousemove', this.handleMouseMove);
+		this.operateDOMEvents('remove');
 	},
 
 	methods: {
@@ -170,18 +166,25 @@ export default {
 				ctx.save();
 			});
 		},
+
+		operateDOMEvents(type) {
+			let fn = type === 'add' 
+				? document.documentElement.addEventListener 
+				: document.documentElement.removeEventListener;
+
+			fn('mouseup', this.handleMouseUp);
+			fn('mousemove', this.handleMouseMove);
+		},
 		handleMouseDown(e) {
-			toggleSelection();
+			Clipboard.clearSelection();
+			
 			this.lastMouseX = e.clientX;
 			this.lastMouseY = e.clientY;
 
-			this.isMoving = true;
+			this.operateDOMEvents('add');
 		},
 
 		handleMouseMove(e) {
-			toggleSelection();
-			if (!this.isMoving) return;
-
 			const { scrollLeft, scrollTop, shrink, scale, maxScrollLeft, maxScrollTop } = this;
 
 			let mouseX = e.clientX;
@@ -194,14 +197,18 @@ export default {
 
 			let x = scrollLeft + diffX * shrink * scale;
 			let y = scrollTop + diffY * shrink * scale;
-			x = x >= 0 && x <= maxScrollLeft ? x : scrollLeft;
-			y = y >= 0 && y <= maxScrollTop ? y : scrollTop;
+
+			x < 0 && (x = 0);
+			y < 0 && (y = 0);
+			x > maxScrollLeft && (x = maxScrollLeft);
+			y > maxScrollTop && (y = maxScrollTop);
 
 			this.$emit('scroll', x, y);
 		},
 
 		handleMouseUp() {
-			this.isMoving = false;
+			Clipboard.clearSelection();
+			this.operateDOMEvents('remove');
 		}
 
 	},

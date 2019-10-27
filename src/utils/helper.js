@@ -1,5 +1,5 @@
-export { kebabCase, isEqualWith, cloneDeep, throttle } from 'lodash';
-
+export { kebabCase, isEqualWith, cloneDeep, throttle, debounce } from 'lodash';
+export { $ } from '@wya/utils';
 /**
  * 判断浏览器是否支持passive, 默认preventDefault无效
  */

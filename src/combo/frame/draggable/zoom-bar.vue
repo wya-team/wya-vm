@@ -2,7 +2,7 @@
 	<div class="vm-zoom-bar">
 		<div class="vm-zoom-bar__wrapper">
 			<vc-select
-				:value="currentScale"
+				v-model="currentScale"
 				:placeholder="currentPlaceholder"
 				style="width: 75px"
 				@change="handleChangeSelect"
@@ -16,10 +16,11 @@
 				</vc-option>
 			</vc-select>
 			<vc-slider
-				:value="currentScale * 100"
-				:step="1"
-				:min="50"
-				:max="200"
+				v-model="currentScale"
+				:step="0.01"
+				:min="0.5"
+				:max="2"
+				:formatter="v => v * 100 + '%'"
 				style="width: 160px; margin-left: 16px; margin-right: 15px;"
 				@change="handleChangeSlider"
 			/>
@@ -139,13 +140,9 @@ export default {
 	},
 	methods: {
 		handleChangeSlider(v) {
-			this.currentScale = v / 100;
-
 			this.$emit('update:scale', this.currentScale);
 		},
 		handleChangeSelect(v) {
-			this.currentScale = v;
-			
 			this.$emit('update:scale', this.currentScale);
 		},
 	},

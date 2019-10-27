@@ -6,6 +6,8 @@
 			:scroll-top="scrollTop"
 			:frame-w="frameW"
 			:frame-h="frameH"
+			:client-w="clientW"
+			:client-h="clientH"
 			:scale="scale"
 			:guides="guides"
 			:border-size="borderSize"

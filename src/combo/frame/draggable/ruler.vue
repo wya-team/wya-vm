@@ -111,7 +111,8 @@
 </template>
 
 <script>
-import { $ } from '@wya/utils';
+import { Clipboard } from '../../../vc';
+import { $ } from '../../../utils/helper';
 
 export default {
 	name: 'vm-ruler',
@@ -135,6 +136,14 @@ export default {
 			type: Number,
 			default: 0
 		},
+		clientW: {
+			type: Number,
+			default: 0
+		},
+		clientH: {
+			type: Number,
+			default: 0
+		},
 		scale: {
 			type: Number,
 			default: 1
@@ -144,8 +153,6 @@ export default {
 	},
 	data() {
 		return {
-			// 10刻度间隔(缩放后)
-			interval: 100 * this.scale,
 			// 辅助线开关区域宽高
 			guideSize: 20,
 
@@ -171,28 +178,27 @@ export default {
 	computed: {
 		// 刻度的宽度, 5000用于滚动距离避免重绘
 		canvasW() {
+			const offset = this.borderSize * 2 + this.guideSize;
+			const { frameW, frameH, scale, borderSize, guideSize, clientW, clientH } = this;
+
 			return Math.max(
-				this.frameW * this.scale, 
-				this.frameH * this.scale, 
-				7000
+				frameW * scale + offset, 
+				frameH * scale + offset, 
+				clientW, 
+				clientH
 			);
 		},
 		// 0刻度距离轴容器左边的距离
 		placeholderW() {
 			return this.borderSize + this.guideSize;
 		},
+
+		// 10刻度间隔(缩放后)
+		interval() {
+			return 100 * this.scale;
+		}
 	},
 	watch: {
-		frameW() {
-			this.refreshCanvas();
-		},
-		frameH() {
-			this.refreshCanvas();
-		},
-		scale(v) {
-			this.interval = this.interval * v;
-			this.refreshCanvas();
-		},
 		linesX: {
 			deep: true,
 			handler() {
@@ -207,27 +213,36 @@ export default {
 		}
 	},
 
+	created() {
+		let watchArr = [
+			'frameW', 
+			'frameH', 
+			'scale', 
+			'clientW', 
+			'clientH'
+		];
+
+		let hook = debounce(this.refreshCanvas, 50);
+
+		watchArr.forEach(item => this.$watch(item, hook));
+	},
 	mounted() {
 		this.$nextTick(() => {
 			this.canvas = [this.$refs.canvasX, this.$refs.canvasY];
 			this.offsetX = this.$refs.x.getBoundingClientRect().x;
 			this.offsetY = this.$refs.y.getBoundingClientRect().y;
 			this.refreshCanvas();
-
-			// 辅助线抬起/移动事件
-			window.addEventListener('mouseup', this.handleMouseUp);
-			window.addEventListener('mousemove', this.handleMouseMove);
 		});
 	},
 
 	destroyed() {
-		window.removeEventListener('mouseup', this.handleMouseUp);
-		window.removeEventListener('mousemove', this.handleMouseMove);
+		this.operateDOMEvents('remove');
 	},
 
 	methods: {
 		refreshCanvas() {
 			this.canvas.forEach(canvas => this.repaint(canvas));
+			window.canvas = this.canvas;
 		},
 
 		/**
@@ -235,11 +250,10 @@ export default {
 		 */
 		repaint(canvas) {
 			if (!this._isMounted) return;
-			
-			canvas.height = canvas.height; // 重设高度，清空画布
-
 			let { canvasW, guideSize, placeholderW, interval } = this;
 			let ctx = canvas.getContext('2d');
+			// 重置画布
+			canvas.height = canvas.height;
 
 			ctx.beginPath();
 			ctx.fillStyle = '#474747';
@@ -315,20 +329,32 @@ export default {
 			!this.linesY.includes(this.mouseY) && this.linesY.push(this.mouseY);
 		},
 
+		operateDOMEvents(type) {
+			let fn = type === 'add' 
+				? document.documentElement.addEventListener 
+				: document.documentElement.removeEventListener;
+
+			fn('mouseup', this.handleMouseUp);
+			fn('mousemove', this.handleMouseMove);
+		},
+
 		// 鼠标按下事件
 		handleMouseDown(axias, index) {
-			this.isMousePress = true;
+			Clipboard.clearSelection();
+
 			this.movingIndex = index;
 			this.movingAxias = axias;
+
+			this.operateDOMEvents('add');
 		},
 
 		// 鼠标放手事件
 		handleMouseUp() {
-			this.isMousePress = false;
+			Clipboard.clearSelection();
+			this.operateDOMEvents('remove');
 		},
 
 		handleMouseMove(e) {
-			if (!this.isMousePress) return;
 			const { offsetX, offsetY, placeholderW, scrollLeft, scrollTop, scale } = this;
 			if (this.movingAxias === 'x') {
 				this.$set(

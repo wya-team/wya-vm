@@ -5,6 +5,8 @@
 		:scroll-top="scrollTop"
 		:frame-w="width"
 		:frame-h="height"
+		:client-w="clientW"
+		:client-h="clientH"
 		:scale="scale"
 		:border-size="borderSize"
 		:guides.sync="guides"
@@ -119,6 +121,7 @@ import Thumbnail from './thumbnail.vue';
 import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
 import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME } from '../../../utils/constants';
+import { Resize } from '../../../vc';
 
 export default {
 	name: 'vm-frame',
@@ -205,16 +208,21 @@ export default {
 		}
 	},
 	mounted() {
-		this.$nextTick(() => {
-			/**
-			 * 1. 自适应布局
-			 * 2. 滚动条最右侧显示（hackStyle）
-			 */
-			this.clientW = this.$refs.wrapper.offsetWidth;
-			this.clientH = this.$refs.wrapper.offsetHeight;
-		});
+		Resize.on(this.$refs.wrapper, this.handleResize);
+	},
+	destroyed() {
+		Resize.on(this.$refs.wrapper, this.handleResize);
 	},
 	methods: {
+		/**
+		 * 1. 自适应布局
+		 * 2. 滚动条最右侧显示（hackStyle）
+		 */
+		handleResize() {
+			this.clientW = this.$refs.wrapper.offsetWidth;
+			this.clientH = this.$refs.wrapper.offsetHeight;
+		},
+
 		handleScroll: throttle(function (e) {
 			this.scrollLeft = e.target.scrollLeft;
 			this.scrollTop = e.target.scrollTop;
