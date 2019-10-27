@@ -10,6 +10,8 @@
 		:scale="scale"
 		:border-size="borderSize"
 		:guides.sync="guides"
+		:theme="theme"
+		:class="classes"
 		class="vm-frame-draggable" 
 	>
 		<template #content>
@@ -26,8 +28,7 @@
 						:style="[contentStyle, frameStyle]"
 						class="vm-frame-draggable__content"
 						style="position: relative;"
-						@dragover.prevent="handleDragOver"
-						@dragend="handleDragEnd"
+						@dragover.prevent
 						@drop="handleDrop"
 					>
 						<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
@@ -94,6 +95,8 @@
 				:scroll-left="scrollLeft"
 				:scroll-top="scrollTop"
 				:border-size="borderSize"
+				:class="classes"
+				:theme="theme"
 				@scroll="handleScrollThumbnail"
 			/>
 		</template>	
@@ -106,6 +109,8 @@
 				:frame-h="height"
 				:client-w="clientW"
 				:client-h="clientH"
+				:class="classes"
+				:theme="theme"
 			/>
 		</template>
 	</vm-inner>
@@ -118,9 +123,9 @@ import AlignLines from './align-lines.vue';
 import Inner from './inner.vue';
 import ZoomBar from './zoom-bar.vue';
 import Thumbnail from './thumbnail.vue';
-import { RightMenu, RIGHT_MENU_MAP } from './right-menu.vue';
+import { RightMenu } from './right-menu.vue';
 import { getUid, cloneDeep, throttle } from '../../../utils/helper';
-import { WIDGET_TO_FRAME } from '../../../utils/constants';
+import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
 import { Resize } from '../../../vc';
 
 export default {
@@ -161,6 +166,7 @@ export default {
 			type: Boolean,
 			default: true
 		},
+		theme: String,
 	},
 	data() {
 		return {
@@ -205,6 +211,12 @@ export default {
 				width: `${Math.max(this.clientW, this.width * this.scale) + this.borderSize}px`,
 				height: `${this.height * this.scale + this.borderSize}px`
 			};
+		},
+
+		classes() {
+			return {
+				'is-dark': this.theme === 'dark'
+			};
 		}
 	},
 	mounted() {
@@ -219,6 +231,7 @@ export default {
 		 * 2. 滚动条最右侧显示（hackStyle）
 		 */
 		handleResize() {
+			if (!this.$refs.wrapper) return;
 			this.clientW = this.$refs.wrapper.offsetWidth;
 			this.clientH = this.$refs.wrapper.offsetHeight;
 		},
@@ -229,6 +242,7 @@ export default {
 		}, 50),
 
 		handleScrollThumbnail(x, y) {
+
 			this.scrollLeft = x;
 			this.$refs.wrapper.scrollLeft = x;
 
@@ -236,11 +250,6 @@ export default {
 			this.$refs.wrapper.scrollTop = y;
 		},
 
-		handleDragOver(e) {
-		},
-		handleDragEnd(e) {
-			console.log(e);
-		},
 		handleDrop(e) {
 			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME)) || {};
 			let result = this.$parent.$options.modules[module];
@@ -281,7 +290,7 @@ export default {
 				data.y = 0;
 			}
 
-			// 会同步到上级 这里不用this.$emit("update:sync")
+			// 会同步到上级 这里不用this.$emit("update:sync"), TODO: remove
 			this.dataSource.push(data);
 
 			this.$emit('change', {
@@ -315,57 +324,75 @@ export default {
 			});
 		},
 		handleShowMenu(e, it) {
-			// 根据z降序，相等则后面的z放在前面
-			let sortList = [...this.dataSource.filter(v => v.module !== 'page')].reverse().sort((a, b) => b.z - a.z);
-			let index = sortList.findIndex(v => v.id === it.id);
-
-			if (it.module === 'page') return;
-			
-			const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
+			if (it.module === PAGE_MOULE) return;
 
 			RightMenu.popup({
 				event: e,
-			}).then(type => {
-				let changeItem;
-				switch (type) {
-					case TOP:
-						if (index > 0) {
-							changeItem = sortList[0];
-							it.z = changeItem.z;
-						}
-						break;
-					case BOTTOM:
-						if (index < sortList.length - 1) {
-							changeItem = sortList[sortList.length - 1];
-							it.z = changeItem.z;
-						}
-						break;
-					case UP:
-						if (index > 0) {
-							changeItem = sortList[index - 1];
-							[changeItem.z, it.z] = [it.z, changeItem.z];
-						}
-						break;
-					case DOWN:
-						if (index < sortList.length - 1) {
-							changeItem = sortList[index + 1];
-							[changeItem.z, it.z] = [it.z, changeItem.z];
-						}
-						break;
-					case DELETE:
-						this.$emit('change', { type: 'delete', id: it.id });
-						break;
-					default:
-						break;
-				}
-				if (type !== DELETE && changeItem) {
-					let curIndex = this.dataSource.findIndex(v => v.id === it.id);
-					this.dataSource.splice(curIndex, 1);
-					let nextIndex = this.dataSource.findIndex(v => v.id === changeItem.id) + ([TOP, UP].includes(type)
-						? 1 : 0);
-					this.dataSource.splice(nextIndex, 0, it);
+				onSelect: type => {
+					let changed;
+					// 根据z降序，相等则后面的z放在前面
+					let data = this.dataSource
+						.slice()
+						.filter(v => v.module !== PAGE_MOULE)
+						.reverse()
+						.sort((a, b) => b.z - a.z);
+					let index = data.findIndex(v => v.id === it.id);
+
+					const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
+
+					switch (type) {
+						case TOP:
+							if (index === 0) return;
+							changed = data[0];
+							break;
+						case BOTTOM:
+							if (index === data.length - 1) return;
+							changed = data[data.length - 1];
+							break;
+						case UP:
+							if (index === 0) return;
+							changed = data[index - 1];
+							break;
+						case DOWN:
+							if (index === data.length - 1) return;
+							changed = data[index + 1];
+							break;
+						case DELETE:
+							this.$emit('change', { type: 'delete', id: it.id });
+							return;
+						default:
+							return;
+					}
+
+					let current = this.dataSource.findIndex(v => v.id === it.id);
+					let target = this.dataSource.findIndex(v => v.id === changed.id);
+					
+					if (current === target) return;
+
+					let sort = [current, target];
+					this.$emit('change', {
+						type: 'sort',
+						sort
+					});
+
+					this.sortData(sort);
 				}
 			});
+		},
+
+		/**
+		 * 外部使用, TODO: remove(操作了引用)
+		 */
+		sortData(v) {
+			let current = this.dataSource[v[0]];
+			let target = this.dataSource[v[1]];
+
+			if (current.z != target.z) {
+				current.z = target.z;
+			}
+
+			this.dataSource.splice(v[0], 1, target);
+			this.dataSource.splice(v[1], 1, current);
 		}
 	},
 };

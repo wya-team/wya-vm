@@ -10,6 +10,7 @@
 			:client-h="clientH"
 			:scale="scale"
 			:guides="guides"
+			:theme="theme"
 			:border-size="borderSize"
 			@guides-change="$emit('update:guides', arguments[0])"
 		>
@@ -43,11 +44,17 @@ $block: vm-frame-draggable--inner;
 @include block($block) {
 	flex: 1;
 	overflow: hidden;
-	background: rgba(255, 0, 0, 0.05); // TODO: dark模式;
+	background: $theme-light-frame-bg; // TODO: dark模式;
 	
 	display: flex; 
 	flex-direction: column;
-
 	position: relative;
+	
+	border-left: 1px solid #BDBDBD;
+	@include when(dark) {
+		// background: $theme-dark-frame-bg;
+		border-left: 1px solid black; 
+		border-right: 1px solid black; 
+	}
 }
 </style>

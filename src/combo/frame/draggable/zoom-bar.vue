@@ -153,14 +153,23 @@ export default {
 @import "../../../style/index.scss";
 
 $block: vm-zoom-bar;
-@include block($block) {
-	background: #4a4a4a; 
+
+$theme-light-zoom-bg: #efefef;
+$theme-dark-zoom-bg: #343434;
+
+@include block($block) { 
 	height: 40px; 
 	z-index: 2;
+	background: $theme-dark-zoom-bg;
+	box-shadow: 0px -2px 10px 0px rgba(0, 0, 0, 0.08);
 	@include element(wrapper) {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
+	}
+	@include when(dark) {
+		background: $theme-dark-zoom-bg;
+		box-shadow: none;
 	}
 }
 </style>

@@ -4,6 +4,8 @@
 			v-if="showWidget"
 			:style="widgetStyle" 
 			:content-style="widgetContentStyle" 
+			:theme="theme"
+			:class="classes"
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
@@ -18,6 +20,7 @@
 			:show-ruler="showRuler"
 			:show-zoom-bar="showZoomBar"
 			:show-thumbnail="showThumbnail"
+			:theme="theme"
 			v-bind="frameOpts"
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
@@ -31,6 +34,8 @@
 		<vm-editor 
 			v-if="showEditor && editor"
 			:data-source="editor"
+			:theme="theme"
+			:class="classes"
 			@change="handleChange"
 		/>
 		<vm-assist-save
@@ -53,6 +58,7 @@
 <script>
 import { Assist } from './assist';
 import { cloneDeep, isEqualWith } from '../utils/helper';
+import { PAGE_MOULE } from '../utils/constants';
 
 export default {
 	name: 'vm-combo',
@@ -93,7 +99,7 @@ export default {
 		 */
 		theme: {
 			type: String,
-			default: 'default'
+			default: 'default' // default / light / dark
 		},
 		showAssist: {
 			type: Boolean,
@@ -150,9 +156,10 @@ export default {
 				height: h
 			};
 		},
+
 		classes() {
 			return {
-				[`vm-combo__theme--${this.theme}`]: !!this.theme
+				'is-dark': this.theme === 'dark'
 			};
 		}
 	},
@@ -203,7 +210,7 @@ export default {
 
 			source.forEach(item => {
 				// page组件
-				item.module === 'page' && (this.pageEditor = item);
+				item.module === PAGE_MOULE && (this.pageEditor = item);
 				kv[item.module] = item;
 			});
 

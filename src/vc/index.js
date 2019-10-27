@@ -11,6 +11,4 @@ export { default as Select } from '@wya/vc/lib/select';
 export { default as Option } from '@wya/vc/lib/option';
 export { default as Clipboard } from '@wya/vc/lib/clipboard';
 export { default as Utils } from '@wya/vc/lib/utils';
-
-const { Resize } = Utils;
-export { Resize };
+export { Resize } from '@wya/vc/lib/utils';

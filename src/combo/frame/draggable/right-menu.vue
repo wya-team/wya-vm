@@ -23,19 +23,19 @@
 </template>
 <script>
 import { Portal } from '../../../vc';
-
-export const RIGHT_MENU_MAP = {
-	TOP: '置顶', 
-	BOTTOM: '置底', 
-	UP: '上移一层', 
-	DOWN: '下移一层', 
-	DELETE: '删除', 
-};
+import { RIGHT_MENU_MAP } from '../../../utils/constants';
+import { $ } from '../../../utils/helper';
 
 export const config = {
 	name: 'vm-right-menu',
 	props: {
-		event: MouseEvent
+		event: MouseEvent,
+		onSelect: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		}
 	},
 	data() {
 		return {
@@ -52,17 +52,42 @@ export const config = {
 	},
 	mounted() {
 		this.visible = true;
+		this.operateDOMEvents('add');
+	},
+
+	destroyed() {
+		this.operateDOMEvents('remove');
 	},
 	methods: {
 		handleClick(item) {
 			this.visible = false;
-			this.$emit('sure', item);
+			this.onSelect(item);
+
+			this.$emit('close');
+		},
+
+		operateDOMEvents(type) {
+			let fn = type === 'add' 
+				? document.documentElement.addEventListener 
+				: document.documentElement.removeEventListener;
+
+			fn('click', this.handleDeselect);
+		},
+
+		handleDeselect(e) {
+			let path = e.path || e.composedPath() || [];
+			let inArea = path.some(el => el === this.$el || el === this.event.target);
+
+			if (!inArea) {
+				this.visible = false;
+				this.$emit('close');
+			}
 		}
 	},
 };
 
 export default config;
-export const RightMenu = new Portal(config);
+export const RightMenu = new Portal(config, { promise: false });
 
 </script>
 <style lang="scss">

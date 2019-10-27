@@ -71,6 +71,7 @@ export default {
 			type: Number,
 			default: 0
 		},
+		theme: String
 	},
 	data() {
 		return {
@@ -118,7 +119,8 @@ export default {
 			'frameH', 
 			'scale', 
 			'clientW', 
-			'clientH'
+			'clientH',
+			'theme',
 		];
 		let hook = debounce(this.repaint, 50);
 		
@@ -135,9 +137,10 @@ export default {
 
 	methods: {
 		repaint() {
-			if (!this._isMounted) return;
-
 			let canvas = this.$refs.canvas;
+
+			if (!this._isMounted || !canvas) return;
+
 			let { dataSource, shrink } = this;
 			let ctx = canvas.getContext('2d');
 
@@ -154,7 +157,7 @@ export default {
 					(x + w / 2) / shrink,
 					(y + h / 2) / shrink
 				);
-				ctx.fillStyle = 'rgba(219, 219, 219, 0.4)';
+				ctx.fillStyle = '#DBDBDB';
 				ctx.rotate(r * Math.PI / 180);
 				ctx.fillRect(
 					-w / 2 / shrink,
@@ -198,10 +201,12 @@ export default {
 			let x = scrollLeft + diffX * shrink * scale;
 			let y = scrollTop + diffY * shrink * scale;
 
-			x < 0 && (x = 0);
-			y < 0 && (y = 0);
 			x > maxScrollLeft && (x = maxScrollLeft);
 			y > maxScrollTop && (y = maxScrollTop);
+
+			// maxScrollLeft / maxScrollTop 自适应下宽度不够, 计算为零
+			x < 0 && (x = 0);
+			y < 0 && (y = 0);
 
 			this.$emit('scroll', x, y);
 		},
@@ -223,8 +228,8 @@ $block: vm-thumbnail;
 	position: absolute;
 	bottom: 50px;
 	right: 10px;
-	background: #343434;
-	border: 1px solid #16F2F6;
+	background: $theme-light;
+	border: 1px solid $primary;
 	z-index: 2;
 	@include element(visible) {
 		position: absolute;
@@ -232,6 +237,9 @@ $block: vm-thumbnail;
 		border: 1px solid #DBDBDB;
 		background: rgba(68, 68, 68, 0.5);
 		cursor: move;
+	}
+	@include when(dark) {
+		background: $theme-dark;
 	}
 }
 </style>

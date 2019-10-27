@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-ruler">
+	<div :class="{ 'is-dark': isDark }" class="vm-ruler">
 		<!-- 坐标原点，定位 -->
 		<div
 			:style="{
@@ -22,6 +22,7 @@
 				ref="canvasX"
 				:width="canvasW"
 				:height="guideSize"
+				class="vm-ruler__canvas"
 			/>
 			<!-- X虚线 -->
 			<div
@@ -69,6 +70,7 @@
 						ref="canvasY"
 						:width="canvasW"
 						:height="guideSize"
+						class="vm-ruler__canvas"
 					/>
 					
 					<!-- Y虚线 -->
@@ -112,7 +114,9 @@
 
 <script>
 import { Clipboard } from '../../../vc';
-import { $ } from '../../../utils/helper';
+import { $, debounce } from '../../../utils/helper';
+
+const SCROLL_BAR_WIDTH = 30; // TODO: 计算滚动条宽度
 
 export default {
 	name: 'vm-ruler',
@@ -149,7 +153,8 @@ export default {
 			default: 1
 		},
 		guides: Array,
-		borderSize: Number
+		borderSize: Number,
+		theme: String,
 	},
 	data() {
 		return {
@@ -181,12 +186,13 @@ export default {
 			const offset = this.borderSize * 2 + this.guideSize;
 			const { frameW, frameH, scale, borderSize, guideSize, clientW, clientH } = this;
 
-			return Math.max(
+			let width = Math.max(
 				frameW * scale + offset, 
 				frameH * scale + offset, 
 				clientW, 
 				clientH
 			);
+			return SCROLL_BAR_WIDTH + width;
 		},
 		// 0刻度距离轴容器左边的距离
 		placeholderW() {
@@ -196,6 +202,10 @@ export default {
 		// 10刻度间隔(缩放后)
 		interval() {
 			return 100 * this.scale;
+		},
+
+		isDark() {
+			return this.theme === 'dark';
 		}
 	},
 	watch: {
@@ -219,7 +229,8 @@ export default {
 			'frameH', 
 			'scale', 
 			'clientW', 
-			'clientH'
+			'clientH',
+			'theme'
 		];
 
 		let hook = debounce(this.refreshCanvas, 50);
@@ -249,21 +260,21 @@ export default {
 		 * 轴距离容器左边有20px的间距和辅助线开关区域的宽度
 		 */
 		repaint(canvas) {
-			if (!this._isMounted) return;
-			let { canvasW, guideSize, placeholderW, interval } = this;
+			if (!this._isMounted || !canvas) return;
+			let { canvasW, guideSize, placeholderW, interval, isDark } = this;
 			let ctx = canvas.getContext('2d');
 			// 重置画布
 			canvas.height = canvas.height;
 
 			ctx.beginPath();
-			ctx.fillStyle = '#474747';
+			ctx.fillStyle = isDark ? '#474747' : '#FAFAFA';
 			ctx.fillRect(0, 0, canvasW, guideSize);
 			ctx.translate(placeholderW, 0); // (20, 0)坐标开始画10刻度线
-			ctx.fillStyle = "#615E5B";
+			ctx.fillStyle = isDark ? "#615E5B" : '#000';
 			ctx.save();
 			for (let i = 0; i < canvasW / interval; i++) {
 				// 画刻度线
-				ctx.fillStyle = "#615E5B";
+				ctx.fillStyle = isDark ? "#615E5B" : '#000';
 				ctx.translate(i * interval, 0);
 				ctx.fillRect(0, 0, 1, guideSize);
 				ctx.restore();
@@ -383,8 +394,14 @@ export default {
 @import "../../../style/index.scss";
 
 $block: vm-ruler;
-$blue-guide: rgba(0,173,255,.84);
+$blue-guide: rgba(0, 173, 255, .84);
 $blue-label: rgba(64, 116, 180, .7);
+
+$theme-light-ruler: #FAFAFA;
+$theme-dark-ruler: #474747;
+
+$theme-light-guide: #F0F0F0;
+$theme-dark-guide: #535353;
 
 @include block($block) {
 	display: flex; 
@@ -418,9 +435,24 @@ $blue-label: rgba(64, 116, 180, .7);
 		left: 0;
 		width: 20px;
 		height: 20px;
-		background: #535353;
+		background: $theme-light-guide; 
 		cursor: pointer;
 		z-index: 3;
+	}
+	@include element(canvas) {
+		background: $theme-light-ruler;
+	}
+
+	@include when(dark) {
+		@include element(canvas) {
+			background: $theme-dark-ruler;
+		}
+		@include element(guide) {
+			background: $theme-dark-guide;
+		}
+		@include element(guide) {
+			background: $theme-dark-guide; 
+		}
 	}
 }
 

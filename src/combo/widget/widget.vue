@@ -146,6 +146,9 @@ export default {
 @import "../../style/index.scss";
 
 $block: vm-widget;
+$theme-dark-widget-bg: #535353;
+$theme-dark-widget-active-bg: #424242;
+$theme-dark-border: #4C4C4C;
 
 @include block($block) {
 	flex: 0 0 354px;
@@ -204,7 +207,7 @@ $block: vm-widget;
 		flex-wrap: nowrap;
 	}
 	@include element(tabs) {
-		width: 56px;
+		width: 57px;
 		height: 100%;
 		padding:0;
 		color: $assit;
@@ -285,6 +288,44 @@ $block: vm-widget;
 		p {
 			padding-top: 8px;
 		}
+	}
+
+	@include when(dark) {
+		@include element(wrapper) {
+			background: $theme-dark-widget-bg;
+			color: white;
+		}
+		@include element(title) {
+			color: white;
+			border-bottom: 1px solid $theme-dark-border;
+		}
+		@include element(tabs) {
+			color: #BDBDBD;
+			border-right: none;
+			border-bottom: none;
+			p {
+				&.is-active {
+					color: white;
+					background: $theme-dark-widget-active-bg;
+				}
+			}
+		}
+		@include element(menu) {
+			border-top: 1px solid $theme-dark-border;
+		}
+		@include element(content) {
+			background: $theme-dark-widget-active-bg;
+		}
+
+		@include element(arrow) {
+			border: 2px solid $white;
+			border-top: 0;
+			border-left: 0;
+		}
+		@include element(combo) {
+			border-bottom: 1px solid $theme-dark-border;
+		}
+
 	}
 }
 
