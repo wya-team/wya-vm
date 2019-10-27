@@ -441,8 +441,8 @@ export default {
 
 			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
 
-			this.preMouseX = mousePositionX + doc.scrollLeft;
-			this.preMouseY = mousePositionY + doc.scrollTop;
+			// this.preMouseX = mousePositionX + doc.scrollLeft;
+			// this.preMouseY = mousePositionY + doc.scrollTop;
 		},
 		handleMove(e) {
 			const { mousePositionX, mousePositionY } = this.getPositionByEvent(e);
@@ -507,8 +507,14 @@ export default {
 				this.$emit('resizing');
 			} else if (this.isRotating) {
 				let angle = this.getAngle(
-					[this.parentX + this.x + this.w / 2, -(this.parentY + this.y + this.h / 2)],
-					[this.lastMouseX + this.offset[0], -(this.lastMouseY + this.offset[1])],
+					[
+						this.parentX + this.x * this.scale + this.w / 2 * this.scale, 
+						-(this.parentY + this.y * this.scale + this.h / 2 * this.scale)
+					],
+					[
+						this.lastMouseX + this.offset[0], 
+						-(this.lastMouseY + this.offset[1])
+					]
 				);
 
 				let criticalAngle = angleArr.find(item => Math.abs(item - angle) < 3);
