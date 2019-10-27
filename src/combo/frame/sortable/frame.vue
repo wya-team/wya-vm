@@ -1,45 +1,51 @@
 <template>
-	<div 
-		:style="style" 
-		class="vm-frame-sortable"
-		@dragover.prevent
-		@dragenter="handleDragEnter"
-		@dragleave="handleDragLeave"
-		@drop="handleDrop"
-	>
-		<transition-group tag="div" name="flip-list">
-			<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
-				<!-- TODO: 不操作引用修改 -->
-				<div :style="it.wrapperStyle">
-					<vm-sortable
-						ref="sort"
-						:index="index"
-						:type="dragType"
-						:disabled="it.disabled"
-						:draggable="it.draggable || typeof it.draggable === 'undefined'"
-						:closeable="it.closeable || typeof it.closeable === 'undefined'"
-						@activated="$emit('activated', it, index)"
-						@deactivated="$emit('deactivated', it, index)"
-						@delete="$emit('change', { type: 'delete', id: it.id })"
-						@sorting="handleSorting"
-						@sort-end="handleSortEnd"
-					>
-						<component 
-							:is="`vm-${it.module}-viewer`" 
-							:index="index"
-							:vm="vm"
-							v-bind="it" 
-							style="min-height: 3px"
-						/>
-					</vm-sortable>
-				</div>
-				<div v-if="it.placeholder" :style="{height: `${it.placeholder}px`}"/>
+	<vm-inner>
+		<template #content>
+			<div 
+				:style="[style, frameStyle]" 
+				class="vm-frame-sortable"
+				@dragover.prevent
+				@dragenter="handleDragEnter"
+				@dragleave="handleDragLeave"
+				@drop="handleDrop"
+			>
+				<transition-group tag="div" name="flip-list">
+					<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
+						<!-- TODO: 不操作引用修改 -->
+						<div :style="it.wrapperStyle">
+							<vm-sortable
+								ref="sort"
+								:index="index"
+								:type="dragType"
+								:disabled="it.disabled"
+								:draggable="it.draggable || typeof it.draggable === 'undefined'"
+								:closeable="it.closeable || typeof it.closeable === 'undefined'"
+								@activated="$emit('activated', it, index)"
+								@deactivated="$emit('deactivated', it, index)"
+								@delete="$emit('change', { type: 'delete', id: it.id })"
+								@sorting="handleSorting"
+								@sort-end="handleSortEnd"
+							>
+								<component 
+									:is="`vm-${it.module}-viewer`" 
+									:index="index"
+									:vm="vm"
+									v-bind="it" 
+									style="min-height: 3px"
+								/>
+							</vm-sortable>
+						</div>
+						<div v-if="it.placeholder" :style="{height: `${it.placeholder}px`}"/>
+					</div>
+				</transition-group>
 			</div>
-		</transition-group>
-	</div>
+		</template>
+	</vm-inner>
+	
 </template>
 
 <script>
+import Inner from './inner.vue';
 import Sortable from '../../../base/sortable.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
 import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../../utils/constants';
@@ -48,12 +54,14 @@ export default {
 	name: 'vm-frame',
 	components: {
 		'vm-sortable': Sortable,
+		'vm-inner': Inner,
 	},
 	props: {
 		width: Number,
 		height: Number,
 		dataSource: Array,
-		editor: Object
+		editor: Object,
+		frameStyle: Object,
 	},
 	data() {
 		return {

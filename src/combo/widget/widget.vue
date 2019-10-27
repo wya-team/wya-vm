@@ -295,6 +295,9 @@ $theme-dark-border: #4C4C4C;
 			background: $theme-dark-widget-bg;
 			color: white;
 		}
+		@include element(header) {
+			color: white;
+		}
 		@include element(title) {
 			color: white;
 			border-bottom: 1px solid $theme-dark-border;
