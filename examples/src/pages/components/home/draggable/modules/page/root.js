@@ -12,8 +12,8 @@ export const page = {
 	// 初始数据
 	data: {
 		// for draggable
-		w: 2000,
-		h: 2000,
+		w: window.screen.width,
+		h: window.screen.height,
 		parent: false, // 不能超过父级
 		// handles: [], // 可以控制操作handles
 		draggable: false, // 可以拖拽
