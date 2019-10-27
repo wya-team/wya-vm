@@ -1,30 +1,28 @@
-
 import Viewer from './viewer.vue';
 import Editor from './editor.vue';
 
-export const array = {
-	module: "array",
-	type: '营销',
-	name: "数组模版",
+export const echart = {
+	module: "echart",
+	type: '基础',
+	name: "图表",
 	widgets: [
 		// 写法一
 		{
 			render(h, props) {
 				return (
-					<div>一行两列</div>
+					<div>图表一</div>
 				);
 			}
 		},
 		// 写法二
 		{
-			name: '一行两列',
-			image: 'https://avatars3.githubusercontent.com/u/34465004?s=200&v=4',
+			name: '图表二',
 		}
 	],
 	Viewer,
 	Editor, 
 	// 初始数据
-	data: (index) => ({
+	data: {
 		// for draggable
 		w: 200,
 		h: 150,
@@ -32,13 +30,18 @@ export const array = {
 		x: 0, // 动态分配
 		y: 0, // 动态分配
 		z: 1,
-		parent: false,
+		parent: true, // 不能超过父级
+		// handles: [], // 可以控制操作handles
+		draggable: true, // 可以拖拽
+		rotatable: true, // 可以旋转
+		resizable: true, // 可以变化
 		// for frame
 		closeable: true,
+		active: false,
 		
 		// for content
-		name: `名称${index}`
-	}),
+		name: '名称'
+	},
 	dataValidity: (res = {}) => {
 		if (!res.name) {
 			return {

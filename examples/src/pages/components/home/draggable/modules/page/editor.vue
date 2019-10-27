@@ -1,7 +1,18 @@
 <template>
 	<div style="display: flex; flex-direction: column;">
-		<div>w: <input :value="w" @input="handleChange($event, 'w')"></div>
-		<div>h: <input :value="h" @input="handleChange($event, 'h')"></div>
+		<div style="padding: 20px">
+			<span>屏幕大小：</span>
+			<vc-input-number
+				:value="$attrs.w"
+				style="width: 88px; margin-right: 23px;"
+				@input="handleChange(arguments[0], 'w')"
+			/>
+			<vc-input-number
+				v-model="$attrs.h"
+				style="width: 88px;"
+				@input="handleChange(arguments[0], 'h')"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -13,10 +24,7 @@ export default {
 	},
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
-	props: {
-		w: Number,
-		h: Number,
-	},
+	props: {},
 	data() {
 		return {};
 	},
@@ -25,8 +33,8 @@ export default {
 	created() {
 	},
 	methods: {
-		handleChange(e, key) {
-			this.$emit('change', { [key]: e.target.value });
+		handleChange(v, key) {
+			this.$emit('change', { [key]: v });
 		},
 		handleClick() {
 			// this.$emit('update:x', this.x + 1);

@@ -4,7 +4,7 @@ import Editor from './editor.vue';
 
 export const tpl = {
 	module: "tpl",
-	type: '基础组件',
+	type: '基础',
 	name: "模版",
 	Viewer,
 	Editor, 
