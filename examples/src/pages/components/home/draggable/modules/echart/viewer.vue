@@ -1,5 +1,5 @@
 <template>
-	<div :style="{ width: w + 'px', height: h + 'px' }">
+	<div :style="{ width: w + 'px', height: h + 'px', background: bg, zIndex: z }">
 		<vc-echarts 
 			:options="options"
 			:auto-resize="true"
@@ -23,6 +23,7 @@ export default {
 		z: Number,
 		r: Number,
 		name: String,
+		bg: String
 	},
 	data() {
 		let fakeData = [];

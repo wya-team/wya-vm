@@ -1,9 +1,14 @@
 <template>
 	<div>
+		<div style="position: absolute; top: 0;" @click="handleClick">
+			{{ theme }}
+		</div>
 		<vm-combo 
 			v-model="list"
-			:frame-style="{ border: '1px solid red' }"
+			:frame-style="{ border: '1px solid #5495f6', background: '#191C34' }"
 			:style="style"
+			:show-lines="false"
+			:theme="theme"
 			@save="handleSave"
 			@error="handleError"
 		/>
@@ -32,7 +37,8 @@ export default {
 					h: window.screen.height,
 				}
 			],
-			style: {}
+			style: {},
+			theme: 'dark'
 		};
 	},
 	computed: {
@@ -51,6 +57,9 @@ export default {
 		},
 		handleError({ type, msg }) {
 			Message.error(msg);
+		},
+		handleClick() {
+			this.theme = this.theme === 'dark' ? 'light' : 'dark';
 		}
 	},
 };
