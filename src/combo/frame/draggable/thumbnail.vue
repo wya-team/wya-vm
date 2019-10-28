@@ -82,7 +82,7 @@ export default {
 	computed: {
 		shrink() {
 			const { width, height, frameW, frameH, borderSize, scale } = this;
-			return Math.min(
+			return Math.max(
 				(frameW + borderSize * 2) / width,
 				(frameH + borderSize * 2) / height
 			);
@@ -120,7 +120,7 @@ export default {
 			'scale', 
 			'clientW', 
 			'clientH',
-			'theme',
+			'theme'
 		];
 		let hook = debounce(this.repaint, 50);
 		
