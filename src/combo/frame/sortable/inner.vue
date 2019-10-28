@@ -7,6 +7,9 @@
 <script>
 export default {
 	name: 'vm-frame-inner',
+	props: {
+		hasPage: Boolean
+	}
 };
 </script>
 
@@ -16,9 +19,10 @@ export default {
 $block: vm-frame-sortable--inner;
 @include block($block) {
 	flex: 1;
-	overflow: hidden;
+	overflow: auto;
 	display: flex; 
-	flex-direction: column;
 	position: relative;
+	align-items: center;
+	justify-content: center;
 }
 </style>

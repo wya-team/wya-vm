@@ -42,20 +42,6 @@
 			v-bind="editorOpts"
 			@change="handleChange"
 		/>
-		<vm-assist-save
-			v-if="showAssist"
-			@save="handleOperate('save')"
-			@preview="handleOperate('preview')"
-		/>
-		<vm-assist-operation
-			v-if="showAssist"
-			:current="current"
-			:total="total"
-			:is-edit="!!editor"
-			@undo="handleOperate('undo')"
-			@redo="handleOperate('redo')"
-			@delete="handleOperate('delete')"
-		/>
 	</div>
 </template>
 

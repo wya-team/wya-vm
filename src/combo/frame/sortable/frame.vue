@@ -1,9 +1,9 @@
 <template>
-	<vm-inner>
+	<vm-inner :has-page="hasPage" class="vm-frame-sortable">
 		<template #content>
 			<div 
 				:style="[style, frameStyle]" 
-				class="vm-frame-sortable"
+				class="vm-frame-sortable__wrapper"
 				@dragover.prevent
 				@dragenter="handleDragEnter"
 				@dragleave="handleDragLeave"
@@ -48,7 +48,7 @@
 import Inner from './inner.vue';
 import Sortable from '../../../base/sortable.vue';
 import { getUid, cloneDeep } from '../../../utils/helper';
-import { SORT_IN_FRAME, WIDGET_TO_FRAME } from '../../../utils/constants';
+import { SORT_IN_FRAME, WIDGET_TO_FRAME, PAGE_MOULE } from '../../../utils/constants';
 
 export default {
 	name: 'vm-frame',
@@ -74,12 +74,15 @@ export default {
 	},
 	computed: {
 		style() {
-			const w = this.width === 0 ? 'auto' : `${this.width}px`;
-			const h = this.height === 0 ? 'auto' : `${this.height}px`;
+			const w = !this.width ? 'auto' : `${this.width}px`;
+			const h = !this.height ? 'auto' : `${this.height}px`;
 			return {
 				width: w,
 				height: h
 			};
+		},
+		hasPage() {
+			return this.dataSource.some(i => i.module === PAGE_MOULE);
 		}
 	},
 	created() {
@@ -218,17 +221,20 @@ export default {
 <style lang="scss">
 @import "../../../style/index.scss";
 
-.vm-frame-sortable {
-	// 不可缩小
-	flex-shrink: 0;
-	border: 1px solid $border;
-	margin-left: 20px;
-	position: relative;
-	overflow: auto
+$block: vm-frame-sortable;
+
+@include block($block) {
+	@include element(wrapper) {
+		flex-shrink: 0;
+		border: 1px solid $border;
+		margin-left: 20px;
+		position: relative;
+	}
+	@include element(item) {
+		transition: all .5s;
+	}
 }
-.vm-frame-sortable__item {
-	transition: all .5s;
-}
+
 // 开始消失/进入的元素
 .flip-list-enter, 
 .flip-list-leave-to{
