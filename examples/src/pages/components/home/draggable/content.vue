@@ -1,13 +1,21 @@
 <template>
 	<div>
-		<div style="position: absolute; top: 0;" @click="handleClick">
-			{{ theme }}
+		<div style="position: absolute; top: 0;" @click="theme === 'dark' ? 'light' : 'dark'">
+			主题: {{ theme }} (点我切换)
 		</div>
+
+		<div style="position: absolute; top: 0; left: 200px" @click="showRuler = !showRuler">
+			标尺: {{ showRuler ? '展示' : '隐藏' }} (点我切换)
+		</div>
+
 		<vm-combo 
 			v-model="list"
 			:frame-style="{ border: '1px solid #5495f6', background: '#191C34' }"
+			:frame-w="1920"
+			:frame-h="1080"
 			:style="style"
 			:show-lines="false"
+			:show-ruler="showRuler"
 			:theme="theme"
 			@save="handleSave"
 			@error="handleError"
@@ -38,7 +46,8 @@ export default {
 				}
 			],
 			style: {},
-			theme: 'dark'
+			theme: 'dark',
+			showRuler: true
 		};
 	},
 	computed: {
@@ -57,9 +66,6 @@ export default {
 		},
 		handleError({ type, msg }) {
 			Message.error(msg);
-		},
-		handleClick() {
-			this.theme = this.theme === 'dark' ? 'light' : 'dark';
 		}
 	},
 };

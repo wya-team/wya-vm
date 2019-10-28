@@ -17,12 +17,14 @@
 		<div>
 			<br>
 		</div>
-		<div style="display: flex; align-items: flex-start;">
+		<div style="display: flex; align-items: flex-start; ">
 			<vm-combo
 				ref="combo"
 				v-model="editorData"
 				:frame-w="data.frameW"
 				:frame-h="data.frameH"
+				:width="data.frameW"
+				:height="data.frameH"
 				:show-widget="false"
 				:show-editor="false"
 				:show-lines="false"
