@@ -224,6 +224,7 @@ export default {
 $block: vm-frame-sortable;
 
 @include block($block) {
+	background: #f7f6fa;
 	@include element(wrapper) {
 		flex-shrink: 0;
 		border: 1px solid $border;
