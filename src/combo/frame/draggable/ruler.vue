@@ -495,7 +495,7 @@ $theme-dark-guide: #535353;
 		transform: rotate(90deg);
 		transform-origin: 0 0 0;
 		position: absolute;
-		left: 20px;
+		left: 25px;
 		top: 5px;
 		user-select: none;
 		color: #fff;
