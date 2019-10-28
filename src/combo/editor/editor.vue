@@ -39,8 +39,9 @@ export default {
 	},
 	watch: {
 		"dataSource.module": {
-			handler() {
-				this.key = getUid();
+			handler(v) {
+				this.key = getUid(v);
+				console.log('BUG/TODO': this.key);
 			}
 		}
 	},
@@ -57,7 +58,6 @@ export default {
 				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 
 				if (hasOwn(opts, key) && !valueIsNaN(val)) {
-
 					this.$emit('change', {
 						type: 'update',
 						id: this.dataSource.id,
@@ -68,7 +68,6 @@ export default {
 					this.$refs.target.$emit(`update:${key}`, val);
 				}
 			}
-
 		}
 	},
 };
