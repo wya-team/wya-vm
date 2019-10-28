@@ -16,6 +16,8 @@
 <script>
 import { createVMDrags } from '@wya/vm';
 import { Message } from '@wya/vc';
+import { Resize } from '@wya/vc/lib/utils/resize';
+
 import { defaultModules } from './modules/root';
 
 let { Combo, Preview } = createVMDrags(defaultModules, { mode: 'sortable' });
@@ -39,13 +41,19 @@ export default {
 	computed: {
 	},
 	mounted() {
-		// 需要减去padding值
-		this.style = {
-			width: window.innerWidth - 40 + 'px',
-			height: window.innerHeight - 40 + 'px',
-		};
+		Resize.on(document.body, this.handleResize);
+	},
+	destroyed() {
+		Resize.off(document.body, this.handleResize);
 	},
 	methods: {
+		handleResize() {
+			// 需要减去padding值
+			this.style = {
+				width: window.innerWidth - 40 + 'px',
+				height: window.innerHeight - 40 + 'px',
+			};
+		},
 		handleSave(response) {
 			console.log(response, this.list);
 		},

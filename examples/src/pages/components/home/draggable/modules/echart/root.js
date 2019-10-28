@@ -42,7 +42,7 @@ export const echart = {
 			
 			// for content
 			name: `样式${index + 1}`,
-			bg: index ? 'red' : 'blue'
+			bg: index ? '#FDE5E7' : '#E6E8FF'
 		};
 	},
 	dataValidity: (res = {}) => {

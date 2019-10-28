@@ -10,7 +10,7 @@ import { Device, Storage, Cookie } from '@wya/utils';
 typeof window === "object" ? window._global = {} : this._global = {};
 
 // 版本号
-_global.version = '1.0';
+_global.version = '1.5';
 
 Storage.setVersion(_global.version);
 Cookie.setVersion(_global.version);

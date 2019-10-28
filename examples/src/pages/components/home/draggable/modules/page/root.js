@@ -4,8 +4,12 @@ import Editor from './editor.vue';
 export const page = {
 	module: "page",
 	Viewer: {
-		render(h) {
-			return null;
+		inheritAttrs: false,
+		render(h, props) {
+			// 测试修改其他模块失焦时（非同步修改），是否作用到page上
+			return (
+				<span>{ this.$attrs.name }</span>
+			);
 		}
 	},
 	Editor, 
@@ -22,6 +26,7 @@ export const page = {
 		// for frame
 		closeable: false,
 		active: false,
+		name: ''
 	},
 	dataValidity: (res = {}) => {
 		if (!res.w && !res.h) {

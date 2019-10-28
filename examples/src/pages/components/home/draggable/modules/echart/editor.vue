@@ -47,11 +47,11 @@
 		</div>
 
 		<div style="padding: 20px">
-			<span>名字：</span>
+			<span>Name - 失去焦点时修改：</span>
 			<vc-input
-				:value="$attrs.name"
+				v-model="currentName"
 				style="width: 88px; margin-right: 23px;"
-				@input="handleChange(arguments[0], 'name')"
+				@blur="handleBlur"
 			/>
 		</div>
 	</div>
@@ -65,11 +65,21 @@ export default {
 	},
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
-	props: { },
-	data() {
-		return {};
+	props: {
+		name: String
 	},
-	computed: {
+	data() {
+		return {
+			currentName: '',
+		};
+	},
+	watch: {
+		name: {
+			immediate: true,
+			handler(v) {
+				this.currentName = v;
+			}
+		}
 	},
 	created() {
 	},
@@ -80,6 +90,9 @@ export default {
 		handleClick() {
 			// this.$emit('update:x', this.x + 1);
 			this.$emit('change', { x: this.x + 1 });
+		},
+		handleBlur(e) {
+			this.$emit('change', { name: e.target.value });
 		}
 	},
 };
