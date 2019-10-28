@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-frame-draggable--inner">
+	<div :class="{ 'is-hide-border': !showRuler }" class="vm-frame-draggable--inner">
 		<vm-ruler
 			v-if="showRuler"
 			:scroll-left="scrollLeft"
@@ -44,7 +44,7 @@ $block: vm-frame-draggable--inner;
 @include block($block) {
 	flex: 1;
 	overflow: hidden;
-	background: $theme-light-frame-bg; // TODO: dark模式;
+	background: $theme-light-frame-bg;
 	
 	display: flex; 
 	flex-direction: column;
@@ -52,9 +52,13 @@ $block: vm-frame-draggable--inner;
 	
 	border-left: 1px solid #BDBDBD;
 	@include when(dark) {
-		// background: $theme-dark-frame-bg;
 		border-left: 1px solid black; 
 		border-right: 1px solid black; 
+	}
+
+	@include when(hide-border) {
+		border-left: none; 
+		border-right: none; 
 	}
 }
 </style>

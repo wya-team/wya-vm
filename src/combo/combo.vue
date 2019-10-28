@@ -36,6 +36,10 @@
 			:data-source="editor"
 			:theme="theme"
 			:class="classes"
+			:style="editorStyle"
+			:width="editorW"
+			:height="editorH"
+			v-bind="editorOpts"
 			@change="handleChange"
 		/>
 		<vm-assist-save
@@ -95,6 +99,14 @@ export default {
 		widgetOpts: Object,
 
 		/**
+		 * widget
+		 */
+		editorStyle: Object,
+		editorW: Number,
+		editorH: Number,
+		editorOpts: Object,
+
+		/**
 		 * combo
 		 */
 		theme: {
@@ -148,8 +160,8 @@ export default {
 	},
 	computed: {
 		style() {
-			const w = this.width === 0 ? 'auto' : `${this.width}px`;
-			const h = this.height === 0 ? 'auto' : `${this.height}px`;
+			const w = !this.width ? 'auto' : `${this.width}px`;
+			const h = !this.height ? 'auto' : `${this.height}px`;
 
 			return {
 				width: w,

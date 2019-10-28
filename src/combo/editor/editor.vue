@@ -27,7 +27,7 @@ export default {
 		dataSource: Object,
 		width: {
 			type: Number,
-			default: 446
+			default: 355
 		}
 	},
 	data() {
@@ -74,39 +74,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.vm-editor {
-	flex-shrink: 0;
-	// margin-left: 20px;
-	// min-width: 446px; // 暂时写死
-	// max-width: 446px;
-	// flex: 0 0 354px;
-}
-.vm-editor-wrapper {
-	position: relative;
-	padding: 0;
-	height: 100%;
-	border: 1px solid #0000001a;
-	border-radius: 0px;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-	background: #fff;
-	z-index: 2;
-}
-.vm-editor__arrow {
-	left: -7px;
-	top: 20px;
-	width: 14px;
-	height: 14px;
-	transform: translateX(-50%) rotate(45deg);
-	box-shadow: -3px 3px 7px rgba(0, 0, 0, 0.07);
-	background: #fff;
-	transform: rotate(45deg);
-	position: absolute;
-	border-color: #0000;
-	border-style: solid;
-	border-left: 1px solid #0000001a;
-	border-bottom: 1px solid #0000001a;
-}
-
 @import "../../style/index.scss";
 
 $block: vm-editor;

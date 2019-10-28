@@ -1,5 +1,6 @@
 <template>
-	<vm-inner 
+	<vm-inner
+		ref="inner"
 		:show-ruler="showRuler"
 		:scroll-left="scrollLeft"
 		:scroll-top="scrollTop"
@@ -183,14 +184,15 @@ export default {
 			clientW: 0,
 			clientH: 0,
 
-			// 四周留白
-			borderSize: 20,
-
 			// 参考线
 			guides: [[], []]
 		};
 	},
 	computed: {
+		// 四周留白
+		borderSize() {
+			return this.showRuler ? 20 : 0;
+		},
 		wrapperStyle() {
 			return {
 				paddingTop: `${this.borderSize}px`,
@@ -223,17 +225,20 @@ export default {
 		Resize.on(this.$refs.wrapper, this.handleResize);
 	},
 	destroyed() {
-		Resize.on(this.$refs.wrapper, this.handleResize);
+		Resize.off(this.$refs.wrapper, this.handleResize);
 	},
 	methods: {
 		/**
 		 * 1. 自适应布局
-		 * 2. 滚动条最右侧显示（hackStyle）
+		 * 2. 滚动条最右侧显示（hackStyle）, 容易导致无限计划
+		 * tips: vm-combo, width 为auto时，会出现一直计算，直到width小于最大的width
+		 * TODO: 可以针对inner获取他的宽高
 		 */
 		handleResize() {
-			if (!this.$refs.wrapper) return;
-			this.clientW = this.$refs.wrapper.offsetWidth;
-			this.clientH = this.$refs.wrapper.offsetHeight;
+			if (!this.$refs.inner) return;
+			let el = this.$refs.wrapper;
+			this.clientW = el.offsetWidth;
+			this.clientH = el.offsetHeight;
 		},
 
 		handleScroll: throttle(function (e) {

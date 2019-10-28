@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-zoom-bar">
+	<div class="vm-zoom-bar vm-hack-editor">
 		<div class="vm-zoom-bar__wrapper">
 			<vc-select
 				v-model="currentScale"
@@ -160,7 +160,7 @@ $theme-dark-zoom-bg: #343434;
 @include block($block) { 
 	height: 40px; 
 	z-index: 2;
-	background: $theme-dark-zoom-bg;
+	background: $theme-light-zoom-bg;
 	box-shadow: 0px -2px 10px 0px rgba(0, 0, 0, 0.08);
 	@include element(wrapper) {
 		display: flex;

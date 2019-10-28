@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-thumbnail">
+	<div class="vm-thumbnail vm-hack-editor">
 		<div style="position: relative;">
 			<canvas
 				ref="canvas"
