@@ -10,5 +10,20 @@ export const defaultModules = {
 	tpl,
 	array,
 	setting,
-	area
+	area,
+	page: {
+		module: 'page',
+		Viewer: {
+			render() {
+				return null;
+			}
+		},
+		Editor: {
+			render() {
+				return (
+					<div>随意</div>
+				);
+			}
+		}
+	}
 };

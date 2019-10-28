@@ -5,7 +5,8 @@
 			v-model="list"
 			:frame-w="375"
 			:frame-h="606"
-			show-assist
+			:show-assist="false"
+			:style="style"
 			@save="handleSave"
 			@error="handleError"
 		/>
@@ -28,16 +29,21 @@ export default {
 		return {
 			list: [
 				{
-					id: "vm-1566971480749-1",
-					module: "tpl"
-					// 测试动态注入字段
+					id: Math.random(),
+					module: 'page',
 				}
-			]
+			],
+			style: {},
 		};
 	},
 	computed: {
 	},
-	created() {
+	mounted() {
+		// 需要减去padding值
+		this.style = {
+			width: window.innerWidth - 40 + 'px',
+			height: window.innerHeight - 40 + 'px',
+		};
 	},
 	methods: {
 		handleSave(response) {
@@ -50,5 +56,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 </style>
