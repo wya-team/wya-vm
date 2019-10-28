@@ -30,7 +30,7 @@ export const hasOwn = (target, key) => Object.prototype.hasOwnProperty.call(targ
  */
 const now = +(new Date());
 let index = 0;
-export const getUid = () => `vm-${now}-${++index}`;
+export const getUid = (name) => `vm${name ? `-${name}` : ''}-${now}${++index}`;
 
 /**
  * 判断是否是NaN
