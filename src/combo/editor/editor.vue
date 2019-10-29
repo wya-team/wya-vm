@@ -48,6 +48,8 @@ export default {
 
 		/**
 		 * 延迟触发
+		 * 用户端在激活时不要立马做操作，否者会存在问题
+		 * TODO: 失焦时为异步情况，editor会被销毁，可以设计一个专门为API(传id)
 		 */
 		resetCurEditor: debounce(function (id) {
 			this.currentId = id;
