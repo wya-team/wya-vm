@@ -33,7 +33,8 @@
 		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
 		<vm-editor 
 			v-if="showEditor && editor"
-			:data-source="editor"
+			:value="editor"
+			:data-source="rebuildData"
 			:theme="theme"
 			:class="classes"
 			:style="editorStyle"
@@ -275,7 +276,9 @@ export default {
 			this.editor = it;
 		},
 
-		handleDeactivated() {
+		handleDeactivated(e, it) {
+			// console.log(e, it);
+			// console.log('deactivated', this.editor.module, this.editor.id);
 			this.editor = this.pageEditor || null;
 		},
 

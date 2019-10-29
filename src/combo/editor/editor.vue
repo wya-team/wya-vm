@@ -1,15 +1,14 @@
 <template>
 	<div 
 		:style="{flex: `0 0 ${width}px` }" 
-		:key="key"
 		class="vm-editor vm-hack-editor"
 	>
 		<div class="vm-editor__wrapper">
 			<!-- <div class="vm-editor__arrow" /> -->
 			<component
 				ref="target"
-				:is="`vm-${dataSource.module}-editor`"
-				v-bind.sync="dataSource"
+				:is="`vm-${value.module}-editor`"
+				v-bind.sync="value"
 				@change="handleChange"
 			/>
 		</div>
@@ -17,14 +16,15 @@
 </template>
 
 <script>
-import { valueIsNaN, hasOwn, getUid } from "../../utils/helper";
+import { valueIsNaN, hasOwn, getUid, debounce } from "../../utils/helper";
 
 export default {
 	name: 'vm-editor',
 	components: {
 	},
 	props: {
-		dataSource: Object,
+		dataSource: Array,
+		value: Object,
 		width: {
 			type: Number,
 			default: 355
@@ -32,20 +32,27 @@ export default {
 	},
 	data() {
 		return {
-			key: getUid()
+			currentId: this.value.id
 		};
 	},
 	computed: {
 	},
 	watch: {
-		"dataSource.module": {
+		"value.module": {
 			handler(v) {
-				this.key = getUid(v);
-				console.log('BUG/TODO': this.key);
+				this.resetCurEditor(this.value.id);
 			}
 		}
 	},
 	methods: {
+
+		/**
+		 * 延迟触发
+		 */
+		resetCurEditor: debounce(function (id) {
+			this.currentId = id;
+		}, 50),
+
 		/**
 		 * hack操作
 		 * 业务上避免使用该操作
@@ -60,12 +67,15 @@ export default {
 				if (hasOwn(opts, key) && !valueIsNaN(val)) {
 					this.$emit('change', {
 						type: 'update',
-						id: this.dataSource.id,
+						id: this.currentId,
 						old: {
 							[key]: val
 						}
 					});
-					this.$refs.target.$emit(`update:${key}`, val);
+
+					// TODO: remove(引用修改)
+					let data = this.dataSource.find(i => i.id === this.currentId);
+					data[key] = val;
 				}
 			}
 		}

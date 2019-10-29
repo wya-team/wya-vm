@@ -210,7 +210,7 @@ export default {
 
 		hackStyle() {
 			return {
-				width: `${Math.max(this.clientW, this.width * this.scale) + this.borderSize}px`,
+				width: `${Math.max(this.clientW - this.borderSize, this.width * this.scale + this.borderSize)}px`,
 				height: `${this.height * this.scale + this.borderSize}px`
 			};
 		},

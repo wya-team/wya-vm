@@ -135,8 +135,15 @@ export default {
 			}
 		}
 	},
-	created() {
-		
+	mounted() {
+		/**
+		 * 1. 自动调整至最合适的位置
+		 * TODO: 考虑初始数据异步的情况
+		 */
+		setTimeout(() => {
+			this.currentScale = this.autoScale;
+			this.$emit('update:scale', this.currentScale);
+		}, 0);
 	},
 	methods: {
 		handleChangeSlider(v) {
