@@ -66,12 +66,18 @@ export default {
 			type: Number,
 			default: 0
 		},
-
+		theme: String,
 		borderSize: {
-			type: Number,
-			default: 0
-		},
-		theme: String
+			type: Object,
+			default() {
+				return {
+					top: 0,
+					left: 0,
+					bottom: 0,
+					right: 0
+				};
+			}
+		}
 	},
 	data() {
 		return {
@@ -83,8 +89,8 @@ export default {
 		shrink() {
 			const { width, height, frameW, frameH, borderSize, scale } = this;
 			return Math.max(
-				(frameW + borderSize * 2) / width,
-				(frameH + borderSize * 2) / height
+				(frameW + borderSize.left + borderSize.right) / width,
+				(frameH + borderSize.top + borderSize.bottom) / height
 			);
 		},
 		visibleStyle() {
@@ -104,11 +110,11 @@ export default {
 		},
 		maxScrollLeft() {
 			const { frameW, clientW, borderSize, scale } = this;
-			return frameW * scale - clientW + borderSize * 2;
+			return frameW * scale - clientW + borderSize.left + borderSize.right;
 		},
 		maxScrollTop() {
 			const { frameH, clientH, borderSize, scale } = this;
-			return frameH * scale - clientH + borderSize * 2;
+			return frameH * scale - clientH + borderSize.top + borderSize.bottom;
 		}
 	},
 

@@ -84,8 +84,15 @@ export default {
 		},
 
 		borderSize: {
-			type: Number,
-			default: 0
+			type: Object,
+			default() {
+				return {
+					top: 0,
+					left: 0,
+					bottom: 0,
+					right: 0
+				};
+			}
 		}
 	},
 	data() {
@@ -105,8 +112,8 @@ export default {
 				return 1;
 			}
 			return Math.min(
-				(clientW - borderSize * 2) / frameW, 
-				(clientH - borderSize * 2) / frameH, 
+				(clientW - borderSize.left - borderSize.right) / frameW, 
+				(clientH - borderSize.top - borderSize.bottom) / frameH, 
 				1
 			);
 		},

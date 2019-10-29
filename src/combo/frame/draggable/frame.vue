@@ -191,12 +191,18 @@ export default {
 	computed: {
 		// 四周留白
 		borderSize() {
-			return this.showRuler ? 20 : 0;
+			let size = this.showRuler ? 20 : 0;
+			return {
+				top: size,
+				left: size,
+				bottom: size,
+				right: size
+			};
 		},
 		wrapperStyle() {
 			return {
-				paddingTop: `${this.borderSize}px`,
-				paddingLeft: `${this.borderSize}px`,
+				paddingTop: `${this.borderSize.top}px`,
+				paddingLeft: `${this.borderSize.left}px`,
 			};
 		},
 		contentStyle() {
@@ -210,8 +216,8 @@ export default {
 
 		hackStyle() {
 			return {
-				width: `${Math.max(this.clientW - this.borderSize, this.width * this.scale + this.borderSize)}px`,
-				height: `${this.height * this.scale + this.borderSize}px`
+				width: `${Math.max(this.clientW - this.borderSize.left, this.width * this.scale + this.borderSize.left)}px`,
+				height: `${this.height * this.scale + this.borderSize.bottom}px`
 			};
 		},
 

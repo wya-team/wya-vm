@@ -153,8 +153,18 @@ export default {
 			default: 1
 		},
 		guides: Array,
-		borderSize: Number,
 		theme: String,
+		borderSize: {
+			type: Object,
+			default() {
+				return {
+					top: 0,
+					left: 0,
+					bottom: 0,
+					right: 0
+				};
+			}
+		}
 	},
 	data() {
 		return {
@@ -183,12 +193,14 @@ export default {
 	computed: {
 		// 刻度的宽度, 5000用于滚动距离避免重绘
 		canvasW() {
-			const offset = this.borderSize * 2 + this.guideSize;
 			const { frameW, frameH, scale, borderSize, guideSize, clientW, clientH } = this;
 
+			const offsetW = borderSize.left + borderSize.right + guideSize;
+			const offsetH = borderSize.top + borderSize.bottom + guideSize;
+
 			let width = Math.max(
-				frameW * scale + offset, 
-				frameH * scale + offset, 
+				frameW * scale + offsetW, 
+				frameH * scale + offsetH, 
 				clientW, 
 				clientH
 			);
@@ -196,7 +208,7 @@ export default {
 		},
 		// 0刻度距离轴容器左边的距离
 		placeholderW() {
-			return this.borderSize + this.guideSize;
+			return this.borderSize.left + this.guideSize;
 		},
 
 		// 10刻度间隔(缩放后)
