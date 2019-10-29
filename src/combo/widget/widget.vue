@@ -146,13 +146,13 @@ export default {
 @import "../../style/index.scss";
 
 $block: vm-widget;
-$theme-dark-widget-bg: #535353;
-$theme-dark-widget-active-bg: #424242;
-$theme-dark-border: #4C4C4C;
+$tabs-w: 48px;
+$content-w: 236px;
+$w: $tabs-w + $content-w;
 
 @include block($block) {
-	flex: 0 0 354px;
-	width: 354px;
+	flex: 0 0 $w;
+	width: $w;
 	z-index: 10;
 	@include element(wrapper) {
 		background: $white;
@@ -207,7 +207,7 @@ $theme-dark-border: #4C4C4C;
 		flex-wrap: nowrap;
 	}
 	@include element(tabs) {
-		width: 57px;
+		width: $tabs-w;
 		height: 100%;
 		padding:0;
 		color: $assit;
@@ -229,7 +229,7 @@ $theme-dark-border: #4C4C4C;
 		}
 	}
 	@include element(content) {
-		width: 297px;
+		width: $content-w;
 		overflow: auto;
 		height: 100%;
 	}
@@ -283,52 +283,11 @@ $theme-dark-border: #4C4C4C;
 		cursor: move;
 		img {
 			width: 100%;
-			border: 1px dashed $border;
+			// border: 1px dashed $border;
 		}
 		p {
 			padding-top: 8px;
 		}
-	}
-
-	@include when(dark) {
-		@include element(wrapper) {
-			background: $theme-dark-widget-bg;
-			color: white;
-		}
-		@include element(header) {
-			color: white;
-		}
-		@include element(title) {
-			color: white;
-			border-bottom: 1px solid $theme-dark-border;
-		}
-		@include element(tabs) {
-			color: #BDBDBD;
-			border-right: none;
-			border-bottom: none;
-			p {
-				&.is-active {
-					color: white;
-					background: $theme-dark-widget-active-bg;
-				}
-			}
-		}
-		@include element(menu) {
-			border-top: 1px solid $theme-dark-border;
-		}
-		@include element(content) {
-			background: $theme-dark-widget-active-bg;
-		}
-
-		@include element(arrow) {
-			border: 2px solid $white;
-			border-top: 0;
-			border-left: 0;
-		}
-		@include element(combo) {
-			border-bottom: 1px solid $theme-dark-border;
-		}
-
 	}
 }
 

@@ -5,15 +5,29 @@ $acitved: #efefef;
 $black: #000000;
 $white: #fff;
 
-$theme-light: #efefef;
-$theme-dark: #424242;
-
 $theme-light-bg: #efefef;
 $theme-dark-bg: #424242;
 
 $theme-light-frame-bg: #d9d9d9;
 $theme-dark-frame-bg: #424242;
 
-$theme-light-assist: #efefef;
-$theme-dark-assist: #343434;
+// widget
+$theme-dark-widget-bg: #535353;
+$theme-dark-widget-active-bg: #424242;
+$theme-dark-widget-border: #4C4C4C;
+
+// editor
+$theme-dark-editor-bg: #535353;
+
+// ruler
+$theme-light-ruler-bg: #FAFAFA;
+$theme-dark-ruler-bg: #474747;
+
+$theme-light-guide-bg: #F0F0F0;
+$theme-dark-guide-bg: #535353;
+
+// zoom
+$theme-light-zoom-bg: #efefef;
+$theme-dark-zoom-bg: #343434;
+
 

@@ -228,7 +228,7 @@ $block: vm-thumbnail;
 	position: absolute;
 	bottom: 50px;
 	right: 10px;
-	background: $theme-light;
+	background: $theme-light-bg;
 	border: 1px solid $primary;
 	z-index: 2;
 	@include element(visible) {
@@ -237,9 +237,6 @@ $block: vm-thumbnail;
 		border: 1px solid #DBDBDB;
 		background: rgba(68, 68, 68, 0.5);
 		cursor: move;
-	}
-	@include when(dark) {
-		background: $theme-dark;
 	}
 }
 </style>

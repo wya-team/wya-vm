@@ -5,7 +5,6 @@
 			:style="widgetStyle" 
 			:content-style="widgetContentStyle" 
 			:theme="theme"
-			:class="classes"
 			v-bind="widgetOpts"
 			@change="handleWidgetChange"
 		/>
@@ -36,7 +35,6 @@
 			:value="editor"
 			:data-source="rebuildData"
 			:theme="theme"
-			:class="classes"
 			:style="editorStyle"
 			:width="editorW"
 			:height="editorH"
@@ -50,6 +48,7 @@
 import { Assist } from './assist';
 import { cloneDeep, isEqualWith } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
+import './theme-dark.scss';
 
 export default {
 	name: 'vm-combo',
@@ -158,7 +157,7 @@ export default {
 
 		classes() {
 			return {
-				'is-dark': this.theme === 'dark'
+				'vm-combo__theme--dark': this.theme === 'dark'
 			};
 		}
 	},

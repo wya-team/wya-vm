@@ -1,0 +1,75 @@
+@import "../style/index.scss";
+
+.vm-combo__theme--dark {
+	@include block(vm-widget) {
+		@include element(wrapper) {
+			background: $theme-dark-widget-bg;
+			color: white;
+		}
+		@include element(header) {
+			color: white;
+		}
+		@include element(title) {
+			color: white;
+			border-bottom: 1px solid $theme-dark-widget-border;
+		}
+		@include element(tabs) {
+			color: #BDBDBD;
+			border-right: none;
+			border-bottom: none;
+			p {
+				&.is-active {
+					color: white;
+					background: $theme-dark-widget-active-bg;
+				}
+			}
+		}
+		@include element(menu) {
+			border-top: 1px solid $theme-dark-widget-border;
+		}
+		@include element(content) {
+			background: $theme-dark-widget-active-bg;
+		}
+
+		@include element(arrow) {
+			border: 2px solid $white;
+			border-top: 0;
+			border-left: 0;
+		}
+		@include element(combo) {
+			border-bottom: 1px solid $theme-dark-widget-border;
+		}
+
+	}
+
+	@include block(vm-editor) {
+		@include element(wrapper) {
+			background: $theme-dark-editor-bg;
+			color: white;
+		}
+	}
+
+	@include block(vm-frame-draggable--inner) {
+		border-left: 1px solid black; 
+		border-right: 1px solid black; 
+	}
+
+	@include block(vm-ruler) {
+		@include element(canvas) {
+			background: $theme-dark-ruler-bg;
+		}
+		@include element(guide) {
+			background: $theme-dark-guide-bg;
+		}
+	}
+
+	@include block(vm-thumbnail) {
+		background: $theme-dark-bg;
+	}
+
+	@include block(vm-zoom-bar) { 
+		background: $theme-dark-zoom-bg;
+		box-shadow: none;
+	}
+}
+	

@@ -27,7 +27,7 @@ export default {
 		value: Object,
 		width: {
 			type: Number,
-			default: 355
+			default: 327
 		}
 	},
 	data() {
@@ -86,7 +86,6 @@ export default {
 @import "../../style/index.scss";
 
 $block: vm-editor;
-$theme-dark-editor-bg: #535353;
 
 @include block($block) {
 	flex-shrink: 0;
@@ -118,13 +117,6 @@ $theme-dark-editor-bg: #535353;
 		border-style: solid;
 		border-left: 1px solid #0000001a;
 		border-bottom: 1px solid #0000001a;
-	}
-
-	@include when(dark) {
-		@include element(wrapper) {
-			background: $theme-dark-editor-bg;
-			color: white;
-		}
 	}
 }
 </style>

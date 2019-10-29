@@ -160,10 +160,6 @@ export default {
 @import "../../../style/index.scss";
 
 $block: vm-zoom-bar;
-
-$theme-light-zoom-bg: #efefef;
-$theme-dark-zoom-bg: #343434;
-
 @include block($block) { 
 	height: 40px; 
 	z-index: 2;
@@ -173,10 +169,6 @@ $theme-dark-zoom-bg: #343434;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-	}
-	@include when(dark) {
-		background: $theme-dark-zoom-bg;
-		box-shadow: none;
 	}
 }
 </style>

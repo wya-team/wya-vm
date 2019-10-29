@@ -51,11 +51,6 @@ $block: vm-frame-draggable--inner;
 	position: relative;
 	
 	border-left: 1px solid #BDBDBD;
-	@include when(dark) {
-		border-left: 1px solid black; 
-		border-right: 1px solid black; 
-	}
-
 	@include when(hide-border) {
 		border-left: none; 
 		border-right: none; 

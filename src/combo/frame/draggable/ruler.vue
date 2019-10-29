@@ -397,12 +397,6 @@ $block: vm-ruler;
 $blue-guide: rgba(0, 173, 255, .84);
 $blue-label: rgba(64, 116, 180, .7);
 
-$theme-light-ruler: #FAFAFA;
-$theme-dark-ruler: #474747;
-
-$theme-light-guide: #F0F0F0;
-$theme-dark-guide: #535353;
-
 @include block($block) {
 	display: flex; 
 	flex-direction: column;
@@ -435,23 +429,23 @@ $theme-dark-guide: #535353;
 		left: 0;
 		width: 20px;
 		height: 20px;
-		background: $theme-light-guide; 
+		background: $theme-light-bg; 
 		cursor: pointer;
 		z-index: 3;
 	}
 	@include element(canvas) {
-		background: $theme-light-ruler;
+		background: $theme-light-ruler-bg;
 	}
 
 	@include when(dark) {
 		@include element(canvas) {
-			background: $theme-dark-ruler;
+			background: $theme-dark-ruler-bg;
 		}
 		@include element(guide) {
-			background: $theme-dark-guide;
+			background: $theme-dark-guide-bg;
 		}
 		@include element(guide) {
-			background: $theme-dark-guide; 
+			background: $theme-dark-guide-bg; 
 		}
 	}
 }
