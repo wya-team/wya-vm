@@ -17,6 +17,7 @@ export const echart = {
 		// 写法二
 		{
 			name: '图表二',
+			img: "-"
 		}
 	],
 	Viewer,

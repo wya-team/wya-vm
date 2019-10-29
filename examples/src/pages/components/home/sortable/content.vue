@@ -6,7 +6,8 @@
 			:frame-w="375"
 			:frame-h="606"
 			:show-assist="false"
-			:style="style"
+			:width="style.width"
+			:height="style.height"
 			@save="handleSave"
 			@error="handleError"
 		/>
@@ -35,7 +36,10 @@ export default {
 					module: 'page',
 				}
 			],
-			style: {},
+			style: {
+				width: window.innerWidth - 40,
+				height: window.innerHeight - 40,
+			},
 		};
 	},
 	computed: {
@@ -50,8 +54,8 @@ export default {
 		handleResize() {
 			// 需要减去padding值
 			this.style = {
-				width: window.innerWidth - 40 + 'px',
-				height: window.innerHeight - 40 + 'px',
+				width: window.innerWidth - 40,
+				height: window.innerHeight - 40,
 			};
 		},
 		handleSave(response) {

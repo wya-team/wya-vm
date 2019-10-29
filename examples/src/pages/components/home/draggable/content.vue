@@ -13,7 +13,8 @@
 			:frame-style="{ border: '1px solid #5495f6', background: 'white' }"
 			:frame-w="1920"
 			:frame-h="1080"
-			:style="style"
+			:width="style.width"
+			:height="style.height"
 			:show-lines="false"
 			:show-ruler="showRuler"
 			:theme="theme"
@@ -47,7 +48,10 @@ export default {
 					h: window.screen.height,
 				}
 			],
-			style: {},
+			style: {
+				width: window.innerWidth - 40,
+				height: window.innerHeight - 40,
+			},
 			theme: 'dark',
 			showRuler: true
 		};
@@ -65,9 +69,11 @@ export default {
 		handleResize() {
 			// 需要减去padding值
 			this.style = {
-				width: window.innerWidth - 40 + 'px',
-				height: window.innerHeight - 40 + 'px',
+				width: window.innerWidth - 40,
+				height: window.innerHeight - 40,
 			};
+
+			console.log(window.innerWidth, window.innerHeight);
 		},
 		handleSave(response) {
 			console.log(response, this.list);
