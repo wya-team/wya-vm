@@ -1,0 +1,35 @@
+/**
+ * TODO: 使用vc-scroller;
+ */
+@mixin scroller($size: 4px, $thumb-bg: rgba(0, 0, 0, 0.2), $track-bg: rgba(0, 0, 0, 0)) {
+	/**
+	 * scrollbar width
+	 */
+	&::-webkit-scrollbar {
+		width: $size;
+	}
+
+	&::-webkit-scrollbar:horizontal {
+		height: $size;
+	}
+
+	/**
+	 * scrollbar bg
+	 */
+	&::-webkit-scrollbar-track {
+		background: $track-bg;
+		z-index: 0;
+	}
+
+	/**
+	 * Handle
+	 */
+	&::-webkit-scrollbar-thumb {
+		background: $thumb-bg;
+		border: 1px solid $thumb-bg;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background: rgba(0, 0, 0, 0.2);
+	}
+}

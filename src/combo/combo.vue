@@ -498,6 +498,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../style/index.scss";
+
 .vm-combo {
 	display: flex;
 }

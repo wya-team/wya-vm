@@ -209,7 +209,7 @@ $w: $tabs-w + $content-w;
 	@include element(tabs) {
 		width: $tabs-w;
 		height: 100%;
-		padding:0;
+		padding: 0;
 		color: $assit;
 		display: flex;
 		line-height: 24px;
@@ -217,6 +217,7 @@ $w: $tabs-w + $content-w;
 		border-right: 1px solid $border;
 		justify-content: flex-start;
 		flex-direction: column;
+		@include scroller();
 		p {
 			text-align: center;
 			height: 49px;
@@ -232,6 +233,7 @@ $w: $tabs-w + $content-w;
 		width: $content-w;
 		overflow: auto;
 		height: 100%;
+		@include scroller();
 	}
 
 	@include element(title) {

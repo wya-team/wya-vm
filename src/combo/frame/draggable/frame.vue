@@ -417,6 +417,7 @@ $block: vm-frame-draggable;
 @include block($block) {
 	@include element(wrapper) {
 		overflow: auto;
+		@include scroller();
 	}
 	@include element(content) {
 		// 不可缩小
