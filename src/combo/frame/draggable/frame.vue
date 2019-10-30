@@ -241,7 +241,7 @@ export default {
 		 * TODO: 可以针对inner获取他的宽高
 		 */
 		handleResize() {
-			if (!this.$refs.inner) return;
+			if (!this.$refs.wrapper) return;
 			let el = this.$refs.wrapper;
 			this.clientW = el.offsetWidth;
 			this.clientH = el.offsetHeight;

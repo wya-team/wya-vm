@@ -35,7 +35,7 @@
     "@wya/sass": "^1.1.10",
     "@wya/socket": "^1.0.3",
     "@wya/utils": "^1.5.2",
-    "@wya/vc": "^1.8.6",
+    "@wya/vc": "^1.8.8",
     "@wya/vm": "^1.1.28",
     "ali-oss": "^6.1.0",
     "fast-xml-parser": "^3.12.12",
