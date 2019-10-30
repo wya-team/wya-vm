@@ -148,8 +148,8 @@ export default {
 		 * TODO: 考虑初始数据异步的情况
 		 */
 		setTimeout(() => {
-			this.currentScale = this.autoScale;
-			this.$emit('update:scale', this.currentScale);
+			// this.currentScale = this.autoScale;
+			// this.$emit('update:scale', this.currentScale);
 		}, 0);
 	},
 	methods: {

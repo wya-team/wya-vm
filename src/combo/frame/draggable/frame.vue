@@ -301,25 +301,25 @@ export default {
 				data.y = 0;
 			}
 
-			// 会同步到上级 这里不用this.$emit("update:sync"), TODO: remove
-			this.dataSource.push(data);
-
-			this.$emit('change', {
-				type: 'create',
+			let action = {
+				type: 'CREATE',
 				index: rowIndex,
-				id
-			});
+				id,
+				data
+			};
+			this.$emit('change', action);
 
 			// 新元素处于激活状态
 			this.setActived(rowIndex);
 		},
-		handleEnd(old, id, index) {
-			this.$emit('change', {
-				type: 'update',
+		handleEnd(original, id, index) {
+			let action = {
+				type: 'UPDATE',
 				id,
 				index,
-				old
-			});
+				original
+			};
+			this.$emit('change', action);
 		},
 		/**
 		 * index因为都是最后一个插入
@@ -334,76 +334,58 @@ export default {
 				}
 			});
 		},
-		handleShowMenu(e, it) {
+		handleShowMenu(event, it) {
 			if (it.module === PAGE_MOULE) return;
+			const onSelect = type => {
+				let changed;
+				// 根据z降序，相等则后面的z放在前面
+				let data = this.dataSource
+					.slice()
+					.filter(v => v.module !== PAGE_MOULE)
+					.reverse()
+					.sort((a, b) => b.z - a.z);
+				let index = data.findIndex(v => v.id === it.id);
 
-			RightMenu.popup({
-				event: e,
-				onSelect: type => {
-					let changed;
-					// 根据z降序，相等则后面的z放在前面
-					let data = this.dataSource
-						.slice()
-						.filter(v => v.module !== PAGE_MOULE)
-						.reverse()
-						.sort((a, b) => b.z - a.z);
-					let index = data.findIndex(v => v.id === it.id);
+				const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
 
-					const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
-
-					switch (type) {
-						case TOP:
-							if (index === 0) return;
-							changed = data[0];
-							break;
-						case BOTTOM:
-							if (index === data.length - 1) return;
-							changed = data[data.length - 1];
-							break;
-						case UP:
-							if (index === 0) return;
-							changed = data[index - 1];
-							break;
-						case DOWN:
-							if (index === data.length - 1) return;
-							changed = data[index + 1];
-							break;
-						case DELETE:
-							this.$emit('change', { type: 'delete', id: it.id });
-							return;
-						default:
-							return;
-					}
-
-					let current = this.dataSource.findIndex(v => v.id === it.id);
-					let target = this.dataSource.findIndex(v => v.id === changed.id);
-					
-					if (current === target) return;
-
-					let sort = [current, target];
-					this.$emit('change', {
-						type: 'sort',
-						sort
-					});
-
-					this.sortData(sort);
+				switch (type) {
+					case TOP:
+						if (index === 0) return;
+						changed = data[0];
+						break;
+					case BOTTOM:
+						if (index === data.length - 1) return;
+						changed = data[data.length - 1];
+						break;
+					case UP:
+						if (index === 0) return;
+						changed = data[index - 1];
+						break;
+					case DOWN:
+						if (index === data.length - 1) return;
+						changed = data[index + 1];
+						break;
+					case DELETE:
+						this.$emit('change', { type: 'DELETE', id: it.id });
+						return;
+					default:
+						return;
 				}
-			});
-		},
 
-		/**
-		 * 外部使用, TODO: remove(操作了引用)
-		 */
-		sortData(v) {
-			let current = this.dataSource[v[0]];
-			let target = this.dataSource[v[1]];
+				let current = this.dataSource.findIndex(v => v.id === it.id);
+				let target = this.dataSource.findIndex(v => v.id === changed.id);
+				let action = {
+					type: 'SORT',
+					sort: [current, target],
+					history: true
+				};
 
-			if (current.z != target.z) {
-				current.z = target.z;
-			}
+				this.$emit('change', action);
+			};
 
-			this.dataSource.splice(v[0], 1, target);
-			this.dataSource.splice(v[1], 1, current);
+
+			// init
+			RightMenu.popup({ event, onSelect });
 		}
 	},
 };

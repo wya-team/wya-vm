@@ -546,10 +546,10 @@ export default {
 				bottomline && (diffY = bottomline - elmY - elmH);
 
 				if (this.parent) {
-					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW / this.scale) {
+					if (elmX + diffX < 0 || elmX + diffX + elmW > this.parentW) {
 						diffX = 0;
 					}
-					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH / this.scale) {
+					if (elmY + diffY < 0 || elmY + diffY + elmH > this.parentH) {
 						diffY = 0;
 					}
 				}

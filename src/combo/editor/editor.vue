@@ -70,14 +70,10 @@ export default {
 					this.$emit('change', {
 						type: 'update',
 						id: this.currentId,
-						old: {
+						changed: {
 							[key]: val
 						}
 					});
-
-					// TODO: remove(引用修改)
-					let data = this.dataSource.find(i => i.id === this.currentId);
-					data[key] = val;
 				}
 			}
 		}

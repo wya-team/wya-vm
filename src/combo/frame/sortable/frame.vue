@@ -160,13 +160,11 @@ export default {
 					break;
 			}
 
-			// 会同步到上级 这里不用this.$emit("update:sync")
-			this.dataSource.splice(rowIndex, 0, data);
-
 			this.$emit('change', { 
-				type: 'create', 
+				type: 'CREATE', 
 				index: rowIndex,
-				id
+				id,
+				data
 			});
 
 			// 新元素处于激活状态
@@ -191,28 +189,20 @@ export default {
 		 * 交换位置
 		 */
 		handleSorting(v) {
-			this.sortData(v);
+			this.$emit('change', {
+				type: 'SORT',
+				changed: v,
+				history: false
+			});
 		},
 
 
 		handleSortEnd(v) {
-			if (v[1] != v[2]) {
-				this.$emit('change', {
-					type: 'sort',
-					sort: v
-				});
-			}
-		},
-
-		/**
-		 * 外部使用
-		 */
-		
-		sortData(v) {
-			let current = this.dataSource[v[0]];
-			let target = this.dataSource[v[1]];
-			this.dataSource.splice(v[0], 1, target);
-			this.dataSource.splice(v[1], 1, current);
+			this.$emit('change', {
+				type: 'SORT',
+				original: v,
+				history: true
+			});
 		}
 	},
 };

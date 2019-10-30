@@ -46,6 +46,7 @@
 
 <script>
 import { Assist } from './assist';
+import { Store, mapStates } from './store';
 import { cloneDeep, isEqualWith } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
 import './theme-dark.scss';
@@ -129,20 +130,12 @@ export default {
 		},
 	},
 	data() {
-		return {
-			editor: null,
-			pageEditor: null,
-			/**
-			 * vm-assist-operation
-			 */
-			current: 0,
-			total: 0,
-
-			rebuildData: [],
-
-			rebuildFrameW: 0,
-			rebuildFrameH: 0
-		};
+		this.store = new Store(this, {
+			frameW: this.frameW,
+			frameH: this.frameH,
+		});
+		window.store = this.store;
+		return {};
 	},
 	computed: {
 		style() {
@@ -159,126 +152,46 @@ export default {
 			return {
 				'vm-combo__theme--dark': this.theme === 'dark'
 			};
-		}
+		},
+
+		...mapStates({
+			rebuildData: 'data',
+			rebuildFrameW: 'frameW',
+			rebuildFrameH: 'frameH',
+			current: 'currentSnapshot',
+			total: 'totalSnapshot',
+			editor: 'currentEditor',
+			pageEditor: 'pageEditor',
+		})
 	},
 	watch: {
 		dataSource: {
 			deep: true,
 			immediate: true,
 			handler(v) {
-
-				if (isEqualWith(v, this.rebuildData)) {
-					return;
-				}
-
-				// todo, 是否重写
-				this.rebuildData = this.makeRebuildData(this.dataSource);
-
-				// 特殊组件， 如页面设置, 设置PageEditor
-				this.rebuildSpecialComp(this.rebuildData);
-
-				// 初始化编辑状态
-				this.resetEditor(this.editor);
-			}
-		},
-		pageEditor: {
-			deep: true,
-			immediate: true,
-			handler(v) {
-				this.rebuildFrameW = v && v.w ? v.w : this.frameW;
-				this.rebuildFrameH = v && v.h ? v.h : this.frameH;
+				this.store.commit('INIT', v);
 			}
 		}
-	},
-	created() {
-		this.historyData = [];
 	},
 	destroyed() {
 		this.$options.previewManager.destroy();
 	},
 	methods: {
-		/**
-		 *  组件要具有唯一性，否者会异常
-		 * page组件处理（页面设置）,
-		 * 其他
-		 */
-		rebuildSpecialComp(source) {
-			if (!source.length) return {};
-			let kv = {};
-
-			source.forEach(item => {
-				// page组件
-				item.module === PAGE_MOULE && (this.pageEditor = item);
-				kv[item.module] = item;
-			});
-
-			return kv;
-		},
-
-		makeRebuildData(source) {
-			let { modules } = this.$options;
-			let result = cloneDeep(source).map((it) => {
-				let { data = {}, rebuilder = {} } = modules[it.module] || {};
-
-				typeof data === 'function' && (data = data());
-				typeof rebuilder === 'function' && (rebuilder = rebuilder());
-
-				// TODO: 深度遍历，目前仅一层
-				Object.keys(it).forEach(key => {
-					if (!rebuilder[key]) return;
-					if (it[key] instanceof Array) {
-						it[key] = it[key].map((children) => {
-							return {
-								...rebuilder[key],
-								...children
-							};
-						});
-					} else if (it[key] instanceof Object) {
-						it[key] = {
-							...rebuilder[key],
-							...it[key]
-						};
-					}
-				});
-
-				return {
-					...data,
-					...it
-				};
-			});
-			return result;
-		},
-		/**
-		 * 目前只支持以下几种数据
-		 * current, total
-		 */
-		sync(opts) {	
-			for (let key in opts) {
-				if (this[key] != opts[key]) {
-					this.$emit(`update:${key}`, opts[key]);
-				}
-			}
-		},
 
 		syncData() {
 			this.$emit('change', this.rebuildData);
 			this.$emit('update:data-source', this.rebuildData);
 		},
 
-		resetEditor(it) {
-			this.editor = it || this.pageEditor || null;
-		},
 		/**
 		 * draggable
 		 */
 		handleActivated(it) {
-			this.editor = it;
+			this.store.resetCurrentEditor(it);
 		},
 
 		handleDeactivated(e, it) {
-			// console.log(e, it);
-			// console.log('deactivated', this.editor.module, this.editor.id);
-			this.editor = this.pageEditor || null;
+			this.store.resetCurrentEditor();
 		},
 
 		/**
@@ -292,35 +205,8 @@ export default {
 		/**
 		 * 数据变化
 		 */
-		handleChange({ type, id, index, old, sort }) {
-			if (!type || (!sort && !id)) {
-				console.error('[wya-vm/combo]: id, type is required');
-			}
-			const { current, total } = this;
-			const target = {
-				type,
-				id,
-				old,
-				sort,
-				index: id && typeof index === 'undefined' 
-					? this.rebuildData.findIndex(item => item.id === id) 
-					: index,
-				data: cloneDeep(this.rebuildData.find(item => item.id === id)),
-			};
-
-			// 继续插入，还是以当前停留位置插入
-			current === total 
-				? this.historyData.push(target)
-				: this.historyData.splice(current, total - current, target);
-
-			let { length } = this.historyData;
-			this.current = length;
-			this.total = length;
-			
-			type === 'delete' && (
-				this.rebuildData.splice(target.index, 1), 
-				this.resetEditor()
-			);
+		handleChange({ type, ...payload }) {
+			this.store.commit(type, payload);
 
 			this.syncData();
 		},
@@ -361,79 +247,15 @@ export default {
 				});
 				return;
 			}
-			this.handleChange({ type: 'delete', id });
+			this.handleChange({ type: 'DELETE', id });
 		},
 
 		undo() {
-			let current = this.current - 1;
-			if (current < 0) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是初始状态" 
-				});
-				return;
-			}
-
-			this.current = current;
-
-			let { type, id, data, index, old, sort } = this.historyData[this.current] || {};
-			switch (type) {
-				case 'create':
-					this.rebuildData.splice(index, 1);
-					break;
-				case 'delete':
-					this.rebuildData.splice(index, 0, data);
-					break;
-				case 'update':	
-					this.rebuildData.splice(index, 1, cloneDeep({ ...data, ...old }));
-					break;
-				case 'sort':	
-					this.$refs.frame.sortData(sort);
-					break;
-				default:
-					break;
-			}
-			if (this.editor && this.editor.id === id) {
-				this.resetEditor(this.rebuildData[index]);
-			}
-
-			this.syncData();
+			
 		},
 
 		redo() {
-			let current = this.current + 1;
-			if (current > this.total) {
-				this.$emit('error', { 
-					type: 'undo', 
-					msg: "目前已经是最终状态" 
-				});
-				return;
-			}
-
-			this.current = current;
-
-			let { type, id, data, index, sort } = this.historyData[this.current - 1];
-			switch (type) {
-				case 'create':
-					this.rebuildData.splice(index, 1, data);
-					break;
-				case 'delete':
-					this.rebuildData.splice(index, 1);
-					break;
-				case 'update':	
-					this.rebuildData.splice(index, 1, data);
-					break;
-				case 'sort':	
-					this.$refs.frame.sortData(sort);
-					break;
-				default:
-					break;
-			}
-			if (this.editor && this.editor.id === id) {
-				this.resetEditor(this.rebuildData[index]);
-			}
-
-			this.syncData();
+			
 		},
 
 		/**
