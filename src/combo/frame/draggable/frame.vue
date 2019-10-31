@@ -14,6 +14,7 @@
 		:theme="theme"
 		:class="classes"
 		class="vm-frame-draggable" 
+		@client-resize="handleClientResize" 
 	>
 		<template #content>
 			<div 
@@ -127,7 +128,6 @@ import Thumbnail from './thumbnail.vue';
 import { RightMenu } from './right-menu.vue';
 import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
-import { Resize } from '../../../vc';
 
 export default {
 	name: 'vm-frame',
@@ -227,24 +227,17 @@ export default {
 			};
 		}
 	},
-	mounted() {
-		Resize.on(this.$refs.wrapper, this.handleResize);
-	},
-	destroyed() {
-		Resize.off(this.$refs.wrapper, this.handleResize);
-	},
 	methods: {
 		/**
 		 * 1. 自适应布局
 		 * 2. 滚动条最右侧显示（hackStyle）, 容易导致无限计划
 		 * tips: vm-combo, width 为auto时，会出现一直计算，直到width小于最大的width
-		 * TODO: 可以针对inner获取他的宽高
 		 */
-		handleResize() {
+		handleClientResize(w, h) {
 			if (!this.$refs.wrapper) return;
-			let el = this.$refs.wrapper;
-			this.clientW = el.offsetWidth;
-			this.clientH = el.offsetHeight;
+
+			this.clientW = w; 
+			this.clientH = h; 
 		},
 
 		handleScroll: throttle(function (e) {
@@ -399,6 +392,7 @@ $block: vm-frame-draggable;
 @include block($block) {
 	@include element(wrapper) {
 		overflow: auto;
+		height: 100%; // 兼容无ruler模式
 		@include scroller();
 	}
 	@include element(content) {

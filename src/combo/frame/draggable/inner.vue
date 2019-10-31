@@ -2,6 +2,7 @@
 	<div :class="{ 'is-hide-border': !showRuler }" class="vm-frame-draggable--inner">
 		<vm-ruler
 			v-if="showRuler"
+			ref="ruler"
 			:scroll-left="scrollLeft"
 			:scroll-top="scrollTop"
 			:frame-w="frameW"
@@ -24,6 +25,8 @@
 
 <script>
 import Ruler from './ruler.vue';
+import { Resize } from '../../../vc';
+import { throttle } from '../../../utils/helper';
 
 export default {
 	name: 'vm-frame-inner',
@@ -34,6 +37,29 @@ export default {
 		showRuler: Boolean,
 		...Ruler.props,
 	},
+	mounted() {
+		Resize.on(this.$el, this.handleResize);
+	},
+	destroyed() {
+		Resize.off(this.$el, this.handleResize);
+	},
+	methods: {
+		handleResize: throttle(function (e) {
+			if (!this.$el) return;
+
+			// 2为border描边
+			let offset = +(this.$refs.ruler && (this.$refs.ruler.guideSize + 2));
+			let w = this.$el.offsetWidth - offset;
+			let h = this.$el.offsetHeight - offset;
+
+			if (!w || !h) return;
+			this.$emit(
+				'client-resize', 
+				w, 
+				h,
+			);
+		}, 50),
+	}
 };
 </script>
 

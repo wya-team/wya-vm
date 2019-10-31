@@ -6,12 +6,13 @@
 				:key="it.id" 
 				:style="isDraggable ? { 
 					position: 'absolute', 
-					width: `${it.w ? `${it.w * mult}px` : 'auto' }`, 
-					height: `${it.h ? `${it.h * mult}px` : 'auto' }`, 
-					left: `${it.x * mult}px`, 
-					top: `${it.y * mult}px`, 
+					width: `${it.w ? `${it.w * scale}px` : 'auto' }`, 
+					height: `${it.h ? `${it.h * scale}px` : 'auto' }`, 
+					left: `${it.x * scale}px`, 
+					top: `${it.y * scale}px`, 
 					transform: `rotate(${it.r}deg)`
 				} : {} "
+				@click.alt.exact="handleClick(it.id)"
 			>
 				<component
 					:is="`vm-${it.module}-viewer`" 
@@ -46,10 +47,35 @@ export default {
 			return this.mode === 'draggable';
 		},
 
-		mult() {
+		scale() {
 			return typeof this.frameW === 'undefined' 
 				? 1 
 				: window.innerWidth / this.frameW;
+		}
+	},
+	created() {
+		this.isWatch = false;
+		this.currentId = '';
+	},
+	methods: {
+		/**
+		 * 用于debug
+		 */
+		handleClick(id) {
+			this.currentId = this.currentId === id ? null : id;
+			if (this.isWatch) return;
+
+			this.isWatch = true;
+			this.$watch('dataSource', (v) => {
+
+				if (!this.currentId) return;
+
+				console.log('\n----');
+				console.log(new RegExp(new Date().toString()));
+				console.log(JSON.parse(JSON.stringify(v.find(i => i.id === this.currentId))));
+				console.log('----\n\n');
+
+			}, { deep: true, immediate: true });
 		}
 	}
 };

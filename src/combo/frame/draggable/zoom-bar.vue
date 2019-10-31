@@ -20,7 +20,7 @@
 				:step="0.01"
 				:min="0.5"
 				:max="2"
-				:formatter="v => v * 100 + '%'"
+				:formatter="v => (v * 100).toFixed(0) + '%'"
 				style="width: 160px; margin-left: 16px; margin-right: 15px;"
 				@change="handleChangeSlider"
 			/>
@@ -104,6 +104,7 @@ export default {
 	computed: {
 		autoScale() {
 			let { frameW, frameH, clientW, clientH, borderSize } = this;
+			
 			if (!frameW 
 				|| !frameH 
 				|| !clientW 
@@ -138,8 +139,11 @@ export default {
 			immediate: true,
 			handler(v) {
 				this.currentScale = v;
-				this.currentPlaceholder = v * 100 + '%';
+				this.currentPlaceholder = (v * 100).toFixed(0) + '%';
 			}
+		},
+		clientW() {
+			setTimeout(this.resetScale, 0);
 		}
 	},
 	mounted() {
@@ -147,10 +151,7 @@ export default {
 		 * 1. 自动调整至最合适的位置
 		 * TODO: 考虑初始数据异步的情况
 		 */
-		setTimeout(() => {
-			this.currentScale = this.autoScale;
-			this.$emit('update:scale', this.currentScale);
-		}, 0);
+		setTimeout(this.resetScale, 0);
 	},
 	methods: {
 		handleChangeSlider(v) {
@@ -159,6 +160,10 @@ export default {
 		handleChangeSelect(v) {
 			this.$emit('update:scale', this.currentScale);
 		},
+		resetScale() {
+			this.currentScale = this.autoScale;
+			this.$emit('update:scale', this.currentScale);
+		}
 	},
 };
 </script>
