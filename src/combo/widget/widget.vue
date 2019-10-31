@@ -182,7 +182,7 @@ $w: $tabs-w + $content-w;
 			flex: 1;
 		}
 		span {
-			color: $assit;
+			// color: $assit;
 			cursor: pointer;
 		}
 	}
@@ -274,14 +274,14 @@ $w: $tabs-w + $content-w;
 		width: 100%;
 		border-bottom: 1px solid $border;
 		// justify-content: center;
-		padding: 12px;
+		padding: 6px 6px;
 	}
 	@include element(item) {
 		flex: 0 0 50%;
 		display: flex;
 		align-items: center;
 		flex-direction: column;
-		padding: 6px 12px;
+		padding: 6px 6px;
 		cursor: move;
 		img {
 			width: 100%;

@@ -10,14 +10,17 @@ export const echart = {
 		{
 			render(h, props) {
 				return (
-					<div>图表一</div>
+					<div>
+						<img src="https://avatars2.githubusercontent.com/u/34465004?v=4" />
+						<p>图表一</p>
+					</div>
 				);
 			}
 		},
 		// 写法二
 		{
 			name: '图表二',
-			img: "-"
+			image: "https://avatars2.githubusercontent.com/u/34465004?v=4"
 		}
 	],
 	Viewer,
