@@ -69,7 +69,7 @@
 							@rotating="$emit('rotating', it)"
 							@resize-end="$emit('resize-end', it)"
 							@drag-end="$emit('drag-end', it)"
-							@delete="$emit('change', { type: 'delete', id: it.id })"
+							@delete="$emit('change', { type: 'DELETE', id: it.id })"
 							@end="handleEnd(arguments[0], it.id, index)"
 							@contextmenu.prevent.native="handleShowMenu($event, it)"
 						>

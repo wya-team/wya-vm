@@ -39,7 +39,9 @@ class Store extends BaseWatcher {
 			this.updateCurrentEditor();
 		},
 		DELETE(states, payload) {
-			let { id, index } = payload;
+			let { id } = payload;
+			let index = states.data.findIndex(i => i.id === id);
+
 			this.verifyChange(id);
 			this.updateHistory('DELETE', payload);
 
