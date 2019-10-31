@@ -237,7 +237,7 @@ $w: $tabs-w + $content-w;
 	}
 
 	@include element(title) {
-		padding: 15px 20px;
+		padding: 15px 12px;
 		font-size: 12px;
 		color: #000;
 		// font-weight: bold;
