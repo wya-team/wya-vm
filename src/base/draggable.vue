@@ -305,8 +305,9 @@ export default {
 				throw new Error('@wya/vm: 父层容器宽度计算异常');
 			}
 
-			this.parentW = width;
-			this.parentH = height; // this.$el.parentNode.clientHeight
+			// 原始高度
+			this.parentW = width / this.scale;
+			this.parentH = height / this.scale; // this.$el.parentNode.clientHeight
 
 			if (this.w > this.parentW) {
 				this.sync({ w: this.parentW });
@@ -476,8 +477,8 @@ export default {
 				if (this.handle.includes('bottom')) {
 					if (axisY - elmY < this.minH) {
 						axisY = elmY + this.minH;
-					} else if (this.parent && axisY > this.parentH / this.scale) {
-						axisY = Math.round(this.parentH / this.scale);
+					} else if (this.parent && axisY > this.parentH) {
+						axisY = Math.round(this.parentH);
 					}
 					elmH = axisY - elmY;
 				}
@@ -493,8 +494,8 @@ export default {
 				if (this.handle.includes('right')) {
 					if (axisX - elmX < this.minW) {
 						axisX = elmX + this.minW;
-					} else if (this.parent && axisX > this.parentW / this.scale) {
-						axisX = Math.round(this.parentW / this.scale);
+					} else if (this.parent && axisX > this.parentW) {
+						axisX = Math.round(this.parentW);
 					}
 					elmW = axisX - elmX;
 				}
