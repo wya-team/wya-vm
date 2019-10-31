@@ -305,10 +305,10 @@ export default {
 			}
 			this.$options.previewManager.popup({
 				dataSource: cloneDeep(this.rebuildData),
-				style: {
+				styles: {
 					...this.frameStyle,
-					width: this.frameW === 0 ? 'auto' : `${this.frameW}px`,
-					height: this.frameH === 0 ? 'auto' : `${this.frameH}px`
+					width: this.rebuildFrameW === 0 ? 'auto' : `${this.rebuildFrameW}px`,
+					height: this.rebuildFrameH === 0 ? 'auto' : `${this.rebuildFrameH}px`
 				},
 				className: 'vm-combo__frame'
 			});

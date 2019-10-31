@@ -9,6 +9,7 @@
 		<transition :name="animate">
 			<div v-show="visible" class="vm-assist-preview-popup__content">
 				<vm-preview 
+					:style="styles"
 					:data-source="dataSource" 
 					:mode="mode"
 				/>
@@ -25,9 +26,11 @@ export default {
 	},
 	props: {
 		dataSource: Array,
-		css: {
-			type: Object,
-			default: () => ({ style: {}, className: "" })
+		styles: {
+			type: Object
+		},
+		className: {
+			type: String
 		},
 		animate: {
 			type: String,
