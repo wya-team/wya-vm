@@ -220,6 +220,8 @@ $block: vm-frame-sortable;
 		border: 1px solid $border;
 		margin-left: 20px;
 		position: relative;
+		overflow: auto;
+		@include scroller();
 	}
 	@include element(item) {
 		transition: all .5s;
