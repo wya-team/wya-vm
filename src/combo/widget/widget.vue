@@ -90,7 +90,9 @@ export default {
 	data() {
 		const { modules } = this.$parent.$options;
 		let toolsList = {};
+		let index = 0;
 		for (let key in modules) {
+			index++;
 			// 过滤页面设置
 			if (hasOwn(modules, key) && modules[key].type !== 'basic') {
 				let item = modules[key];
@@ -107,7 +109,7 @@ export default {
 						draggable: !!(!item.widgets && item.Viewer && item.Editor),
 
 						// 更多, 由click事件控制
-						active: false
+						active: !!(index === 1 && item.widgets)
 					});
 				}
 			}

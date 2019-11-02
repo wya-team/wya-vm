@@ -4,6 +4,7 @@
 			<vc-select
 				v-model="currentScale"
 				:placeholder="currentPlaceholder"
+				:portal-class-name="['vm-zoom-bar__select', { 'is-dark': theme === 'dark' }]"
 				style="width: 75px"
 				@change="handleChangeSelect"
 			>
@@ -62,7 +63,7 @@ export default {
 			type: Number,
 			default: 1
 		},
-
+		theme: String,
 		frameW: {
 			type: Number,
 			default: 0
@@ -142,9 +143,10 @@ export default {
 				this.currentPlaceholder = (v * 100).toFixed(0) + '%';
 			}
 		},
-		clientW() {
-			setTimeout(this.resetScale, 0);
-		}
+		// 被吐槽， 变化太频繁（宽度变化会影响）
+		// clientW() {
+		// 	setTimeout(this.resetScale, 0);
+		// }
 	},
 	mounted() {
 		/**

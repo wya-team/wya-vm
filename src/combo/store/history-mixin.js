@@ -15,17 +15,16 @@ export default {
 	methods: {
 		verifyChange(key) {
 			if (!key) {
-				throw new VcError('[wya-vm/combo]: id / sort 必传');
+				throw new Error('[wya-vm/combo]: id / original 必传');
 			}
 		},
 		updateHistory(type, payload) {
 			const { data, currentSnapshot, totalSnapshot } = this.states;
-			const { id, sort, original, index } = payload;
+			const { id, original, index } = payload;
 			const snapshot = {
 				type,
 				id,
 				original,
-				sort,
 				index: id && typeof index === 'undefined' 
 					? data.findIndex(item => item.id === id) 
 					: index,
