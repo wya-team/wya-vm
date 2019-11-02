@@ -7,8 +7,8 @@ import { page } from './page/root';
 import { echart } from './echart/root';
 
 export const defaultModules = {
+	echart,
 	tpl,
 	array,
 	page,
-	echart
 };
