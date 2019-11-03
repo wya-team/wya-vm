@@ -340,7 +340,6 @@ export default {
 				let index = data.findIndex(v => v.id === it.id);
 
 				const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
-
 				switch (type) {
 					case TOP:
 						if (index === 0) return;
@@ -367,9 +366,10 @@ export default {
 
 				let current = this.dataSource.findIndex(v => v.id === it.id);
 				let target = this.dataSource.findIndex(v => v.id === changed.id);
+
 				let action = {
 					type: 'SORT',
-					sort: [current, target],
+					changed: [current, target],
 					history: true
 				};
 
