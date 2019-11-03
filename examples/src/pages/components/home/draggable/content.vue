@@ -11,6 +11,12 @@
 			<vc-button @click="$refs.combo.preview()">
 				预览
 			</vc-button>
+			<vc-button @click="$refs.combo.undo()">
+				撤回
+			</vc-button>
+			<vc-button @click="$refs.combo.redo()">
+				取消撤回
+			</vc-button>
 		</div>
 
 		<vm-combo 
