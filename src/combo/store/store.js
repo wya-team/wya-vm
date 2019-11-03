@@ -38,22 +38,33 @@ class Store extends BaseWatcher {
 			// 更新当前设置
 			this.updateCurrentEditor();
 		},
-		DELETE(states, payload) {
-			let { id } = payload;
-			let index = states.data.findIndex(i => i.id === id);
-
-			this.verifyChange(id);
-			this.updateHistory('DELETE', payload);
-
-			states.data.splice(index, 1);
-			this.resetCurrentEditor();
-		},
 		CREATE(states, payload) {
 			let { id, index, data } = payload;
 			this.verifyChange(id);
-			this.updateHistory('CREATE', payload);
 
 			states.data.splice(index, 0, data);
+
+			this.updateHistory('CREATE', {
+				...payload,
+				data,
+				index
+			});
+		},
+		DELETE(states, payload) {
+			let { id } = payload;
+			let index = states.data.findIndex(i => i.id === id);
+			let data = states.data[index];
+
+			this.verifyChange(id);
+
+			states.data.splice(index, 1);
+
+			this.resetCurrentEditor();
+			this.updateHistory('DELETE', {
+				...payload,
+				data,
+				index
+			});
 		},
 		/**
 		 * changed 修改的字段
@@ -70,7 +81,12 @@ class Store extends BaseWatcher {
 				states.data[index][key] = changed[key];
 			});
 			
-			this.updateHistory('UPDATE', { ...payload, original });
+			this.updateHistory('UPDATE', { 
+				...payload, 
+				original, 
+				data: states.data[index],
+				index
+			});
 		},
 
 		/**
@@ -80,7 +96,6 @@ class Store extends BaseWatcher {
 		 */
 		SORT(states, payload) {
 			let { changed, original, history } = payload;
-
 			// 是否记录历史
 			if (changed && changed[0] !== changed[1]) {
 
@@ -104,11 +119,39 @@ class Store extends BaseWatcher {
 			}
 			
 		},
-		UODO() {
-			// TODO
+		UNDO(states, payload) {
+			let { current } = payload;
+			states.currentSnapshot = current;
+
+			let { type, id, data, index, original } = this.historyData[current] || {};
+			let fn = {
+				CREATE: () => states.data.splice(index, 1),
+				DELETE: () => states.data.splice(index, 0, data),
+				UPDATE: () => states.data.splice(index, 1, cloneDeep({ ...data, ...original })),
+				SORT: () => this.commit('SORT', { changed: original, history: false }),
+			};
+			fn[type] && fn[type]();
+
+			states.pagesEditor 
+				&& states.pagesEditor.id === id
+				&& this.resetCurrentEditor(states.data[index]);
 		},
-		REDO() {
-			// TODO
+		REDO(states, payload) {
+			let { current } = payload;
+			states.currentSnapshot = current;
+
+			let { type, id, data, index, original } = this.historyData[current - 1] || {};
+			let fn = {
+				CREATE: () => states.data.splice(index, 1, data),
+				DELETE: () => states.data.splice(index, 1),
+				UPDATE: () => states.data.splice(index, 1, data),
+				SORT: () => this.commit('SORT', { changed: original, history: false }),
+			};
+			fn[type] && fn[type]();
+
+			states.pagesEditor 
+				&& states.pagesEditor.id === id
+				&& this.resetCurrentEditor(states.data[index]);
 		}
 	}
 

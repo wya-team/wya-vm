@@ -173,6 +173,11 @@ export default {
 			}
 		}
 	},
+	created() {
+		// 处理历史暴露的API映射
+		this.create = this.add;
+		this.delete = this.remove;
+	},
 	destroyed() {
 		this.$options.previewManager.destroy();
 	},
@@ -207,15 +212,7 @@ export default {
 		 */
 		handleChange({ type, ...payload }) {
 			this.store.commit(type, payload);
-
 			this.syncData();
-		},
-
-		/**
-		 * widget-operation
-		 */
-		handleOperate(type, ...rest) {
-			this[type] && this[type](...rest);
 		},
 
 		/**
@@ -233,12 +230,13 @@ export default {
 					}
 				}
 			}, true);
+			this.syncData();
 		},
 
 		/**
 		 * 删除
 		 */
-		delete(id) {
+		remove(id) {
 			id = id || (this.editor || {}).id;
 			if (!id) {
 				this.$emit('error', { 
@@ -248,14 +246,33 @@ export default {
 				return;
 			}
 			this.handleChange({ type: 'DELETE', id });
+			this.syncData();
 		},
 
 		undo() {
-			
+			let current = this.current - 1;
+			if (current < 0) {
+				this.$emit('error', { 
+					type: 'undo', 
+					msg: "目前已经是初始状态" 
+				});
+				return;
+			}
+			this.store.commit('UNDO', { current });
+			this.syncData();
 		},
 
 		redo() {
-			
+			let current = this.current + 1;
+			if (current > this.total) {
+				this.$emit('error', { 
+					type: 'undo', 
+					msg: "目前已经是最终状态" 
+				});
+				return;
+			}
+			this.store.commit('REDO');
+			this.syncData();
 		},
 
 		/**

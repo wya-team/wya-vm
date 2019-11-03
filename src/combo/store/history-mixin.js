@@ -19,16 +19,14 @@ export default {
 			}
 		},
 		updateHistory(type, payload) {
-			const { data, currentSnapshot, totalSnapshot } = this.states;
-			const { id, original, index } = payload;
+			const { currentSnapshot, totalSnapshot } = this.states;
+			const { id, original, index, data } = payload;
 			const snapshot = {
 				type,
 				id,
 				original,
-				index: id && typeof index === 'undefined' 
-					? data.findIndex(item => item.id === id) 
-					: index,
-				data: cloneDeep(data.find(item => item.id === id)),
+				index,
+				data: cloneDeep(data),
 			};
 
 			// 继续插入，还是以当前停留位置插入
