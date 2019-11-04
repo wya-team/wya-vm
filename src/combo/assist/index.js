@@ -1,12 +1,9 @@
-import Operation from './operation.vue';
-import Save from './save.vue';
-import { Preview, PreviewPopup } from './preview/index';
+import { COMPONENTS_MAP } from './components/index';
+import { MIXINS_MAP } from './mixins/index';
 
 const Assist = {
-	Operation,
-	Save,
-	Preview,
-	PreviewPopup
+	components: (select = []) => select.map(key => COMPONENTS_MAP[key]).filter(i => !!i),
+	mixins: (select = []) => select.map(key => MIXINS_MAP[key]).filter(i => !!i)
 };
 
 export { Assist };

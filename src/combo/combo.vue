@@ -134,7 +134,6 @@ export default {
 			frameW: this.frameW,
 			frameH: this.frameH,
 		});
-		window.store = this.store;
 		return {};
 	},
 	computed: {
@@ -236,9 +235,9 @@ export default {
 		/**
 		 * 删除
 		 */
-		remove(id) {
+		remove(id, force = false) {
 			id = id || (this.editor || {}).id;
-			if (!id) {
+			if (!id || (this.editor.module === PAGE_MOULE)) {
 				this.$emit('error', { 
 					type: 'id', 
 					msg: "请先选择操作对象" 
@@ -271,7 +270,7 @@ export default {
 				});
 				return;
 			}
-			this.store.commit('REDO');
+			this.store.commit('REDO', { current });
 			this.syncData();
 		},
 
