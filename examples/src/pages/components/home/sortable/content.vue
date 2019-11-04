@@ -1,7 +1,23 @@
 <template>
-	<div>
+	<div style="padding-top: 20px">
+		<div style="position: absolute; top: 5px;">
+			<vc-button @click="theme = theme === 'dark' ? 'light' : 'dark'">
+				主题: {{ theme }}
+			</vc-button>
+			<vc-button @click="$refs.combo.preview()">
+				预览
+			</vc-button>
+			<vc-button @click="$refs.combo.undo()">
+				撤回
+			</vc-button>
+			<vc-button @click="$refs.combo.redo()">
+				取消撤回
+			</vc-button>
+		</div>
+
 		<!-- <vm-preview :data-source="list"/> -->
 		<vm-combo 
+			ref="combo"
 			v-model="list"
 			:frame-w="375"
 			:frame-h="606"
@@ -38,8 +54,9 @@ export default {
 			],
 			style: {
 				width: window.innerWidth - 40,
-				height: window.innerHeight - 40,
+				height: window.innerHeight - 60,
 			},
+			theme: 'dark'
 		};
 	},
 	computed: {
@@ -55,7 +72,7 @@ export default {
 			// 需要减去padding值
 			this.style = {
 				width: window.innerWidth - 40,
-				height: window.innerHeight - 40,
+				height: window.innerHeight - 60,
 			};
 		},
 		handleSave(response) {

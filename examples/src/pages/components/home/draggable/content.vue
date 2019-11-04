@@ -75,7 +75,7 @@ export default {
 			],
 			style: {
 				width: window.innerWidth - 40,
-				height: window.innerHeight - 40,
+				height: window.innerHeight - 60,
 			},
 			theme: 'dark',
 			showRuler: true
