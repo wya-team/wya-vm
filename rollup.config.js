@@ -2,11 +2,11 @@ console.log(`NODE_ENV : ${process.env.NODE_ENV}`);
 const ENV_IS_DEV = process.env.NODE_ENV === 'development';
 // Rollup plugins
 import babel from 'rollup-plugin-babel';
-import buble from 'rollup-plugin-buble';
+import buble from '@rollup/plugin-buble';
+import replace from '@rollup/plugin-replace';
 
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import replace from 'rollup-plugin-replace';
 import { uglify } from 'rollup-plugin-uglify';
 import postcss from 'rollup-plugin-postcss';
 import vue from 'rollup-plugin-vue';
@@ -14,7 +14,7 @@ import vue from 'rollup-plugin-vue';
 // PostCSS plugins
 import simplevars from 'postcss-simple-vars';
 import nested from 'postcss-nested';
-import cssnext from 'postcss-cssnext';
+import preset from 'postcss-preset-env';
 import cssnano from 'cssnano';
 
 // import pkg from "./package.json";
@@ -42,7 +42,7 @@ const external = filename => {
 const BASIC_POSTCSS_PLUGIN = [
 	simplevars(),
 	nested(),
-	cssnext({
+	preset({
 		warnForDuplicates: false,
 	})
 ];
