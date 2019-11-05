@@ -18,7 +18,7 @@
 			>
 				<vc-icon
 					:type="icons[item]"
-					style="color: #fff; font-size: 12px; margin-right: 8px;"
+					class="vm-right-menu__icon"
 				/>
 				<span>
 					{{ menuName[item] }}
@@ -141,6 +141,11 @@ export const RightMenu = new Portal(config, { promise: false });
 				color: #16F2F6;
 			}
 		}
+		.vm-right-menu__icon {
+			font-size: 12px;
+			margin-right: 8px;
+		}
+
 	}
 }
 </style>
