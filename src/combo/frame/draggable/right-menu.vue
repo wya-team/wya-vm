@@ -9,25 +9,34 @@
 		class="vm-right-menu"
 	>
 		<div class="vm-right-menu__content">
-			<span
+			<div
 				v-for="item in menu"
 				:key="item"
 				class="vm-right-menu__item"
 				@click="handleClick(item)"
 				@mousedown.stop
 			>
-				{{ item }}
-			</span>
+				<vc-icon
+					:type="icons[item]"
+					style="color: #fff; font-size: 12px; margin-right: 8px;"
+				/>
+				<span>
+					{{ menuName[item] }}
+				</span>
+			</div>
 		</div>
 	</div>
 </template>
 <script>
-import { Portal } from '../../../vc';
-import { RIGHT_MENU_MAP } from '../../../utils/constants';
+import { Portal, Icon } from '../../../vc';
+import { RIGHT_MENU_MAP, RIGHT_MENU_NAME_MAP } from '../../../utils/constants';
 import { $ } from '../../../utils/helper';
 
 export const config = {
 	name: 'vm-right-menu',
+	components: {
+		'vc-icon': Icon
+	},
 	props: {
 		event: MouseEvent,
 		onSelect: {
@@ -35,12 +44,25 @@ export const config = {
 			default() {
 				return () => {};
 			}
+		},
+		icons: {
+			type: Object,
+			default: () => {
+				return {
+					TOP: 'p-top',
+					BOTTOM: 'p-bottom',
+					UP: 'p-move-up',
+					DOWN: 'p-move-down',
+					DELETE: 'p-delete2',
+				};
+			}
 		}
 	},
 	data() {
 		return {
 			visible: false,
 			wrapHeight: 175,
+			menuName: RIGHT_MENU_NAME_MAP,
 			menu: Object.keys(RIGHT_MENU_MAP).map((key) => RIGHT_MENU_MAP[key])
 		};
 	},
@@ -67,8 +89,8 @@ export const config = {
 		},
 
 		operateDOMEvents(type) {
-			let fn = type === 'add' 
-				? document.documentElement.addEventListener 
+			let fn = type === 'add'
+				? document.documentElement.addEventListener
 				: document.documentElement.removeEventListener;
 
 			fn('click', this.handleDeselect);
@@ -107,9 +129,12 @@ export const RightMenu = new Portal(config, { promise: false });
 			height: 32px;
 			width: 100%;
 			line-height: 32px;
-			text-align: center;
 			display: block;
 			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			padding-left: 14px;
 			cursor: pointer;
 			&:hover {
 				background: #343434;
