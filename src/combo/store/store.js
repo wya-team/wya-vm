@@ -40,7 +40,6 @@ class Store extends BaseWatcher {
 		},
 		CREATE(states, payload) {
 			let { id, index, data } = payload;
-			this.verifyChange(id);
 
 			states.data.splice(index, 0, data);
 
@@ -54,8 +53,6 @@ class Store extends BaseWatcher {
 			let { id } = payload;
 			let index = states.data.findIndex(i => i.id === id);
 			let data = states.data[index];
-
-			this.verifyChange(id);
 
 			states.data.splice(index, 1);
 
@@ -72,8 +69,6 @@ class Store extends BaseWatcher {
 		 */
 		UPDATE(states, payload) {
 			let { id, changed, original = {} } = payload;
-			this.verifyChange(id);
-
 			let index = states.data.findIndex(i => i.id === id);
 			// 只有original时已经同步修改
 			changed && Object.keys(changed).forEach(key => {
@@ -99,7 +94,6 @@ class Store extends BaseWatcher {
 			// 是否记录历史
 			if (changed && changed[0] !== changed[1]) {
 
-				this.verifyChange(changed);
 				let current = states.data[changed[0]];
 				let target = states.data[changed[1]];
 

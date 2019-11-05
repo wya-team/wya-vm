@@ -35,7 +35,7 @@ export const echart = {
 			x: 0, // 动态分配
 			y: 0, // 动态分配
 			z: index + 1,
-			parent: true, // 不能超过父级
+			parent: index === 1, // 不能超过父级
 			// handles: [], // 可以控制操作handles
 			draggable: true, // 可以拖拽
 			rotatable: true, // 可以旋转

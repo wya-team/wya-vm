@@ -210,6 +210,26 @@ export default {
 		 * 数据变化
 		 */
 		handleChange({ type, ...payload }) {
+
+			const { id, original, changed } = payload; 
+
+			switch (type) {
+				case 'CREATE':
+				case 'UPDATE':
+				case 'DELETE':
+					if (!id) {
+						throw new Error('[wya-vm/combo]: id 必传');
+					}
+					break;
+				case 'SORT':
+					if (!original && !changed) {
+						throw new Error('[wya-vm/combo]: original/changed 必传');
+					}
+					break;
+				default:
+					break;
+			}
+
 			this.store.commit(type, payload);
 			this.syncData();
 		},

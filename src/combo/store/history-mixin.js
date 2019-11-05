@@ -13,11 +13,6 @@ export default {
 		this.historyData = [];
 	},
 	methods: {
-		verifyChange(key) {
-			if (!key) {
-				throw new Error('[wya-vm/combo]: id / original 必传');
-			}
-		},
 		updateHistory(type, payload) {
 			const { currentSnapshot, totalSnapshot } = this.states;
 			const { id, original, index, data } = payload;
