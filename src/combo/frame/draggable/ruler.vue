@@ -11,7 +11,7 @@
 			@click="showGuide = !showGuide"
 		/>
 		<!-- x轴 -->
-		<div 
+		<div
 			ref="x"
 			:style="{ transform: `translateX(${-scrollLeft}px)` }"
 			class="vm-ruler__x"
@@ -72,7 +72,7 @@
 						:height="guideSize"
 						class="vm-ruler__canvas"
 					/>
-					
+
 					<!-- Y虚线 -->
 					<div
 						v-show="showGuideY"
@@ -86,7 +86,7 @@
 							{{ mouseY }}
 						</span>
 					</div>
-					
+
 					<!-- Y实线 -->
 					<template v-if="showGuide">
 						<div
@@ -199,9 +199,9 @@ export default {
 			const offsetH = borderSize.top + borderSize.bottom + guideSize;
 
 			let width = Math.max(
-				frameW * scale + offsetW, 
-				frameH * scale + offsetH, 
-				clientW, 
+				frameW * scale + offsetW,
+				frameH * scale + offsetH,
+				clientW,
 				clientH
 			);
 			return SCROLL_BAR_WIDTH + width;
@@ -213,7 +213,15 @@ export default {
 
 		// 10刻度间隔(缩放后)
 		interval() {
-			return 100 * this.scale;
+			let beforeScaleW = 100; // 10刻度所占像素初始值
+			// 目标： 缩放后十刻度占屏幕实际尺寸 60 - 100 像素
+			while (beforeScaleW * this.scale < 60) { // 缩小
+				beforeScaleW += 50;
+			}
+			while (beforeScaleW * this.scale > 100) { // 放大
+				beforeScaleW - 20 >= 0 ? beforeScaleW -= 20 : beforeScaleW -= 10;
+			}
+			return beforeScaleW * this.scale;
 		},
 
 		isDark() {
@@ -237,10 +245,10 @@ export default {
 
 	created() {
 		let watchArr = [
-			'frameW', 
-			'frameH', 
-			'scale', 
-			'clientW', 
+			'frameW',
+			'frameH',
+			'scale',
+			'clientW',
 			'clientH',
 			'theme'
 		];
@@ -295,7 +303,7 @@ export default {
 				ctx.fillStyle = "#8C8D89";
 				ctx.font = "12px";
 				// 文字在轴内的 3/5 位置
-				ctx.fillText(i * 100, i * interval + 4, guideSize / 5 * 3);
+				ctx.fillText((i * interval / this.scale).toFixed(0), i * interval + 4, guideSize / 5 * 3);
 			}
 			// 还原到 (20, 0)坐标
 			ctx.restore();
@@ -334,7 +342,7 @@ export default {
 		handleShowGuideY(e) {
 			const { offsetY, placeholderW, scrollTop, scale } = this;
 			if (
-				this.$refs.y.contains(e.target) 
+				this.$refs.y.contains(e.target)
 				&& !$(e.target).hasClass('is-solid')
 			) {
 				this.showGuideY = true;
@@ -353,8 +361,8 @@ export default {
 		},
 
 		operateDOMEvents(type) {
-			let fn = type === 'add' 
-				? document.documentElement.addEventListener 
+			let fn = type === 'add'
+				? document.documentElement.addEventListener
 				: document.documentElement.removeEventListener;
 
 			fn('mouseup', this.handleMouseUp);
@@ -381,22 +389,22 @@ export default {
 			const { offsetX, offsetY, placeholderW, scrollLeft, scrollTop, scale } = this;
 			if (this.movingAxias === 'x') {
 				this.$set(
-					this.linesX, 
-					this.movingIndex, 
+					this.linesX,
+					this.movingIndex,
 					Math.floor((e.clientX - offsetX - placeholderW + scrollLeft) / scale),
 				);
 				return;
 			}
-			
+
 			if (this.movingAxias === 'y') {
 				this.$set(
-					this.linesY, 
-					this.movingIndex, 
+					this.linesY,
+					this.movingIndex,
 					Math.floor((e.clientY - offsetY - placeholderW + scrollTop) / scale),
 				);
 				return;
 			}
-			
+
 		},
 	},
 };
@@ -410,21 +418,21 @@ $blue-guide: rgba(0, 173, 255, .84);
 $blue-label: rgba(64, 116, 180, .7);
 
 @include block($block) {
-	display: flex; 
+	display: flex;
 	flex-direction: column;
 	height: 100%;
 	position: relative;
 	@include element(x) {
-		display: flex; 
+		display: flex;
 		position: relative;
 		z-index: 2;
 	}
 	@include element(wrapper) {
-		display: flex; 
+		display: flex;
 		height: 100%
 	}
 	@include element(y) {
-		height: 100%; 
+		height: 100%;
 		width: 20px;
 		z-index: 2;
 	}
@@ -441,7 +449,7 @@ $blue-label: rgba(64, 116, 180, .7);
 		left: 0;
 		width: 20px;
 		height: 20px;
-		background: $theme-light-bg; 
+		background: $theme-light-bg;
 		cursor: pointer;
 		z-index: 3;
 	}
@@ -457,7 +465,7 @@ $blue-label: rgba(64, 116, 180, .7);
 			background: $theme-dark-guide-bg;
 		}
 		@include element(guide) {
-			background: $theme-dark-guide-bg; 
+			background: $theme-dark-guide-bg;
 		}
 	}
 }

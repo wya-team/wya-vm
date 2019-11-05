@@ -16,9 +16,17 @@ export const SORT_IN_FRAME = "@wya/vm";
 export const PAGE_MOULE = 'page';
 
 export const RIGHT_MENU_MAP = {
-	TOP: '置顶', 
-	BOTTOM: '置底', 
-	UP: '上移一层', 
-	DOWN: '下移一层', 
-	DELETE: '删除', 
+	TOP: 'TOP',
+	BOTTOM: 'BOTTOM',
+	UP: 'UP',
+	DOWN: 'DOWN',
+	DELETE: 'DELETE',
+};
+
+export const RIGHT_MENU_NAME_MAP = {
+	TOP: '置顶',
+	BOTTOM: '置底',
+	UP: '上移一层',
+	DOWN: '下移一层',
+	DELETE: '删除',
 };
