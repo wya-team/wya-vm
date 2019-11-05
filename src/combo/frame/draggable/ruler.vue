@@ -213,15 +213,20 @@ export default {
 
 		// 10刻度间隔(缩放后)
 		interval() {
-			let beforeScaleW = 100; // 10刻度所占像素初始值
+			const { scale } = this;
+			// 10刻度所占像素初始值
+			let width = 100;
+			
+			if (scale <= 0) return width;
+
 			// 目标： 缩放后十刻度占屏幕实际尺寸 60 - 100 像素
-			while (beforeScaleW * this.scale < 60) { // 缩小
-				beforeScaleW += 50;
+			while (width * scale < 60) { // 缩小
+				width += 50;
 			}
-			while (beforeScaleW * this.scale > 100) { // 放大
-				beforeScaleW - 20 >= 0 ? beforeScaleW -= 20 : beforeScaleW -= 10;
+			while (width * scale > 100) { // 放大
+				width - 20 >= 0 ? width -= 20 : width -= 10;
 			}
-			return beforeScaleW * this.scale;
+			return width * scale;
 		},
 
 		isDark() {
@@ -273,7 +278,6 @@ export default {
 	methods: {
 		refreshCanvas() {
 			this.canvas.forEach(canvas => this.repaint(canvas));
-			window.canvas = this.canvas;
 		},
 
 		/**
