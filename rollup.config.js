@@ -1,10 +1,10 @@
 console.log(`NODE_ENV : ${process.env.NODE_ENV}`);
 const ENV_IS_DEV = process.env.NODE_ENV === 'development';
 // Rollup plugins
-import babel from 'rollup-plugin-babel';
 import buble from '@rollup/plugin-buble';
 import replace from '@rollup/plugin-replace';
 
+import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import { uglify } from 'rollup-plugin-uglify';
