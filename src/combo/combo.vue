@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import { Assist } from './assist';
 import { Store, mapStates } from './store';
 import { cloneDeep, isEqualWith } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
@@ -55,8 +54,6 @@ export default {
 	name: 'vm-combo',
 	components: {
 		// 会被注入vm-frame, vm-widget, vm-editor,
-		'vm-assist-operation': Assist.Operation,
-		'vm-assist-save': Assist.Save,
 	},
 	model: {
 		prop: 'data-source',
@@ -99,10 +96,6 @@ export default {
 		theme: {
 			type: String,
 			default: 'default' // default / light / dark
-		},
-		showAssist: {
-			type: Boolean,
-			default: false
 		},
 		showWidget: {
 			type: Boolean,
