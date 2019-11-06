@@ -223,7 +223,7 @@ $block: vm-frame-sortable;
 	@include element(wrapper) {
 		flex-shrink: 0;
 		border: 1px solid $border;
-		margin-left: 20px;
+		// margin-left: 20px;
 		position: relative;
 		overflow: auto;
 		@include scroller();
