@@ -23,7 +23,8 @@ export default {
 		z: Number,
 		r: Number,
 		name: String,
-		bg: String
+		bg: String,
+		fs: Number
 	},
 	data() {
 		let fakeData = [];

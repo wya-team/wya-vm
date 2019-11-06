@@ -62,6 +62,7 @@
 							:draggable="it.draggable || typeof it.draggable === 'undefined'"
 							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 							:resizable="it.resizable || typeof it.resizable === 'undefined'"
+							:prevent="false"
 							@activated="$emit('activated', it)"
 							@deactivated="$emit('deactivated', arguments[0], it)"
 							@dragging="$emit('dragging', it)"

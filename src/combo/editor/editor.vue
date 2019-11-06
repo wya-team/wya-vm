@@ -1,5 +1,6 @@
 <template>
 	<div 
+		v-if="currentValue"
 		:style="{flex: `0 0 ${width}px` }" 
 		class="vm-editor vm-hack-editor"
 	>
@@ -7,8 +8,8 @@
 			<!-- <div class="vm-editor__arrow" /> -->
 			<component
 				ref="target"
-				:is="`vm-${value.module}-editor`"
-				v-bind.sync="value"
+				:is="`vm-${currentValue.module}-editor`"
+				v-bind.sync="currentValue"
 				@change="handleChange"
 			/>
 		</div>
@@ -23,7 +24,6 @@ export default {
 	components: {
 	},
 	props: {
-		dataSource: Array,
 		value: Object,
 		width: {
 			type: Number,
@@ -32,15 +32,20 @@ export default {
 	},
 	data() {
 		return {
-			currentId: this.value.id
+			currentValue: this.value,
 		};
 	},
 	computed: {
 	},
 	watch: {
-		"value.module": {
+		"value.id": {
 			handler(v) {
-				this.resetCurEditor(this.value.id);
+				// [
+				// 	...this.$el.querySelectorAll("input"),
+				// 	...this.$el.querySelectorAll("textarea"),
+				// 	...this.$el.querySelectorAll(`[contenteditable="true"]`)
+				// ].forEach(i => i.blur());
+				this.resetCurEditor(this.value);
 			}
 		}
 	},
@@ -51,15 +56,15 @@ export default {
 		 * 用户端在激活时不要立马做操作，否者会存在问题
 		 * TODO: 失焦时为异步情况，editor会被销毁，可以设计一个专门为API(传id)
 		 */
-		resetCurEditor: debounce(function (id) {
-			this.currentId = id;
-		}, 50),
+		resetCurEditor: debounce(function () {
+			this.currentValue = this.value;
+		}, 10),
 
 		/**
 		 * hack操作
 		 * 业务上避免使用该操作
 		 */
-		handleChange(opts = {}) {
+		handleChange(opts = {}, id) {
 			if (typeof opts !== 'object') return;
 			for (let key in opts) {
 				let val = opts[key];
@@ -69,13 +74,18 @@ export default {
 				if (hasOwn(opts, key) && !valueIsNaN(val)) {
 					this.$emit('change', {
 						type: 'update',
-						id: this.currentId,
+						id: id || this.currentValue.id,
 						changed: {
 							[key]: val
 						}
 					});
 				}
 			}
+		},
+
+		// 用于异步修改时触发
+		emitChange(id, opts = {}) {
+			this.handleChange(opts, id);
 		}
 	},
 };

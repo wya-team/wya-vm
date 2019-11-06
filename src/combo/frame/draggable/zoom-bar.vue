@@ -153,7 +153,7 @@ export default {
 		 * 1. 自动调整至最合适的位置
 		 * TODO: 考虑初始数据异步的情况
 		 */
-		setTimeout(this.resetScale, 0);
+		// setTimeout(this.resetScale, 0);
 	},
 	methods: {
 		handleChangeSlider(v) {

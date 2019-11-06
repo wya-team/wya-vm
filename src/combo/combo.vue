@@ -29,9 +29,9 @@
 			<slot name="frame-header" />
 			<slot name="frame-footer" />
 		</vm-frame>
-		<!--  vue.sync遇到引用类型可跨层级修改，Object/Array. 如Object, 不要操作对象，把每个值解构出来v-bind.sync. -->
+		<!-- v-show主要用于没有页面设置 -->
 		<vm-editor 
-			v-if="showEditor && editor"
+			v-if="showEditor"
 			:value="editor"
 			:data-source="rebuildData"
 			:theme="theme"

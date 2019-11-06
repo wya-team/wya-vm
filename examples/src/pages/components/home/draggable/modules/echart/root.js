@@ -46,6 +46,7 @@ export const echart = {
 			
 			// for content
 			name: `样式${index + 1}`,
+			fs: 12,
 			bg: index ? '#FDE5E7' : '#E6E8FF'
 		};
 	},

@@ -8,7 +8,7 @@
 				@input="handleChange(arguments[0], 'w')"
 			/>
 			<vc-input-number
-				v-model="$attrs.h"
+				:value="$attrs.h"
 				style="width: 88px;"
 				@input="handleChange(arguments[0], 'h')"
 			/>
@@ -22,18 +22,9 @@
 				@input="handleChange(arguments[0], 'x')"
 			/>
 			<vc-input-number
-				v-model="$attrs.y"
+				:value="$attrs.y"
 				style="width: 88px;"
 				@input="handleChange(arguments[0], 'y')"
-			/>
-		</div>
-
-		<div style="padding: 20px">
-			<span>角度：</span>
-			<vc-input-number
-				:value="$attrs.r"
-				style="width: 88px; margin-right: 23px;"
-				@input="handleChange(arguments[0], 'r')"
 			/>
 		</div>
 
@@ -47,11 +38,32 @@
 		</div>
 
 		<div style="padding: 20px">
-			<span>Name - 失去焦点时修改：</span>
+			<span>角度 - 失焦修改：</span>
+			<br>
+			<vc-input-number
+				v-model="currenR"
+				style="width: 88px; margin-right: 23px;"
+				@blur="handleChange(arguments[0], 'r')"
+			/>
+		</div>
+
+		<div style="padding: 20px">
+			<span>Name - 失焦修改：</span>
+			<br>
 			<vc-input
 				v-model="currentName"
 				style="width: 88px; margin-right: 23px;"
-				@blur="handleBlur"
+				@blur="handleChange(arguments[0], 'name')"
+			/>
+		</div>
+
+		<div style="padding: 20px">
+			<span>Name - 失焦异步修改：</span>
+			<br>
+			<vc-input
+				v-model="currentAsyncName"
+				style="width: 88px; margin-right: 23px;"
+				@blur="handleChangeDelay(arguments[0], 'name')"
 			/>
 		</div>
 	</div>
@@ -66,11 +78,14 @@ export default {
 	// 以下两周都可行，相对的inheritAttrs比较好用的一点
 	inheritAttrs: false,
 	props: {
-		name: String
+		name: String,
+		r: Number
 	},
 	data() {
 		return {
 			currentName: '',
+			currentAsyncName: '',
+			currenR: '',
 		};
 	},
 	watch: {
@@ -78,21 +93,30 @@ export default {
 			immediate: true,
 			handler(v) {
 				this.currentName = v;
+				this.currentAsyncName = v;
+			}
+		},
+		r: {
+			immediate: true,
+			handler(v) {
+				this.currenR = v;
 			}
 		}
 	},
 	created() {
 	},
 	methods: {
+
 		handleChange(e, key) {
-			this.$emit('change', { [key]: e });
+			let v = typeof e === 'object' ? e.target.value : e;
+			this.$emit('change', { [key]: v });
 		},
-		handleClick() {
-			// this.$emit('update:x', this.x + 1);
-			this.$emit('change', { x: this.x + 1 });
-		},
-		handleBlur(e) {
-			this.$emit('change', { name: e.target.value });
+
+		handleChangeDelay(e, key) {
+			setTimeout(() => {
+				let v = typeof e === 'object' ? e.target.value : e;
+				this.$parent.emitChange(this.$attrs.id, { [key]: v });
+			}, 2000);
 		}
 	},
 };

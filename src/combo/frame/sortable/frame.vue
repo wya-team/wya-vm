@@ -20,6 +20,7 @@
 								:disabled="it.disabled"
 								:draggable="it.draggable || typeof it.draggable === 'undefined'"
 								:closeable="it.closeable || typeof it.closeable === 'undefined'"
+								:prevent="false"
 								@activated="$emit('activated', it, index)"
 								@deactivated="$emit('deactivated', it, index)"
 								@delete="$emit('change', { type: 'delete', id: it.id })"
