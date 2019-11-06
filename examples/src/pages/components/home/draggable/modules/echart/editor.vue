@@ -58,19 +58,21 @@
 		</div>
 
 		<div style="padding: 20px">
-			<span>Name - 失焦异步修改：</span>
+			<span>Name - 失焦异步修改(2秒后)：</span>
 			<br>
 			<vc-input
 				v-model="currentAsyncName"
 				style="width: 88px; margin-right: 23px;"
-				@blur="handleChangeDelay(arguments[0], 'name')"
+				@blur="handleChangeAsync(arguments[0], 'name')"
 			/>
 		</div>
 	</div>
 </template>
 
 <script>
+import { Message } from '@wya/vc';
 
+const sleep = timestamp => new Promise(resolve => setTimeout(resolve, timestamp * 1000));
 export default {
 	name: 'vm-echart-editor',
 	components: {
@@ -106,17 +108,22 @@ export default {
 	created() {
 	},
 	methods: {
-
-		handleChange(e, key) {
-			let v = typeof e === 'object' ? e.target.value : e;
-			this.$emit('change', { [key]: v });
+		getValue(e) {
+			return typeof e === 'object' ? e.target.value : e;
 		},
 
-		handleChangeDelay(e, key) {
-			setTimeout(() => {
-				let v = typeof e === 'object' ? e.target.value : e;
-				this.$parent.emitChange(this.$attrs.id, { [key]: v });
-			}, 2000);
+		handleChange(e, key) {
+			this.$emit('change', { [key]: this.getValue(e) });
+		},
+
+		async handleChangeAsync(e, key) {
+			Message.loading('校正中');
+
+			await sleep(1);
+
+			this.$parent.emitChange(this.$attrs.id, { [key]: this.getValue(e) });
+
+			Message.destroy();
 		}
 	},
 };
