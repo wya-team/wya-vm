@@ -113,7 +113,7 @@ export default {
 		 * 组件被按下事件
 		 */
 		handleClick(e = {}) {
-			// 去除默认事件 todo: 匹配输入框
+			// 去除默认事件
 			this.prevent
 				&& e.preventDefault
 				&& !eleInRegExp(e.target, this.preventRegExp)

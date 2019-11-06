@@ -36,7 +36,7 @@
 					>
 						<vm-grid-lines v-if="showLines" :width="width" :height="height" :grid="[10, 10]" />
 						<vm-align-lines v-if="showLines" :data-source="dataSource" :editor="editor"/>
-						<!-- TODO: 不操作引用修改 -->
+						<!-- prevent为true用于点击时可以触发输入框的失焦 -->
 						<vm-draggable
 							v-for="(it, index) in dataSource"
 							ref="draggable"

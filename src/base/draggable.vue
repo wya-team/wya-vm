@@ -277,7 +277,6 @@ export default {
 		this.beforeStatus = null;
 	},
 	mounted() {
-		// 初始化控件宽高, todo: 宽高未零时，是否需要计算
 		if (this.w && this.minW > this.w) {
 			this.sync({ w: this.minW });
 		}
