@@ -40,6 +40,7 @@ export default {
 	watch: {
 		"value.id": {
 			handler(v) {
+				// frame 中子元素已设置prevent
 				// [
 				// 	...this.$el.querySelectorAll("input"),
 				// 	...this.$el.querySelectorAll("textarea"),
@@ -64,14 +65,16 @@ export default {
 		 * hack操作
 		 * 业务上避免使用该操作
 		 */
-		handleChange(opts = {}, id) {
+		handleChange(opts = {}) {
 			if (typeof opts !== 'object') return;
-			for (let key in opts) {
-				let val = opts[key];
+			const { id, ...rest } = opts;
+
+			for (let key in rest) {
+				let val = rest[key];
 
 				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 
-				if (hasOwn(opts, key) && !valueIsNaN(val)) {
+				if (hasOwn(rest, key) && !valueIsNaN(val)) {
 					this.$emit('change', {
 						type: 'update',
 						id: id || this.currentValue.id,
@@ -83,9 +86,12 @@ export default {
 			}
 		},
 
-		// 用于异步修改时触发
+		// 仅用于映射
 		emitChange(id, opts = {}) {
-			this.handleChange(opts, id);
+			this.handleChange({
+				...opts,
+				id
+			});
 		}
 	},
 };
