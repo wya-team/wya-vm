@@ -4,15 +4,21 @@
 			<vc-button @click="theme = theme === 'dark' ? 'light' : 'dark'">
 				主题: {{ theme }}
 			</vc-button>
-
 			<vc-button @click="showRuler = !showRuler">
 				标尺: {{ showRuler ? '展示' : '隐藏' }}
 			</vc-button>
-
-			<vc-button @click="showSlots = !showSlots">
-				头部/尾部: {{ showSlots ? '展示' : '隐藏' }}
+			<vc-button @click="showLines = !showLines">
+				网格: {{ showLines ? '展示' : '隐藏' }}
 			</vc-button>
-
+			<vc-button @click="showZoomBar = !showZoomBar">
+				视口大小: {{ showZoomBar ? '展示' : '隐藏' }}
+			</vc-button>
+			<vc-button @click="showThumbnail = !showThumbnail">
+				缩略图: {{ showThumbnail ? '展示' : '隐藏' }}
+			</vc-button>
+			<vc-button @click="showSlots = !showSlots">
+				头部/尾部(缩放为1时展示): {{ showSlots ? '展示' : '隐藏' }}
+			</vc-button>
 			<vc-button @click="$refs.combo.preview()">
 				预览
 			</vc-button>
@@ -32,7 +38,9 @@
 			:frame-h="1080"
 			:width="style.width"
 			:height="style.height"
-			:show-lines="false"
+			:show-lines="showLines"
+			:show-zoom-bar="showZoomBar"
+			:show-thumbnail="showThumbnail"
 			:show-ruler="showRuler"
 			:theme="theme"
 			@save="handleSave"
@@ -103,6 +111,9 @@ export default {
 			},
 			theme: 'dark',
 			showRuler: true,
+			showZoomBar: true,
+			showThumbnail: true,
+			showLines: false,
 			showSlots: false
 		};
 	},

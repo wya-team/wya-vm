@@ -25,7 +25,7 @@
 			>
 				<div :style="hackStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
-					<slot name="frame-header" />
+					<slot v-if="scale === 1" name="frame-header" />
 					<div
 						ref="content"
 						:style="[contentStyle, frameStyle]"
@@ -84,7 +84,7 @@
 							/>
 						</vm-draggable>
 					</div>
-					<slot name="frame-footer" />
+					<slot v-if="scale === 1" name="frame-footer" />
 				</div>
 			</div>
 		</template>
@@ -156,19 +156,19 @@ export default {
 		frameStyle: Object,
 		showLines: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		showRuler: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		showZoomBar: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		showThumbnail: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		theme: String,
 	},
