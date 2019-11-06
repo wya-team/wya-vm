@@ -25,6 +25,7 @@
 			>
 				<div :style="hackStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
+					<slot name="frame-header" />
 					<div
 						ref="content"
 						:style="[contentStyle, frameStyle]"
@@ -83,6 +84,7 @@
 							/>
 						</vm-draggable>
 					</div>
+					<slot name="frame-footer" />
 				</div>
 			</div>
 		</template>

@@ -1,6 +1,7 @@
 <template>
 	<vm-inner :has-page="hasPage" class="vm-frame-sortable">
 		<template #content>
+			<slot name="frame-header" />
 			<div 
 				:style="[style, frameStyle]" 
 				class="vm-frame-sortable__wrapper"
@@ -40,6 +41,7 @@
 					</div>
 				</transition-group>
 			</div>
+			<slot name="frame-footer" />
 		</template>
 	</vm-inner>
 	
@@ -216,6 +218,8 @@ $block: vm-frame-sortable;
 
 @include block($block) {
 	background: #f7f6fa;
+	display: flex;
+	flex-direction: column;
 	@include element(wrapper) {
 		flex-shrink: 0;
 		border: 1px solid $border;

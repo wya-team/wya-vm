@@ -8,6 +8,11 @@
 			<vc-button @click="showRuler = !showRuler">
 				标尺: {{ showRuler ? '展示' : '隐藏' }}
 			</vc-button>
+
+			<vc-button @click="showSlots = !showSlots">
+				头部/尾部: {{ showSlots ? '展示' : '隐藏' }}
+			</vc-button>
+
 			<vc-button @click="$refs.combo.preview()">
 				预览
 			</vc-button>
@@ -32,7 +37,14 @@
 			:theme="theme"
 			@save="handleSave"
 			@error="handleError"
-		/>
+		>
+			<template v-if="showSlots" #frame-header>
+				<div>header</div>
+			</template>
+			<template v-if="showSlots" #frame-footer>
+				<div>footer</div>
+			</template>
+		</vm-combo>
 	</div>
 </template>
 
@@ -90,7 +102,8 @@ export default {
 				height: window.innerHeight - 60,
 			},
 			theme: 'dark',
-			showRuler: true
+			showRuler: true,
+			showSlots: false
 		};
 	},
 	computed: {

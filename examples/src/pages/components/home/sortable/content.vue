@@ -4,6 +4,9 @@
 			<vc-button @click="theme = theme === 'dark' ? 'light' : 'dark'">
 				主题: {{ theme }}
 			</vc-button>
+			<vc-button @click="showSlots = !showSlots">
+				头部/尾部: {{ showSlots ? '展示' : '隐藏' }}
+			</vc-button>
 			<vc-button @click="$refs.combo.preview()">
 				预览
 			</vc-button>
@@ -26,7 +29,14 @@
 			:height="style.height"
 			@save="handleSave"
 			@error="handleError"
-		/>
+		>
+			<template v-if="showSlots" #frame-header>
+				<div>header</div>
+			</template>
+			<template v-if="showSlots" #frame-footer>
+				<div>footer</div>
+			</template>
+		</vm-combo>
 	</div>
 </template>
 
@@ -56,7 +66,8 @@ export default {
 				width: window.innerWidth - 40,
 				height: window.innerHeight - 60,
 			},
-			theme: 'dark'
+			theme: 'dark',
+			showSlots: false
 		};
 	},
 	computed: {

@@ -26,8 +26,12 @@
 			@change="handleChange"
 			@error="$emit('error', arguments[0])"
 		>
-			<slot name="frame-header" />
-			<slot name="frame-footer" />
+			<template #frame-header>
+				<slot name="frame-header" />
+			</template>
+			<template #frame-footer>
+				<slot name="frame-footer" />
+			</template>
 		</vm-frame>
 		<!-- v-show主要用于没有页面设置 -->
 		<vm-editor 
