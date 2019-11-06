@@ -111,19 +111,19 @@ export default {
 		},
 		showLines: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showRuler: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showZoomBar: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showThumbnail: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 	},
 	data() {

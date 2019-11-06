@@ -156,19 +156,19 @@ export default {
 		frameStyle: Object,
 		showLines: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showRuler: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showZoomBar: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		showThumbnail: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		theme: String,
 	},
@@ -403,7 +403,7 @@ $block: vm-frame-draggable;
 		flex-shrink: 0;
 		border: 1px solid $border;
 		position: relative;
-		overflow: hidden;
+		// overflow: hidden;
 		z-index: 1;
 	}
 }
