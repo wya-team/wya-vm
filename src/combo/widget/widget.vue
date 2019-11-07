@@ -90,15 +90,15 @@ export default {
 	data() {
 		const { modules } = this.$parent.$options;
 		let toolsList = {};
-		let index = 0;
+		let isFirst;
 		for (let key in modules) {
-			index++;
 			// 过滤页面设置
 			if (hasOwn(modules, key) && modules[key].type !== 'basic') {
 				let item = modules[key];
 				let type = item.type || 'undefined';
 				if (!toolsList[type]) {
 					toolsList[type] = [];
+					isFirst = true;
 				}
 				if (item.showWidget || typeof item.showWidget === 'undefined') {
 					toolsList[type].push({
@@ -109,10 +109,11 @@ export default {
 						draggable: !!(!item.widgets && item.Viewer && item.Editor),
 
 						// 更多, 由click事件控制
-						active: !!(index === 1 && item.widgets)
+						active: !!(isFirst && item.widgets)
 					});
 				}
 			}
+			isFirst = false;
 		}
 		return {
 			toolsList,
