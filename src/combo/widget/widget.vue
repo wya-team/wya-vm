@@ -156,7 +156,6 @@ $w: $tabs-w + $content-w;
 @include block($block) {
 	flex: 0 0 $w;
 	width: $w;
-	z-index: 10;
 	@include element(wrapper) {
 		background: $white;
 		padding: 10px 0 0;
