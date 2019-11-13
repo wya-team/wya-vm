@@ -1,7 +1,7 @@
 <template>
 	<div 
 		v-if="currentValue"
-		:style="{flex: `0 0 ${width}px` }" 
+		:style="styles" 
 		class="vm-editor vm-hack-editor"
 	>
 		<div class="vm-editor__wrapper">
@@ -28,8 +28,9 @@ export default {
 		value: Object,
 		width: {
 			type: Number,
-			default: 327
-		}
+			default: 328
+		},
+		height: Number
 	},
 	data() {
 		return {
@@ -37,16 +38,17 @@ export default {
 		};
 	},
 	computed: {
+		styles() {
+			return { 
+				flex: `0 0 ${width}px`, 
+				width: `${width}px`, 
+			};
+		}
 	},
 	watch: {
 		"value.id": {
 			handler(v) {
-				// frame 中子元素已设置prevent
-				// [
-				// 	...this.$el.querySelectorAll("input"),
-				// 	...this.$el.querySelectorAll("textarea"),
-				// 	...this.$el.querySelectorAll(`[contenteditable="true"]`)
-				// ].forEach(i => i.blur());
+				// 相关触发失焦，frame 中子元素需要设置prevent，默认不阻止
 				this.resetCurEditor(this.value);
 			}
 		}
@@ -102,10 +104,6 @@ $block: vm-editor;
 
 @include block($block) {
 	flex-shrink: 0;
-	// margin-left: 20px;
-	// min-width: 446px; // 暂时写死
-	// max-width: 446px;
-	// flex: 0 0 354px;
 	@include element(wrapper) {
 		position: relative;
 		padding: 0;

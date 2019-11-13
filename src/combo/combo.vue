@@ -37,8 +37,6 @@
 		<vm-editor 
 			v-if="showEditor"
 			:value="editor"
-			:data-source="rebuildData"
-			:theme="theme"
 			:style="editorStyle"
 			:width="editorW"
 			:height="editorH"

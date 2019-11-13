@@ -59,8 +59,6 @@
 					</vm-widget-item>
 				</div>
 			</div>
-
-
 		</div>
 	</div>
 </template>
