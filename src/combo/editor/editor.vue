@@ -39,6 +39,7 @@ export default {
 	},
 	computed: {
 		styles() {
+			const { width } = this;
 			return { 
 				flex: `0 0 ${width}px`, 
 				width: `${width}px`, 
