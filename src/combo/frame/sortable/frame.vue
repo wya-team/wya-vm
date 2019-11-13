@@ -99,7 +99,7 @@ export default {
 	},
 	methods: {
 		// 不添加throttle, 具体情况draggable frame
-		handleScroll() {
+		handleScroll(e) {
 			this.scrollTop = e.target.scrollTop;
 		},
 

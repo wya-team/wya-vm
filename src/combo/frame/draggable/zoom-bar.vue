@@ -157,11 +157,7 @@ export default {
 		// }
 	},
 	mounted() {
-		/**
-		 * 1. 自动调整至最合适的位置
-		 * TODO: 考虑初始数据异步的情况
-		 */
-		setTimeout(this.resetScale, 0);
+		this.resetScale(0);
 
 		// 特殊API
 		this.combo && (this.combo.resetScale = this.resetScale);
@@ -173,9 +169,16 @@ export default {
 		handleChangeSelect(v) {
 			this.$emit('update:scale', this.currentScale);
 		},
-		resetScale() {
-			this.currentScale = this.autoScale;
-			this.$emit('update:scale', this.currentScale);
+
+		/**
+		 * pageEditor变化在store中有被调用
+		 * TODO: 去掉延迟
+		 */
+		resetScale(delay = 0) {
+			setTimeout(() => {
+				this.currentScale = this.autoScale;
+				this.$emit('update:scale', this.currentScale);
+			}, delay);
 		}
 	},
 };

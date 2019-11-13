@@ -72,39 +72,7 @@ export default {
 	},
 	data() {
 		return {
-			list: [
-				{
-					id: `vc-page-${Math.random()}`,
-					module: 'page',
-					w: window.screen.width,
-					h: window.screen.height,
-				},
-				{
-					"w": 200,
-					"h": 150,
-					"r": 0,
-					"x": 300,
-					"y": 160,
-					"z": 1,
-					"name": "样式1",
-					"bg": "#E6E8FF",
-					"module": "echart",
-					"id": "vm-15724918705191"
-				},
-				{
-					"w": 200,
-					"h": 150,
-					"r": 0,
-					"x": 345,
-					"y": 208,
-					"z": 2,
-					"name": "样式2",
-					"bg": "#FDE5E7",
-					"module": "echart",
-					"id": "vm-15724918705192"
-				}
-
-			],
+			list: [],
 			style: {
 				width: window.innerWidth - 40,
 				height: window.innerHeight - 60,
@@ -121,12 +89,51 @@ export default {
 
 	},
 	mounted() {
+		this.loadData();
 		Resize.on(document.body, this.handleResize);
 	},
 	destroyed() {
 		Resize.off(document.body, this.handleResize);
 	},
 	methods: {
+		loadData() {
+			Message.loading('加载数据中');
+			setTimeout(() => {
+				this.list = [
+					{
+						id: `vc-page-${Math.random()}`,
+						module: 'page',
+						w: window.screen.width,
+						h: window.screen.height,
+					},
+					{
+						"w": 200,
+						"h": 150,
+						"r": 0,
+						"x": 300,
+						"y": 160,
+						"z": 1,
+						"name": "样式1",
+						"bg": "#E6E8FF",
+						"module": "echart",
+						"id": "vm-15724918705191"
+					},
+					{
+						"w": 200,
+						"h": 150,
+						"r": 0,
+						"x": 345,
+						"y": 208,
+						"z": 2,
+						"name": "样式2",
+						"bg": "#FDE5E7",
+						"module": "echart",
+						"id": "vm-15724918705192"
+					}
+				];
+				Message.destroy();
+			}, 0);
+		},
 		handleResize() {
 			// 需要减去padding值
 			this.style = {

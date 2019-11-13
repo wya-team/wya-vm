@@ -28,7 +28,7 @@ export default {
 					&& v 
 					&& this.combo 
 					&& this.combo.resetScale 
-					&& this.combo.resetScale();
+					&& this.combo.resetScale(500);
 			}
 		}
 	},
