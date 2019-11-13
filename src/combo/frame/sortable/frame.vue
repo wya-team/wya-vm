@@ -14,7 +14,7 @@
 				<transition-group tag="div" name="flip-list">
 					<div v-for="(it, index) in dataSource" :key="it.id" class="vm-frame-sortable__item">
 						<!-- prevent为true用于点击时可以触发输入框的失焦 -->
-						<div :style="it.wrapperStyle">
+						<div :style="getItemStyle(it, index)">
 							<vm-sortable
 								ref="sort"
 								:index="index"
@@ -32,7 +32,6 @@
 								<component 
 									:is="`vm-${it.module}-viewer`" 
 									:index="index"
-									:scroll-top="scrollTop"
 									:vm="vm"
 									v-bind="it" 
 									style="min-height: 3px"
@@ -98,6 +97,24 @@ export default {
 		clearTimeout(this.timer);
 	},
 	methods: {
+
+		getItemStyle(it, index) {
+
+			if (typeof it.wrapperStyle === 'function') {
+				const { scrollTop, dataSource, vm } = this;
+				let params = {
+					row: it,
+					index,
+					dataSource,
+					scrollTop,
+					vm
+				};
+				it.wrapperStyle(params, this);
+			}
+
+			return it.wrapperStyle || {};
+		},
+
 		// 不添加throttle, 具体情况draggable frame
 		handleScroll(e) {
 			this.scrollTop = e.target.scrollTop;
