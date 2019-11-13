@@ -19,9 +19,16 @@ export default {
 		'states.pageEditor': {
 			deep: true,
 			immediate: true,
-			handler(v) {
+			handler(v, oldV) {
 				v && v.w && (this.states.frameW = v.w);
 				v && v.h && (this.states.frameH = v.h);
+
+				// From: zoom-bar.vue
+				oldV === null 
+					&& v 
+					&& this.combo 
+					&& this.combo.resetScale 
+					&& this.combo.resetScale();
 			}
 		}
 	},
