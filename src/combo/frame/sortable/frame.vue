@@ -109,7 +109,7 @@ export default {
 					scrollTop,
 					vm
 				};
-				it.wrapperStyle(params, this);
+				return it.wrapperStyle(params, this);
 			}
 
 			return it.wrapperStyle || {};
