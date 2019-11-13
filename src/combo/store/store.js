@@ -33,9 +33,9 @@ class Store extends BaseWatcher {
 			states._data = rebuildData; // clone
 			states.data = rebuildData; // reset
 
-			// 页面设置
+			// 同步页面设置数据
 			this.updatePageEditor(rebuildData);
-			// 更新当前设置
+			// 同步历史数据
 			this.updateCurrentEditor();
 		},
 		CREATE(states, payload) {
@@ -43,6 +43,7 @@ class Store extends BaseWatcher {
 
 			states.data.splice(index, 0, data);
 
+			// 同步历史数据
 			this.updateHistory('CREATE', {
 				...payload,
 				data,
@@ -56,7 +57,9 @@ class Store extends BaseWatcher {
 
 			states.data.splice(index, 1);
 
+			// 同步编辑数据
 			this.resetCurrentEditor();
+			// 同步历史数据
 			this.updateHistory('DELETE', {
 				...payload,
 				data,
@@ -76,6 +79,7 @@ class Store extends BaseWatcher {
 				states.data[index][key] = changed[key];
 			});
 			
+			// 同步历史数据
 			this.updateHistory('UPDATE', { 
 				...payload, 
 				original, 
@@ -108,6 +112,8 @@ class Store extends BaseWatcher {
 				states.data.splice(changed[1] + (changed[0] < changed[1]), 0, current);
 				states.data.splice(changed[0] + (changed[0] > changed[1]), 1);
 			}
+
+			// 同步历史数据
 			if (history && (!original || original[0] !== original[1])) {
 				this.updateHistory('SORT', { original: changed || original });
 			}
@@ -126,6 +132,7 @@ class Store extends BaseWatcher {
 			};
 			fn[type] && fn[type]();
 
+			// 同步编辑数据
 			states.pagesEditor 
 				&& states.pagesEditor.id === id
 				&& this.resetCurrentEditor(states.data[index]);
@@ -143,6 +150,7 @@ class Store extends BaseWatcher {
 			};
 			fn[type] && fn[type]();
 
+			// 同步编辑数据
 			states.pagesEditor 
 				&& states.pagesEditor.id === id
 				&& this.resetCurrentEditor(states.data[index]);
