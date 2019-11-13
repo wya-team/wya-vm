@@ -16,6 +16,7 @@
 			:style="style"
 			class="vm-draggable__handles"
 		>
+			<!-- 此处使用stop，阻止冒泡，如果active为true, 设置激活状态通过模拟方式 -->
 			<template v-for="item in realHandles">
 				<div
 					v-if="!disabled"
@@ -255,7 +256,14 @@ export default {
 			return handles;
 		}
 	},
-	watch: {},
+	watch: {
+		active: {
+			immediate: true,
+			handler(v) {
+				v && this.setActived();
+			}
+		}
+	},
 	beforeCreate() {
 		this.parentX = 0;
 		this.parentY = 0;
@@ -462,7 +470,6 @@ export default {
 			let diffY = axisY - Math.round((this.lastMouseY - this.parentY + this.offset[1]) / this.scale);
 			this.lastMouseX = this.mouseX;
 			this.lastMouseY = this.mouseY;
-
 			if (this.isResizing) {
 				if (this.handle.includes('top')) {
 					if (elmY - axisY + elmH < this.minH) {
