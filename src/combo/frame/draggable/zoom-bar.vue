@@ -153,7 +153,7 @@ export default {
 		},
 		// 被吐槽， 变化太频繁（宽度变化会影响）
 		// clientW() {
-		// 	setTimeout(this.resetScale, 0);
+		// 	this.resetScale()
 		// }
 	},
 	mounted() {
@@ -173,6 +173,7 @@ export default {
 		/**
 		 * pageEditor变化在store中有被调用
 		 * TODO: 去掉延迟
+		 * TODO: showRuler为false时，无效
 		 */
 		resetScale(delay = 0) {
 			setTimeout(() => {
