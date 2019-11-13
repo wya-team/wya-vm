@@ -103,6 +103,14 @@ export default {
 		};
 	},
 	computed: {
+		combo() {
+			let parent = this.$parent;
+			while (parent && !parent.VMComboId) {
+				parent = parent.$parent;
+			}
+			return parent;
+		},
+
 		autoScale() {
 			let { frameW, frameH, clientW, clientH, borderSize } = this;
 			
@@ -154,6 +162,9 @@ export default {
 		 * TODO: 考虑初始数据异步的情况
 		 */
 		setTimeout(this.resetScale, 0);
+
+		// 特殊API
+		this.combo && (this.combo.resetScale = this.resetScale);
 	},
 	methods: {
 		handleChangeSlider(v) {

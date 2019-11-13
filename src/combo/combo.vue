@@ -50,7 +50,7 @@
 
 <script>
 import { Store, mapStates } from './store';
-import { cloneDeep, isEqualWith } from '../utils/helper';
+import { cloneDeep, isEqualWith, getUid } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
 import './theme-dark.scss';
 
@@ -170,6 +170,8 @@ export default {
 		}
 	},
 	created() {
+		this.VMComboId = getUid('combo');
+		
 		// 处理历史暴露的API映射
 		this.create = this.add;
 		this.delete = this.remove;
