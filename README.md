@@ -126,6 +126,20 @@ rebuilder | 针对data补全数据用 | `Object` `Function` | -
 
 > Viewer 组件会提供一个参数vm, vm.type用来告知当前是`frame`还是`preview`下的内容
 
-- data
+#### data
 
 > 为函数时，参数1（index）表示展开组件拖动的索引
+
+##### Draggable
+
+属性 | 说明 | 类型 | 默认值
+---|---|---|---
+...Draggbale组件上的参数和Viewer上 | - | `any` | -
+
+##### Sortable
+
+属性 | 说明 | 类型 | 默认值
+---|---|---|---
+wrapperStyle | - | `Object`, `Function` | -
+...Sortable组件上的参数和Viewer上 | - | `any` | -
+
