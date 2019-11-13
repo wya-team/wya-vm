@@ -5,6 +5,7 @@
 			<div 
 				:style="[style, frameStyle]" 
 				class="vm-frame-sortable__wrapper"
+				@scroll="handleScroll"
 				@dragover.prevent
 				@dragenter="handleDragEnter"
 				@dragleave="handleDragLeave"
@@ -31,6 +32,7 @@
 								<component 
 									:is="`vm-${it.module}-viewer`" 
 									:index="index"
+									:scroll-top="scrollTop"
 									:vm="vm"
 									v-bind="it" 
 									style="min-height: 3px"
@@ -50,7 +52,7 @@
 <script>
 import Inner from './inner.vue';
 import Sortable from '../../../base/sortable.vue';
-import { getUid, cloneDeep } from '../../../utils/helper';
+import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { SORT_IN_FRAME, WIDGET_TO_FRAME, PAGE_MOULE } from '../../../utils/constants';
 
 export default {
@@ -70,6 +72,7 @@ export default {
 		return {
 			dragType: SORT_IN_FRAME,
 			dragWaiting: false,
+			scrollTop: 0,
 			vm: {
 				type: 'frame'
 			}
@@ -95,6 +98,11 @@ export default {
 		clearTimeout(this.timer);
 	},
 	methods: {
+		// 不添加throttle, 具体情况draggable frame
+		handleScroll() {
+			this.scrollTop = e.target.scrollTop;
+		},
+
 		/**
 		 * TODO：
 		 * 1. dragWaiting等待时，默认插入到最后一个

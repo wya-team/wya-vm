@@ -243,10 +243,11 @@ export default {
 			this.clientH = h; 
 		},
 
-		handleScroll: throttle(function (e) {
+		// 不添加throttle，如：容易导致计算丢失（快速滚动下影响ruler）
+		handleScroll(e) {
 			this.scrollLeft = e.target.scrollLeft;
 			this.scrollTop = e.target.scrollTop;
-		}, 50),
+		},
 
 		handleScrollThumbnail(x, y) {
 
