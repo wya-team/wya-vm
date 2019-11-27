@@ -28,6 +28,9 @@
 			<vc-button @click="$refs.combo.redo()">
 				取消撤回
 			</vc-button>
+			<vc-button @click="loadData">
+				重置
+			</vc-button>
 		</div>
 
 		<vm-combo 
@@ -101,7 +104,7 @@ export default {
 			setTimeout(() => {
 				this.list = [
 					{
-						id: `vc-page-${Math.random()}`,
+						id: `vc-page-15724918705193`,
 						module: 'page',
 						w: window.screen.width,
 						h: window.screen.height,

@@ -47,7 +47,8 @@ export default {
 		}
 	},
 	watch: {
-		"value.id": {
+		value: {
+			deep: true,
 			handler(v) {
 				// 相关触发失焦，frame 中子元素需要设置prevent，默认不阻止
 				this.resetCurEditor(this.value);
