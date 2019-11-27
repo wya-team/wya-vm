@@ -1,6 +1,6 @@
 {
   "name": "@wya/vm",
-  "version": "2.0.0-alpha.43",
+  "version": "2.0.0-alpha.44",
   "description": "",
   "main": "dist/vm.min.js",
   "files": [
