@@ -344,6 +344,8 @@ export default {
 				let index = data.findIndex(v => v.id === it.id);
 
 				const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
+
+				if (type === DELETE && !it.closeable) return;
 				switch (type) {
 					case TOP:
 						if (index === 0) return;
