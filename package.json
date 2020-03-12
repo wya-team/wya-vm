@@ -14,7 +14,7 @@
     "demo": "cd ./examples && npm run dev",
     "build": "rm -rf dist/ && cross-env NODE_ENV=production rollup --config rollup.config.js",
     "pub": "bash ./scripts/publish.sh",
-    "lint": "esw ./src  --ext .vue,.js",
+    "lint": "esw ./src  --ext .vue,.js --color",
     "lint:fix": "npm run lint -- --fix",
     "lint:watch": "npm run lint -- --fix --watch",
     "all": "npm-run-all --parallel --race --continue-on-error lint:watch serve demo",
