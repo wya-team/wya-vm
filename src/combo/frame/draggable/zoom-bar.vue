@@ -10,8 +10,8 @@
 			>
 				<vc-option
 					v-for="(item, index) in options"
-					:value="item.value"
 					:key="index"
+					:value="item.value"
 				>
 					{{ item.label }}
 				</vc-option>

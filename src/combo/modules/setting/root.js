@@ -1,4 +1,4 @@
-import Widget from './widget';
+import Widget from './widget.vue';
 
 export const setting = {
 	module: "setting",

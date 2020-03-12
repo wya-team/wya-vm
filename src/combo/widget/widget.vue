@@ -1,7 +1,9 @@
 <template>
 	<div :style="style" class="vm-widget">
 		<div class="vm-widget__wrapper">
-			<p class="vm-widget__header">组件库</p>
+			<p class="vm-widget__header">
+				组件库
+			</p>
 			<div v-if="showTip" class="vm-widget__tip">
 				<span class="vm-widget__icon-warn">!</span>
 				<p>可拖动数据组件到指定位置</p>
@@ -10,12 +12,13 @@
 			<div class="vm-widget__menu">
 				<div class="vm-widget__tabs">
 					<p
-						v-for="(item, key) in toolsList"
-						v-if="key !== 'undefined'"
-						:key="key"
-						:class="{ 'is-active': currentTab == key}"
-						@click="currentTab = key"
-					>{{ key }}</p>
+						v-for="(item) in tabs"
+						:key="item"
+						:class="{ 'is-active': currentTab == item}"
+						@click="currentTab = item"
+					>
+						{{ item }}
+					</p>
 				</div>
 				<div :style="contentStyle" class="vm-widget__content">
 					<vm-widget-item
@@ -30,8 +33,10 @@
 							class="vm-widget__title"
 							@click="it.widgets && (it.active = !it.active)"
 						>
-							<p v-if="typeof it.component === 'string'" v-html="it.component"/>
-							<component v-else :is="`vm-${it.module}-widget`" v-on="handleEvent(it.module)"/>
+							<!-- eslint-disable -->
+							<p v-if="typeof it.component === 'string'" v-html="it.component" />
+							<!-- eslint-enable -->
+							<component :is="`vm-${it.module}-widget`" v-else v-on="handleEvent(it.module)" />
 							<div v-if="it.widgets" class="vm-widget__arrow" />
 						</div>
 						<!-- 子元素 -->
@@ -51,7 +56,7 @@
 									/>
 								</template>
 								<template v-else>
-									<img :src="widget.image" >
+									<img :src="widget.image">
 									<p>{{ widget.name }}</p>
 								</template>
 							</vm-widget-item>
@@ -113,10 +118,12 @@ export default {
 			}
 			isFirst = false;
 		}
+		let tabs = Object.keys(toolsList);
 		return {
 			toolsList,
+			tabs: tabs.filter(i => i && i !== 'undefined'),
 			showTip: true,
-			currentTab: Object.keys(toolsList)[0]
+			currentTab: tabs[0]
 		};
 	},
 	computed: {

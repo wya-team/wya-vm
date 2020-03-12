@@ -28,7 +28,9 @@
 			v-if="closeable && (isActive || isHover)"
 			class="vm-sortable__delete"
 			@click="$emit('delete')"
-		>✕</p>
+		>
+			✕
+		</p>
 
 		<p
 			v-if="showHighlight && highlight"
@@ -53,7 +55,7 @@ export default {
 	props: {
 		// 当前排序数组的索引值，非order
 		index: {
-			type: Number | String,
+			type: [Number, String],
 			required: true
 		},
 		// 用于getData/setData

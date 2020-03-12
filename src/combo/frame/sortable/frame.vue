@@ -38,14 +38,13 @@
 								/>
 							</vm-sortable>
 						</div>
-						<div v-if="it.placeholder" :style="{height: `${it.placeholder}px`}"/>
+						<div v-if="it.placeholder" :style="{height: `${it.placeholder}px`}" />
 					</div>
 				</transition-group>
 			</div>
 			<slot name="frame-footer" />
 		</template>
 	</vm-inner>
-	
 </template>
 
 <script>

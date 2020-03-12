@@ -6,8 +6,8 @@
 		@mousedown="handleContainerDown"
 		@touchstart.stop="handleContainerDown"
 	>
-		<div :style="style" :class="{ 'is-events-none': isChanging }" >
-			<slot :style="style"/>
+		<div :style="style" :class="{ 'is-events-none': isChanging }">
+			<slot :style="style" />
 		</div>
 		<!-- handle -->
 		<div
@@ -27,9 +27,11 @@
 					@touchstart.stop="handleDown($event, item)"
 				/>
 			</template>
-			<div v-if="rotatable && isRotating" :style="{ width }" class="vm-draggable__rotate"/>
+			<div v-if="rotatable && isRotating" :style="{ width }" class="vm-draggable__rotate" />
 			<!-- delete -->
-			<p v-if="closeable" class="vm-draggable__delete" @click="$emit('delete')">✕</p>
+			<p v-if="closeable" class="vm-draggable__delete" @click="$emit('delete')">
+				✕
+			</p>
 		</div>
 
 		<!-- 位置不会改变的 -->
@@ -39,7 +41,9 @@
 			<div :style="{ width }" class="vm-draggable__rotate--deg is-45" />
 			<div :style="{ width }" class="vm-draggable__rotate--deg is-90" />
 			<div :style="{ width }" class="vm-draggable__rotate--deg is-135" />
-			<div class="vm-draggable__rotate--tip">{{ r }} °</div>
+			<div class="vm-draggable__rotate--tip">
+				{{ r }} °
+			</div>
 		</template>
 	</div>
 </template>

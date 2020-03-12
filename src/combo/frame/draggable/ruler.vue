@@ -288,7 +288,7 @@ export default {
 			let { canvasW, guideSize, placeholderW, interval, isDark } = this;
 			let ctx = canvas.getContext('2d');
 			// 重置画布
-			canvas.height = canvas.height;
+			canvas.height = canvas.height; // eslint-disable-line
 
 			ctx.beginPath();
 			ctx.fillStyle = isDark ? '#474747' : '#FAFAFA';

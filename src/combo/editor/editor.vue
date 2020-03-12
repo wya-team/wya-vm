@@ -7,9 +7,9 @@
 		<div class="vm-editor__wrapper">
 			<!-- <div class="vm-editor__arrow" /> -->
 			<component
+				:is="`vm-${currentValue.module}-editor`"
 				ref="target"
 				:key="currentValue.id"
-				:is="`vm-${currentValue.module}-editor`"
 				v-bind.sync="currentValue"
 				@change="handleChange"
 			/>

@@ -150,7 +150,8 @@ export default {
 			let { dataSource, shrink } = this;
 			let ctx = canvas.getContext('2d');
 
-			canvas.height = canvas.height; // 重设高度，清空画布
+			// 重设高度，清空画布
+			canvas.height = canvas.height; // eslint-disable-line
 
 			ctx.beginPath();
 			ctx.translate(40 / shrink, 40 / shrink);

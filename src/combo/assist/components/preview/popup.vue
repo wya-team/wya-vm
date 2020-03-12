@@ -1,10 +1,12 @@
 <template>
 	<div class="vm-assist-preview-popup">
-		<transition v-if="mask" :name="animate" >
+		<transition v-if="mask" :name="animate">
 			<div v-show="visible" class="vm-assist-preview-popup__mask" @click="handleClose" />
 		</transition>
-		<transition v-if="mask" :name="animate" >
-			<div v-show="visible" class="vm-assist-preview-popup__close" @click="handleClose">&#10005;</div>
+		<transition v-if="mask" :name="animate">
+			<div v-show="visible" class="vm-assist-preview-popup__close" @click="handleClose">
+				&#10005;
+			</div>
 		</transition>
 		<transition :name="animate">
 			<div v-show="visible" class="vm-assist-preview-popup__content">

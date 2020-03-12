@@ -175,5 +175,6 @@
 			}
 		],
 		"jsx-quotes": 1,
+		"no-mixed-operators": 0
 	}
 }
