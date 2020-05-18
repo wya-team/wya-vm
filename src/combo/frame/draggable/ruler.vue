@@ -117,8 +117,6 @@
 import { Clipboard } from '../../../vc';
 import { $, debounce } from '../../../utils/helper';
 
-const scrollerSize = 30; // TODO: 计算滚动条宽度
-
 export default {
 	name: 'vm-ruler',
 	components: {
