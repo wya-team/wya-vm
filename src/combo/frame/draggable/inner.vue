@@ -13,6 +13,7 @@
 			:guides="guides"
 			:theme="theme"
 			:border-size="borderSize"
+			:scroller-size="scrollerSize"
 			:style="{ height: `calc(100% - ${zoomBarH}px)` }"
 			@guides-change="$emit('update:guides', arguments[0])"
 		>

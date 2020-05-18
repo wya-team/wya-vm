@@ -117,7 +117,7 @@
 import { Clipboard } from '../../../vc';
 import { $, debounce } from '../../../utils/helper';
 
-const SCROLL_BAR_WIDTH = 30; // TODO: 计算滚动条宽度
+const scrollerSize = 30; // TODO: 计算滚动条宽度
 
 export default {
 	name: 'vm-ruler',
@@ -165,6 +165,10 @@ export default {
 					right: 0
 				};
 			}
+		},
+		scrollerSize: {
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
@@ -192,20 +196,24 @@ export default {
 		};
 	},
 	computed: {
-		// 刻度的宽度, 5000用于滚动距离避免重绘
+		/**
+		 * 刻度的宽度
+		 */
 		canvasW() {
 			const { frameW, frameH, scale, borderSize, guideSize, clientW, clientH } = this;
+			const { scrollTop, scrollLeft, scrollerSize } = this;
 
 			const offsetW = borderSize.left + borderSize.right + guideSize;
 			const offsetH = borderSize.top + borderSize.bottom + guideSize;
 
 			let width = Math.max(
+				5000, // 用于滚动距离避免重绘[动态计算canvasW时出现不绘制]，主要是元素拖动到画布以外，超过5000就不计算了
 				frameW * scale + offsetW,
 				frameH * scale + offsetH,
 				clientW,
 				clientH
 			);
-			return SCROLL_BAR_WIDTH + width;
+			return scrollerSize + width;
 		},
 		// 0刻度距离轴容器左边的距离
 		placeholderW() {
