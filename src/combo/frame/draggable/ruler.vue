@@ -55,7 +55,8 @@
 				</div>
 			</template>
 		</div>
-		<div class="vm-ruler__wrapper">
+
+		<div class="vm-ruler__wrapper" :style="{ height: `calc(100% - ${guideSize}px)` }">
 			<div class="vm-ruler__y">
 				<div
 					ref="y"
@@ -424,7 +425,7 @@ $blue-label: rgba(64, 116, 180, .7);
 @include block($block) {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
+	// height: 100%; // 动态计算
 	position: relative;
 	@include element(x) {
 		display: flex;
@@ -433,7 +434,7 @@ $blue-label: rgba(64, 116, 180, .7);
 	}
 	@include element(wrapper) {
 		display: flex;
-		height: 100%
+		// height: 100% // 动态计算
 	}
 	@include element(y) {
 		height: 100%;

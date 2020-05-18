@@ -1,5 +1,5 @@
 <template>
-	<div class="vm-zoom-bar vm-hack-editor">
+	<div class="vm-zoom-bar vm-hack-editor" :style="{ height: `${h}px` }">
 		<div class="vm-zoom-bar__wrapper">
 			<vc-select
 				v-model="currentScale"
@@ -64,6 +64,12 @@ export default {
 			default: 1
 		},
 		theme: String,
+
+		h: {
+			type: Number,
+			default: 0
+		},
+
 		frameW: {
 			type: Number,
 			default: 0
@@ -98,6 +104,7 @@ export default {
 	},
 	data() {
 		return {
+			zoomBarH: 40,
 			currentScale: 1,
 			currentSelect: 1,
 		};
@@ -121,6 +128,8 @@ export default {
 			) {
 				return 1;
 			}
+
+			return 1;
 			return Math.min(
 				(clientW - borderSize.left - borderSize.right) / frameW, 
 				(clientH - borderSize.top - borderSize.bottom) / frameH, 
@@ -190,7 +199,6 @@ export default {
 
 $block: vm-zoom-bar;
 @include block($block) { 
-	height: 40px; 
 	z-index: 2;
 	background: $theme-light-zoom-bg;
 	box-shadow: 0px -2px 10px 0px rgba(0, 0, 0, 0.08);

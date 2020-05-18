@@ -2,12 +2,14 @@
 	<vm-inner
 		ref="inner"
 		:show-ruler="showRuler"
+		:show-zoom-bar="showZoomBar"
 		:scroll-left="scrollLeft"
 		:scroll-top="scrollTop"
 		:frame-w="width"
 		:frame-h="height"
 		:client-w="clientW"
 		:client-h="clientH"
+		:zoom-bar-h="zoomBarH"
 		:scale="scale"
 		:border-size="borderSize"
 		:guides.sync="guides"
@@ -19,11 +21,11 @@
 		<template #content>
 			<div 
 				ref="wrapper" 
-				:style="wrapperStyle"
 				class="vm-frame-draggable__wrapper" 
+				:style="wrapperStyle"
 				@scroll="handleScroll"
 			>
-				<div :style="hackStyle">
+				<div :style="scrollStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
 					<slot v-if="scale === 1" name="frame-header" />
 					<div
@@ -110,6 +112,7 @@
 				v-if="showZoomBar"
 				:scale.sync="scale"
 				:border-size="borderSize"
+				:h="zoomBarH"
 				:frame-w="width"
 				:frame-h="height"
 				:client-w="clientW"
@@ -202,25 +205,43 @@ export default {
 				right: size
 			};
 		},
+
+		// zoomBarH的高度
+		zoomBarH() {
+			return this.showZoomBar ? 40 : 0;
+		},
+
+		/**
+		 * 确保宽度不够时，滚动条的位置始终靠最右边与底部
+		 */
 		wrapperStyle() {
+			const { top, left, bottom, right } = this.borderSize;
 			return {
-				paddingTop: `${this.borderSize.top}px`,
-				paddingLeft: `${this.borderSize.left}px`,
+				paddingTop: `${top}px`,
+				paddingLeft: `${left}px`,
 			};
 		},
+
+		/**
+		 * 滚动区域大小，要加入最右边的宽度和底部的高度
+		 */
+		scrollStyle() {
+			const { top, left, bottom, right } = this.borderSize;
+			return {
+				width: `${Math.max(this.clientW - right, this.width * this.scale + right)}px`,
+				height: `${this.height * this.scale + bottom}px`
+			};
+		},
+
+		/**
+		 * 内容区域
+		 */
 		contentStyle() {
 			return {
 				width: `${this.width}px`,
 				height: `${this.height}px`,
 				transform: `scale(${this.scale})`,
 				transformOrigin: `0 0`,
-			};
-		},
-
-		hackStyle() {
-			return {
-				width: `${Math.max(this.clientW - this.borderSize.left, this.width * this.scale + this.borderSize.left)}px`,
-				height: `${this.height * this.scale + this.borderSize.bottom}px`
 			};
 		},
 
@@ -239,6 +260,7 @@ export default {
 		handleClientResize(w, h) {
 			if (!this.$refs.wrapper) return;
 
+			console.log('client', w, h);
 			this.clientW = w; 
 			this.clientH = h; 
 		},

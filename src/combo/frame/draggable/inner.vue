@@ -13,6 +13,7 @@
 			:guides="guides"
 			:theme="theme"
 			:border-size="borderSize"
+			:style="{ height: `calc(100% - ${zoomBarH}px)` }"
 			@guides-change="$emit('update:guides', arguments[0])"
 		>
 			<slot name="content" />
@@ -35,6 +36,8 @@ export default {
 	},
 	props: {
 		showRuler: Boolean,
+		showZoomBar: Boolean,
+		zoomBarH: Number,
 		...Ruler.props,
 	},
 	mounted() {
@@ -47,12 +50,13 @@ export default {
 		handleResize: throttle(function (e) {
 			if (!this.$el) return;
 
-			// 2为border描边
-			let offset = +(this.$refs.ruler && (this.$refs.ruler.guideSize + 2));
+			let offset = +(this.$refs.ruler && (this.$refs.ruler.guideSize));
 			let w = this.$el.offsetWidth - offset;
-			let h = this.$el.offsetHeight - offset;
+			let h = this.$el.offsetHeight - offset - this.zoomBarH;
 
 			if (!w || !h) return;
+
+			// 获得除rule内，zoom-bar上的控制操作空间
 			this.$emit(
 				'client-resize', 
 				w, 

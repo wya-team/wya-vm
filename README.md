@@ -143,3 +143,8 @@ rebuilder | 针对data补全数据用 | `Object` `Function` | -
 wrapperStyle | - | `Object`, `Function` | -
 ...Sortable组件上的参数和Viewer上 | - | `any` | -
 
+
+
+## TODO
+
+- 集成`vc-scroller`去除滚动条占位的影响
