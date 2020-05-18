@@ -12,6 +12,7 @@
 		:zoom-bar-h="zoomBarH"
 		:scale="scale"
 		:border-size="borderSize"
+		:scroller-size="scrollerSize"
 		:guides.sync="guides"
 		:theme="theme"
 		:class="classes"
@@ -101,6 +102,7 @@
 				:client-h="clientH"
 				:scroll-left="scrollLeft"
 				:scroll-top="scrollTop"
+				:scroller-size="scrollerSize"
 				:border-size="borderSize"
 				:class="classes"
 				:theme="theme"
@@ -191,7 +193,10 @@ export default {
 			clientH: 0,
 
 			// 参考线
-			guides: [[], []]
+			guides: [[], []],
+
+			// 悬浮的滚动条为0
+			scrollerSize: 4
 		};
 	},
 	computed: {

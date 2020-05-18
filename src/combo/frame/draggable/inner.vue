@@ -38,6 +38,7 @@ export default {
 		showRuler: Boolean,
 		showZoomBar: Boolean,
 		zoomBarH: Number,
+		scrollerSize: Number,
 		...Ruler.props,
 	},
 	mounted() {
@@ -51,8 +52,8 @@ export default {
 			if (!this.$el) return;
 
 			let offset = +(this.$refs.ruler && (this.$refs.ruler.guideSize));
-			let w = this.$el.offsetWidth - offset;
-			let h = this.$el.offsetHeight - offset - this.zoomBarH;
+			let w = this.$el.offsetWidth - offset - this.scrollerSize;
+			let h = this.$el.offsetHeight - offset - this.zoomBarH - this.scrollerSize;
 
 			if (!w || !h) return;
 

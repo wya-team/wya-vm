@@ -77,6 +77,10 @@ export default {
 					right: 0
 				};
 			}
+		},
+		scrollerSize: {
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
@@ -109,12 +113,12 @@ export default {
 			};
 		},
 		maxScrollLeft() {
-			const { frameW, clientW, borderSize, scale } = this;
-			return frameW * scale - clientW + borderSize.left + borderSize.right;
+			const { frameW, clientW, borderSize, scale, scrollerSize } = this;
+			return frameW * scale - clientW + borderSize.left + borderSize.right + scrollerSize;
 		},
 		maxScrollTop() {
-			const { frameH, clientH, borderSize, scale } = this;
-			return frameH * scale - clientH + borderSize.top + borderSize.bottom;
+			const { frameH, clientH, borderSize, scale, scrollerSize } = this;
+			return frameH * scale - clientH + borderSize.top + borderSize.bottom + scrollerSize;
 		}
 	},
 

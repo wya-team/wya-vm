@@ -129,7 +129,6 @@ export default {
 				return 1;
 			}
 
-			return 1;
 			return Math.min(
 				(clientW - borderSize.left - borderSize.right) / frameW, 
 				(clientH - borderSize.top - borderSize.bottom) / frameH, 
