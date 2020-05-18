@@ -260,7 +260,6 @@ export default {
 		handleClientResize(w, h) {
 			if (!this.$refs.wrapper) return;
 
-			console.log('client', w, h);
 			this.clientW = w; 
 			this.clientH = h; 
 		},
@@ -419,7 +418,7 @@ $block: vm-frame-draggable;
 
 @include block($block) {
 	@include element(wrapper) {
-		overflow: auto;
+		overflow: auto; // hidden时考虑使用悬浮的滚动条
 		height: 100%; // 兼容无ruler模式
 		@include scroller();
 	}

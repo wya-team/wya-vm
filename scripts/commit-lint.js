@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 
-const commitRE = /^(revert: )?(fix|feat|docs|perf|test|types|build|chore|refactor|breaking change)(\(.+\))?: .{1,50}/;
+const commitRE = /^(revert: )?(clean|fix|feat|docs|perf|test|types|build|chore|refactor|breaking change)(\(.+\))?: .{1,50}/;
 const mergeRE = /Merge branch /;
 
 const gitParams = process.env.HUSKY_GIT_PARAMS;
