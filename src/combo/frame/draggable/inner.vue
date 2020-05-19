@@ -54,7 +54,12 @@ export default {
 
 			let offset = +(this.$refs.ruler && (this.$refs.ruler.guideSize));
 
-			// TDOO: offsetWidth包含滚动条，clientWidth不包含滚动条（合理些，未测试）; 后期考虑悬浮滚动条
+			/**
+			 * TDOO: 判断是否有滚动条
+			 * offsetWidth包含滚动条
+			 * clientWidth不包含滚动条;
+			 * offsetWidth === clientWidth 时不含滚动条，不需要减去scrollerSize（合理些，未测试）
+			 */
 			let w = this.$el.offsetWidth - offset - this.scrollerSize;
 			let h = this.$el.offsetHeight - offset - this.zoomBarH - this.scrollerSize;
 
