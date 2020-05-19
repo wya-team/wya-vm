@@ -204,8 +204,12 @@ export default {
 			const offsetW = borderSize.left + borderSize.right + guideSize;
 			const offsetH = borderSize.top + borderSize.bottom + guideSize;
 
+			/**
+			 * TODO: 动态计算
+			 * 用于滚动距离避免重绘[动态计算canvasW时出现不绘制]，主要是元素拖动到画布以外，超过5000就不计算了
+			 */
 			let width = Math.max(
-				5000, // 用于滚动距离避免重绘[动态计算canvasW时出现不绘制]，主要是元素拖动到画布以外，超过5000就不计算了
+				5000,
 				frameW * scale + offsetW,
 				frameH * scale + offsetH,
 				clientW,
