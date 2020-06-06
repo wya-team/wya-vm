@@ -310,9 +310,10 @@ export default {
 				if (modules[mod].dataValidity) {
 					let error = modules[mod].dataValidity(data[i]);
 					if (error) {
+						let msg = error.msg || error.message || error.error || error; // 兼容验证器使用
 						this.$emit('error', { 
 							type: 'save', 
-							msg: `第${i + 1}个 - ${error.error}`, 
+							msg: `第${i + 1}个 - ${msg}`, 
 							index: i 
 						});
 						// 错误元素激活
