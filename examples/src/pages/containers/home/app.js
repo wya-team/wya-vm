@@ -18,5 +18,15 @@ export const homeConfig = [
 		path: '/home/sortable',
 		name: 'home-sortable',
 		component: () => import('./modules/home-sortable.vue')
+	},
+	{
+		path: '/home/async-sortable',
+		name: 'home-async-sortable',
+		component: () => import('./modules/home-async-sortable.vue')
+	},
+	{
+		path: '/home/async-draggable',
+		name: 'home-async-draggable',
+		component: () => import('./modules/home-async-draggable.vue')
 	}
 ];
