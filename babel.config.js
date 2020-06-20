@@ -6,9 +6,9 @@ module.exports = (api) => {
 	api.cache.forever();
 
 	return {
-		// compact: false,
 		presets: [
-			["@babel/preset-env", { "modules": false }]
+			// ["@babel/preset-env", { "modules": false }]
+			["@babel/preset-env"]
 		],
 		plugins: [
 			"@babel/plugin-proposal-export-namespace-from",

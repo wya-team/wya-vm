@@ -5,8 +5,8 @@ import buble from '@rollup/plugin-buble';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import babel from '@rollup/plugin-babel';
 
-import babel from 'rollup-plugin-babel';
 import { uglify } from 'rollup-plugin-uglify';
 import postcss from 'rollup-plugin-postcss';
 import vue from 'rollup-plugin-vue';
@@ -97,7 +97,7 @@ const mainConfig = {
 		// 使用babel，结合.babelrc
 		babel({ 
 			exclude: 'node_modules/**',
-			runtimeHelpers: true
+			babelHelpers: 'runtime'
 		}),
 		// 使用buble
 		buble(),
