@@ -125,6 +125,7 @@ export default {
 		},
 	},
 	data() {
+		// beforeCreate中无法获取props的值，created中会导致watch中immediate无效;
 		this.store = new Store(this, {
 			frameW: this.frameW,
 			frameH: this.frameH,

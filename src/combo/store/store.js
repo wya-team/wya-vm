@@ -157,6 +157,13 @@ class Store extends BaseWatcher {
 		}
 	}
 
+	/**
+	 * 基本不用, 资源默认回收（目前不存在定时器和事件监听）;
+	 */
+	destroy() {
+		this.$destroy();
+	}
+
 	commit(name, ...args) {
 		name = name.toUpperCase();
 
