@@ -1,5 +1,9 @@
 export const homeConfig = [
 	{
+		path: "/home", 
+		redirect: "/home/basic"
+	},
+	{
 		path: '/home/basic',
 		name: 'home-basic',
 		component: () => import('./modules/home-basic.vue')
