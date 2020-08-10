@@ -349,6 +349,20 @@ export default {
 			});
 
 			return true;
+		},
+
+		/**
+		 * TODO: 集成下载，还是项目中自行处理
+		 */
+		download() {
+
+		},
+
+		/**
+		 * TODO: 集成上传，还是项目中自行处理
+		 */
+		upload() {
+
 		}
 	},
 };
