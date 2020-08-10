@@ -31,10 +31,10 @@
 			<vc-button @click="loadData">
 				重置
 			</vc-button>
-			<vc-button @click="handleDownload">
+			<vc-button @click="$refs.combo.download()">
 				下载
 			</vc-button>
-			<vc-button @click="handleUpload">
+			<vc-button @click="$refs.combo.upload()">
 				上传
 			</vc-button>
 		</div>
@@ -156,50 +156,6 @@ export default {
 		},
 		handleError({ type, msg }) {
 			Message.error(msg);
-		},
-		handleDownload() {
-			const content = JSON.stringify(this.list, null, '\t');
-			const blob = new Blob([content], {
-				type: 'application/json;charset=UTF-8'
-			});
-
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.textContent = 'download json';
-			link.href = url;
-			link.download = 'data'; // moment().format('YYYY-MM-DD')
-			link.click();
-
-			URL.revokeObjectURL(url);
-		},
-		handleUpload() {
-			Modal.info({
-				title: '文件上传',
-				content: '上传JSON数据将覆盖当前画布，确认上传？',
-				onOk: () => {
-					const input = document.createElement('input');
-					input.type = 'file';
-					// 限定文件类型
-					input.accept = '.json';
-					input.click();
-
-					input.onchange = () => {
-						const file = input.files[0];
-
-						// FileReader实例
-						const reader = new FileReader();
-						reader.readAsText(file, 'UTF-8');
-						reader.onload = e => {
-							try {
-								this.list = JSON.parse(e.target.result);
-								// TODO: check rules
-							} catch (e) {
-								console.log(e);
-							}
-						};
-					};
-				}
-			});
 		}
 	},
 };

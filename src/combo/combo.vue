@@ -351,18 +351,44 @@ export default {
 			return true;
 		},
 
-		/**
-		 * TODO: 集成下载，还是项目中自行处理
-		 */
 		download() {
+			const content = JSON.stringify(this.dataSource, null, '\t');
+			const blob = new Blob([content], {
+				type: 'application/json;charset=UTF-8'
+			});
 
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.textContent = 'download json';
+			link.href = url;
+			link.download = 'data'; // moment().format('YYYY-MM-DD')
+			link.click();
+
+			URL.revokeObjectURL(url);
 		},
 
-		/**
-		 * TODO: 集成上传，还是项目中自行处理
-		 */
 		upload() {
+			const input = document.createElement('input');
+			input.type = 'file';
+			// 限定文件类型
+			input.accept = '.json';
+			input.click();
 
+			input.onchange = () => {
+				const file = input.files[0];
+
+				// FileReader实例
+				const reader = new FileReader();
+				reader.readAsText(file, 'UTF-8');
+				reader.onload = e => {
+					try {
+						let v = JSON.parse(e.target.result);
+						this.store.commit('INIT', v);
+					} catch (e) {
+						console.log(e);
+					}
+				};
+			};
 		}
 	},
 };

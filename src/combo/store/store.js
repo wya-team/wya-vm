@@ -19,6 +19,9 @@ class Store extends BaseWatcher {
 	}
 
 	mutations = {
+		/**
+		 * TODO: 增加对数据的合法性校正
+		 */
 		INIT(states, data) {
 			// 用户是否修改了数据或引用。TODO: 去掉isEqualWith
 			if (
