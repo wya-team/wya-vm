@@ -24,7 +24,7 @@
 			@activated="handleActivated"
 			@deactivated="handleDeactivated"
 			@change="handleChange"
-			@sort-end="$emit('sort-end')"
+			@sort-end="$emit('sort-end', arguments[0], arguments[1])"
 			@error="$emit('error', arguments[0])"
 		>
 			<template #frame-header>

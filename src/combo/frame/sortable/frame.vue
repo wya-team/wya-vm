@@ -240,7 +240,7 @@ export default {
 				history: true
 			});
 
-			this.$emit('sort-end');
+			this.$emit('sort-end', v, this.dataSource);
 		}
 	},
 };
