@@ -239,6 +239,8 @@ export default {
 				original: v,
 				history: true
 			});
+
+			this.$emit('sort-end');
 		}
 	},
 };
