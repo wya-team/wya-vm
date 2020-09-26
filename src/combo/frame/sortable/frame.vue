@@ -175,6 +175,15 @@ export default {
 				id,
 			};
 
+			// 计算是否允许插入
+			if (typeof result.insertion === 'function') {
+				let allow = result.insertion(rowIndex, this.dataSource);
+
+				if (!allow) {
+					return;
+				}
+			}
+
 			// 只能插入到第一个位置
 			switch (result.insertion) {
 				case 'first':
