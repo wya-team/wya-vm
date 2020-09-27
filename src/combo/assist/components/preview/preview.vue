@@ -29,7 +29,8 @@ export default {
 	name: 'vm-assist-preview',
 	provide() {
 		return {
-			getCtx: () => this
+			getVM: () => this,
+			getData: () => this.dataSource
 		};
 	},
 	components: {
