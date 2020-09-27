@@ -55,6 +55,11 @@ import './theme-dark.scss';
 
 export default {
 	name: 'vm-combo',
+	provide() {
+		return {
+			getCtx: () => this
+		};
+	},
 	components: {
 		// 会被注入vm-frame, vm-widget, vm-editor,
 	},
