@@ -57,7 +57,8 @@ export default {
 	name: 'vm-combo',
 	provide() {
 		return {
-			getCtx: () => this
+			getVM: () => this,
+			getData: () => this.dataSource
 		};
 	},
 	components: {
