@@ -27,6 +27,11 @@
 <script>
 export default {
 	name: 'vm-assist-preview',
+	provide() {
+		return {
+			getCtx: () => this
+		};
+	},
 	components: {
 		
 	},
