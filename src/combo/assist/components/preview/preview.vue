@@ -2,7 +2,7 @@
 	<div class="vm-assist-preview">
 		<div style="position: relative;">
 			<div 
-				v-for="(it) in dataSource" 
+				v-for="(it, index) in dataSource" 
 				:key="it.id" 
 				:style="isDraggable ? { 
 					position: 'absolute', 
@@ -18,6 +18,7 @@
 					:is="`vm-${it.module}-viewer`" 
 					v-bind="it"
 					:vm="vm"
+					:index="index"
 				/>
 			</div>
 		</div>
