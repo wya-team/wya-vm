@@ -1,5 +1,7 @@
 ## DEMO
 
+> 历史原因保持: closeable(vm中使用), closable(vc中使用)
+
 ### Draggable
 
 - [单独的拖拽](https://wya-team.github.io/wya-vm/examples/dist/home/draggable/alone)
