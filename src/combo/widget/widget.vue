@@ -6,7 +6,7 @@
 			</p>
 			<div v-if="showTip" class="vm-widget__tip">
 				<span class="vm-widget__icon-warn">!</span>
-				<p>可拖动数据组件到指定位置</p>
+				<p>请拖动下方组件到指定位置设置</p>
 				<span @click="showTip = !showTip">✕</span>
 			</div>
 			<div class="vm-widget__menu">
