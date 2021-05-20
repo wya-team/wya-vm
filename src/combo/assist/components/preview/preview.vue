@@ -8,6 +8,7 @@
 					position: 'absolute', 
 					width: `${it.w ? `${it.w * scale}px` : 'auto' }`, 
 					height: `${it.h ? `${it.h * scale}px` : 'auto' }`, 
+					borderRadius: `${it.borderRadius ? `${it.borderRadius * scale}px` : 'inherit' }`, 
 					left: `${it.x * scale}px`, 
 					top: `${it.y * scale}px`, 
 					transform: `rotate(${it.r}deg)`
