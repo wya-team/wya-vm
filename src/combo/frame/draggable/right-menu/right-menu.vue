@@ -28,11 +28,11 @@
 	</div>
 </template>
 <script>
-import { Portal, Icon } from '../../../vc';
-import { RIGHT_MENU_MAP, RIGHT_MENU_NAME_MAP } from '../../../utils/constants';
-import { $ } from '../../../utils/helper';
+import { Portal, Icon } from '../../../../vc';
+import { RIGHT_MENU_MAP, RIGHT_MENU_NAME_MAP } from '../../../../utils/constants';
+import { $ } from '../../../../utils/helper';
 
-export const config = {
+export default {
 	name: 'vm-right-menu',
 	components: {
 		'vc-icon': Icon
@@ -107,9 +107,6 @@ export const config = {
 		}
 	},
 };
-
-export default config;
-export const RightMenu = new Portal(config, { promise: false });
 
 </script>
 <style lang="scss">

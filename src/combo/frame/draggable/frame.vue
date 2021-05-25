@@ -133,7 +133,7 @@ import AlignLines from './align-lines.vue';
 import Inner from './inner.vue';
 import ZoomBar from './zoom-bar.vue';
 import Thumbnail from './thumbnail.vue';
-import { RightMenu } from './right-menu.vue';
+import RightMenu from './right-menu';
 import { getUid, cloneDeep, throttle } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
 
@@ -407,7 +407,6 @@ export default {
 
 				this.$emit('change', action);
 			};
-
 
 			// init
 			RightMenu.popup({ event, onSelect });
