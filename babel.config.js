@@ -26,7 +26,11 @@ module.exports = (api) => {
 			], 
 			// "@babel/plugin-external-helpers",
 			["@babel/plugin-proposal-decorators", { legacy: true }],
-			["@babel/plugin-proposal-class-properties", { loose: true }],
+			["@babel/plugin-proposal-class-properties", { 
+				"assumptions": {
+					"setPublicClassFields": true
+				}
+			}],
 			"transform-vue-jsx"
 		]
 	};

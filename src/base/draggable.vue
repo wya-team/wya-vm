@@ -411,7 +411,7 @@ export default {
 
 			// 内部管理
 			const regex = {
-				className: /is-([(top|right|-|bottom|left)]{2})/
+				className: /is-(top|right|bottom|left)(-(top|right|bottom|left)$|$)/
 			};
 
 			let path = e.path || (e.composedPath && e.composedPath()) || [];
@@ -758,7 +758,7 @@ $url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30
 		cursor: nwse-resize;
 		padding: 5px;
 	}
-	.is-bottom-left {
+	&.is-bottom-left {
 		bottom: 0;
 		left: 0;
 		cursor: nesw-resize;

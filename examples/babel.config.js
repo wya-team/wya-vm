@@ -26,7 +26,9 @@ module.exports = (api) => {
 			[
 				"@babel/plugin-proposal-class-properties",
 				{
-					"loose": true
+					"assumptions": {
+						"setPublicClassFields": true
+					}
 				}
 			],
 			[
