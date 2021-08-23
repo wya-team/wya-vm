@@ -28,7 +28,10 @@
 			>
 				<div :style="scrollStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
-					<slot v-if="scale === 1" name="frame-header" />
+					<div :style="scaleStyle">
+						<slot name="frame-header" />
+					</div>
+					
 					<div
 						ref="content"
 						:style="[contentStyle, frameStyle]"
@@ -84,10 +87,14 @@
 								:index="index"
 								:vm="vm"
 								v-bind="it"
+								:scale="scale"
+								@change="handleAttrChange(arguments[0], it)"
 							/>
 						</vm-draggable>
 					</div>
-					<slot v-if="scale === 1" name="frame-footer" />
+					<div :style="[scaleStyle, footerStyle]">
+						<slot name="frame-footer" />
+					</div>
 				</div>
 			</div>
 		</template>
@@ -134,7 +141,7 @@ import Inner from './inner.vue';
 import ZoomBar from './zoom-bar.vue';
 import Thumbnail from './thumbnail.vue';
 import RightMenu from './right-menu';
-import { getUid, cloneDeep, throttle } from '../../../utils/helper';
+import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
 
 export default {
@@ -247,6 +254,27 @@ export default {
 				height: `${this.height}px`,
 				transform: `scale(${this.scale})`,
 				transformOrigin: `0 0`,
+			};
+		},
+
+		/**
+		 * header / footer 缩放
+		 *
+		 * zoom:，原来的h是一同缩放的
+		 * transform占位依旧是原来的width和height, 需要 originSize * this.scale
+		 */
+		scaleStyle() {
+			return {
+				zoom: this.scale,
+			};
+		},
+
+		/**
+		 * 因为中间区域用了transform, 但没有改变height * scale, 所以footer用margin-top控制
+		 */
+		footerStyle() {
+			return {
+				marginTop: `${(this.scale - 1) * this.height / this.scale}px`
 			};
 		},
 
@@ -410,6 +438,36 @@ export default {
 
 			// init
 			RightMenu.popup({ event, onSelect });
+		},
+
+		/**
+		 * 从Viewer传递出来
+		 * id 和 recordChanged 这是内部字段
+		 */
+		handleAttrChange(opts = {}, it) {
+			if (typeof opts !== 'object') return;
+			const { id, recordChanged, ...rest } = opts;
+
+			for (let key in rest) {
+				let val = rest[key];
+				if (['x', 'y', 'z', 'r', 'w', 'h'].includes(key)) {
+					val = Number(val);
+				}
+
+				if (hasOwn(rest, key) && !valueIsNaN(val)) {
+					if (recordChanged === false) {
+						it[key] = val;
+					} else {
+						this.$emit('change', {
+							type: 'UPDATE',
+							id: id || it.id,
+							changed: {
+								[key]: val
+							}
+						});
+					}
+				}
+			}
 		}
 	},
 };

@@ -12,4 +12,5 @@ export { default as Option } from '@wya/vc/lib/option';
 export { default as Clipboard } from '@wya/vc/lib/clipboard';
 export { default as Utils } from '@wya/vc/lib/utils';
 export { default as Icon } from '@wya/vc/lib/icon';
+export { default as HtmlImg } from '@wya/vc/lib/html-img';
 export { Resize } from '@wya/vc/lib/utils';

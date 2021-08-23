@@ -81,6 +81,11 @@ class Store extends BaseWatcher {
 				original[key] = states.data[index][key];
 				states.data[index][key] = changed[key];
 			});
+
+			// 同步编辑数据
+			states.pagesEditor 
+				&& states.pagesEditor.id === id
+				&& this.resetCurrentEditor(states.data[index]);
 			
 			// 同步历史数据
 			this.updateHistory('UPDATE', { 

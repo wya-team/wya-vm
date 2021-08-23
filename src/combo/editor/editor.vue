@@ -67,10 +67,13 @@ export default {
 		/**
 		 * hack操作
 		 * 业务上避免使用该操作
+		 *
+		 * 从Viewer传递出来
+		 * id 和 recordChanged 这是内部字段
 		 */
 		handleChange(opts = {}) {
 			if (typeof opts !== 'object') return;
-			const { id, ...rest } = opts;
+			const { id, recordChanged, ...rest } = opts;
 
 			for (let key in rest) {
 				let val = rest[key];
@@ -78,13 +81,17 @@ export default {
 				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 
 				if (hasOwn(rest, key) && !valueIsNaN(val)) {
-					this.$emit('change', {
-						type: 'update',
-						id: id || this.currentValue.id,
-						changed: {
-							[key]: val
-						}
-					});
+					if (recordChanged === false) {
+						it[key] = val;
+					} else {
+						this.$emit('change', {
+							type: 'UPDATE',
+							id: it.id,
+							changed: {
+								[key]: val
+							}
+						});
+					}
 				}
 			}
 		},

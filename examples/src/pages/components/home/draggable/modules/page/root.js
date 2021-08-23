@@ -1,17 +1,9 @@
-
+import Viewer from './viewer.vue';
 import Editor from './editor.vue';
 
 export const page = {
 	module: "page",
-	Viewer: {
-		inheritAttrs: false,
-		render(h, props) {
-			// 测试修改其他模块失焦时（非同步修改），是否作用到page上
-			return (
-				<span>{ this.$attrs.name }</span>
-			);
-		}
-	},
+	Viewer,
 	Editor, 
 	// 初始数据
 	data: {

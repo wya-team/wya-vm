@@ -337,6 +337,25 @@ export default {
 			return true;
 		},
 
+		getImage(opts = {}) {
+			return new Promise((resolve, reject) => {
+				this.$options.previewManager.popup({
+					dataSource: cloneDeep(this.rebuildData),
+					styles: {
+						...this.frameStyle,
+						width: this.rebuildFrameW === 0 ? 'auto' : `${this.rebuildFrameW}px`,
+						height: this.rebuildFrameH === 0 ? 'auto' : `${this.rebuildFrameH}px`
+					},
+					className: 'vm-combo__frame',
+
+					expect: 'image',
+					imageOpts: opts,
+					onSure: resolve,
+					onClose: reject,
+				});
+			});
+		},
+
 		preview() {
 			if (this.rebuildData.length === 0) {
 				this.$emit('error', { 

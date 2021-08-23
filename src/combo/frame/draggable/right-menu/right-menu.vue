@@ -112,7 +112,7 @@ export default {
 <style lang="scss">
 .vm-right-menu {
 	position: fixed;
-	z-index: 999;
+	z-index: 1999;
 	width: 104px;
 	background: #444;
 	padding: 6px 0px;

@@ -37,6 +37,10 @@
 			<vc-button @click="$refs.combo.upload()">
 				上传
 			</vc-button>
+
+			<vc-button @click="handleClick">
+				图片
+			</vc-button>
 		</div>
 
 		<vm-combo 
@@ -92,7 +96,7 @@ export default {
 			showZoomBar: true,
 			showThumbnail: true,
 			showLines: false,
-			showSlots: false
+			showSlots: true
 		};
 	},
 	computed: {
@@ -156,6 +160,11 @@ export default {
 		},
 		handleError({ type, msg }) {
 			Message.error(msg);
+		},
+
+		async handleClick() {
+			const res = await this.$refs.combo.getImage();
+			console.log(res);
 		}
 	},
 };

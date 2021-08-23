@@ -1,30 +1,34 @@
 <template>
-	<div class="vm-assist-preview-popup">
+	<div class="vm-assist-preview-popup" :style="popupStyle">
 		<transition v-if="mask" :name="animate">
-			<div v-show="visible" class="vm-assist-preview-popup__mask" @click="handleClose" />
+			<div v-show="isActive" class="vm-assist-preview-popup__mask" @click="handleClose" />
 		</transition>
 		<transition v-if="mask" :name="animate">
-			<div v-show="visible" class="vm-assist-preview-popup__close" @click="handleClose">
+			<div v-show="isActive" class="vm-assist-preview-popup__close" @click="handleClose">
 				&#10005;
 			</div>
 		</transition>
 		<transition :name="animate">
-			<div v-show="visible" class="vm-assist-preview-popup__content">
-				<vm-preview 
-					:style="styles"
-					:data-source="dataSource" 
-					:mode="mode"
-				/>
+			<div v-show="isActive" class="vm-assist-preview-popup__content">
+				<component :is="componentType" ref="htmlImg">
+					<vm-preview 
+						:style="styles"
+						:data-source="dataSource" 
+						:mode="mode"
+					/>
+				</component>
 			</div>
 		</transition>
 	</div>
 </template>
 
 <script>
+import { HtmlImg } from '../../../../vc';
+
 export default {
 	name: 'vm-preview',
 	components: {
-		
+		'vc-html-img': HtmlImg
 	},
 	props: {
 		dataSource: Array,
@@ -45,30 +49,72 @@ export default {
 		mode: {
 			type: String,
 			default: 'draggable'
-		}
+		},
+
+		// download / image
+		expect: {
+			type: String,
+		},
+
+		imageOpts: Object
 	},
 	data() {
 		return {
-			visible: false,
+			isActive: false,
 			transform: `translate(-100px, -100px)`
 		};
 	},
 	computed: {
 		isDraggable() {
 			return this.mode === 'draggable';
+		},
+		useImageMode() {
+			return this.expect === 'image' || this.expect === 'download';
+		},
+
+		componentType() {
+			return this.useImageMode ? 'vc-html-img' : 'div';
+		},
+
+		popupStyle() {
+			if (this.useImageMode) {
+				return {
+					top: '100%',
+					bottom: 'unset'
+				};
+			}
+			return {};
 		}
 	},
 	watch: {
 		
 	},
 	mounted() {
-		this.visible = true;
+		this.isActive = true;
+		this.generateImage();
+		this.download();
 	},
-	updated() {
-	},
+
 	methods: {
+		async generateImage() {
+			if (this.expect !== 'image') return;
+			try {
+				const res = await this.$refs.htmlImg.getImage(this.imageOpts || {});
+
+				this.isActive = false;
+				this.$emit('sure', res);
+			} catch (e) {
+				this.isActive = false;
+				this.$emit('close', res);
+			}
+		},
+
+		download() {
+			// TODO
+		},
+
 		handleClose() {
-			this.visible = false;
+			this.isActive = false;
 			setTimeout(() => {
 				this.$emit('close');
 			}, 300); // 动画时间
