@@ -86,7 +86,7 @@ export default {
 					} else {
 						this.$emit('change', {
 							type: 'UPDATE',
-							id: it.id,
+							id: id || this.currentValue.id,
 							changed: {
 								[key]: val
 							}
