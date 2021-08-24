@@ -37,7 +37,7 @@
 				}"
 			/>
 			<div class="vm-basic-area-paint__content">
-				<div class="vm-basic-area-paint__operation">
+				<div class="vm-basic-area-paint__operation vm-hack-entry">
 					<vm-widget module="paint">
 						<vc-button @click="handleAdd">
 							添加热区

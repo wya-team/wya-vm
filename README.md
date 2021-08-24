@@ -127,6 +127,8 @@ dataValidity | 数据校验 | `Function` | -
 rebuilder | 针对data补全数据用 | `Object` `Function` | -
 
 > Viewer 组件会提供一个参数vm, vm.type用来告知当前是`frame`还是`preview`下的内容
+> Viewer, Editor 均是通过`$emit('change', {})`修改值，id: 指定数据块， recordHistory控制是否记录历史
+> Widget的组件通过`$emit('change', {})`向外发数据，可以通过组件Combo绑定widget-change来相应要修改的任务
 
 #### data
 
