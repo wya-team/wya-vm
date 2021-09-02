@@ -26,6 +26,7 @@
 				:style="wrapperStyle"
 				@scroll="handleScroll"
 			>
+				<vm-selection :client-w="clientW" :client-h="clientH" :border-size="borderSize" />
 				<div :style="scrollStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
 					<div :style="scaleStyle">
@@ -141,6 +142,7 @@ import Inner from './inner.vue';
 import ZoomBar from './zoom-bar.vue';
 import Thumbnail from './thumbnail.vue';
 import RightMenu from './right-menu';
+import Selection from './selection.vue';
 import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
 
@@ -153,6 +155,7 @@ export default {
 		'vm-inner': Inner,
 		'vm-zoom-bar': ZoomBar,
 		'vm-thumbnail': Thumbnail,
+		'vm-selection': Selection,
 	},
 	props: {
 		width: {

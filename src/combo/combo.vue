@@ -204,8 +204,8 @@ export default {
 		},
 
 		/**
-		 * 用户处理widget出来的数据, 暂时做不到记忆
-		 * TODO: 可能被废弃
+		 * 用户处理widget出来的数据
+		 * TODO: 支持记忆片段
 		 */
 		handleWidgetChange(module, ...rest) {
 			this.$emit('widget-change', module, ...rest);

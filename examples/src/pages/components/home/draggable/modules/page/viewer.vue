@@ -2,6 +2,7 @@
 	<div 
 		:style="[{ height: `${h ? `${h}px` : 'auto' }`, width: `${w ? `${w}px` : 'auto' }` }]"
 		class="vm-basic-page-viewer"
+		@mousedown="handleSelectionMouseDown"
 	>
 		<div 
 			class="vm-basic-page-viewer__bottom" 
@@ -40,12 +41,15 @@ export default {
 		scale: Number,
 		name: [Number, String],
 	},
-	created() {
-		// setTimeout(() => {
-		// 	this.$emit('change', { h: this.h + 1000, recordChanged: false });
-		// }, 1000);
-	},
 	methods: {
+		operateDOMEvents(type) {
+			let fn = type === 'add'
+				? document.documentElement.addEventListener
+				: document.documentElement.removeEventListener;
+
+			fn('mouseup', this.handleMouseUp);
+			fn('mousemove', this.handleMouseMove);
+		},
 
 		/**
 		 * 拖动点按下事件
@@ -57,10 +61,8 @@ export default {
 			this.startX = e.clientX;
 			this.startY = e.clientY;
 
-			document.addEventListener("mousemove", this.handleMouseMove);
-			document.addEventListener("mouseup", this.handleMouseUp);
-
 			this.handle = handle;
+			this.operateDOMEvents('add');
 		},
 
 		handleMouseMove(e) {
@@ -81,8 +83,15 @@ export default {
 		},
 
 		handleMouseUp() {
-			document.removeEventListener("mousemove", this.handleMouseMove);
-			document.removeEventListener("mouseup", this.handleMouseUp);
+			this.operateDOMEvents('remove');
+		},
+
+		/**
+		 * page区域
+		 */
+		handleSelectionMouseDown(e) {
+			const el = document.querySelector('.vm-selection');
+			el && el.dispatchEvent(new MouseEvent('mousedown', e));
 		}
 	}
 };
