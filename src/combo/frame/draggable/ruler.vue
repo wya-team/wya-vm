@@ -274,12 +274,13 @@ export default {
 		watchArr.forEach(item => this.$watch(item, hook));
 	},
 	mounted() {
-		this.$nextTick(() => {
+		// 兼容使用portal时，有300ms的动画延迟
+		setTimeout(() => {
 			this.canvas = [this.$refs.canvasX, this.$refs.canvasY];
 			this.offsetX = this.$refs.x.getBoundingClientRect().x;
 			this.offsetY = this.$refs.y.getBoundingClientRect().y;
 			this.refreshCanvas();
-		});
+		}, 300);
 	},
 
 	destroyed() {
@@ -288,7 +289,7 @@ export default {
 
 	methods: {
 		refreshCanvas() {
-			this.canvas.forEach(canvas => this.repaint(canvas));
+			this.canvas && this.canvas.forEach(canvas => this.repaint(canvas));
 		},
 
 		/**
