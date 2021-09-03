@@ -34,6 +34,10 @@ import { Slider, Select, Option } from '../../../vc';
 
 const OPTIONS = [
 	{
+		label: '10%',
+		value: 0.1
+	},
+	{
 		label: '50%',
 		value: 0.5
 	},
