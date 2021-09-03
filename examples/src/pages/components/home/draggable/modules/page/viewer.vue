@@ -63,26 +63,38 @@ export default {
 
 			this.handle = handle;
 			this.operateDOMEvents('add');
+
+			this.hasRecord = false;
 		},
 
 		handleMouseMove(e) {
+			if (!this.hasRecord) {
+				// 用于撤回操作
+				this.$emit('change', {
+					w: this.w, 
+					h: this.h, 
+					history: true
+				});
+				this.hasRecord = true;
+			}
 			let x = (e.clientX - this.startX) / this.scale;
 			let y = (e.clientY - this.startY) / this.scale;
 			let el = document.querySelector('.vm-frame-draggable__wrapper');
 
 			// TODO: 滚动
 			if (this.handle.includes('bottom')) {
-				this.$emit('change', { h: this.startH + y, recordChanged: false });
+				this.$emit('change', { h: this.startH + y, history: false });
 				el.scrollTop = el.scrollHeight - el.clientHeight;
 			}
 
 			if (this.handle.includes('right')) {
-				this.$emit('change', { w: this.startW + x, recordChanged: false });
+				this.$emit('change', { w: this.startW + x, history: false });
 				el.scrollLeft = el.scrollWidth - el.clientWidth;
 			}
 		},
 
 		handleMouseUp() {
+			// 用于撤回操作
 			this.operateDOMEvents('remove');
 		},
 

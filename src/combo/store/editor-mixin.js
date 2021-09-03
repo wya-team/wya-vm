@@ -56,6 +56,12 @@ export default {
 			this.states.currentEditor = editor
 				|| this.states.pageEditor 
 				|| null;
+
+
+			// 触发frameW, frameH的变更
+			if (editor && editor.module === PAGE_MOULE) {
+				this.states.pageEditor = editor;
+			}
 		},
 
 		/**

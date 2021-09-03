@@ -69,31 +69,30 @@ export default {
 		 * 业务上避免使用该操作
 		 *
 		 * 从Viewer传递出来
-		 * id 和 recordChanged 这是内部字段
+		 * id 和 history 这是内部字段
 		 */
 		handleChange(opts = {}) {
 			if (typeof opts !== 'object') return;
-			const { id, recordChanged, ...rest } = opts;
+			const { id, history, ...rest } = opts;
 
+			const changed = {};
 			for (let key in rest) {
 				let val = rest[key];
 
 				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 
 				if (hasOwn(rest, key) && !valueIsNaN(val)) {
-					if (recordChanged === false) {
-						it[key] = val;
-					} else {
-						this.$emit('change', {
-							type: 'UPDATE',
-							id: id || this.currentValue.id,
-							changed: {
-								[key]: val
-							}
-						});
-					}
+					changed[key] = val;
 				}
 			}
+
+			this.$emit('change', {
+				type: 'UPDATE',
+				id: id || this.currentValue.id,
+				changed,
+				// 是否记录历史
+				history
+			});
 		},
 
 		// 仅用于映射

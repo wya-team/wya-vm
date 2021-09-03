@@ -445,32 +445,30 @@ export default {
 
 		/**
 		 * 从Viewer传递出来
-		 * id 和 recordChanged 这是内部字段
+		 * id, history 这是内部字段
 		 */
 		handleAttrChange(opts = {}, it) {
 			if (typeof opts !== 'object') return;
-			const { id, recordChanged, ...rest } = opts;
+			const { id, history, ...rest } = opts;
 
+			const changed = {};
 			for (let key in rest) {
 				let val = rest[key];
-				if (['x', 'y', 'z', 'r', 'w', 'h'].includes(key)) {
-					val = Number(val);
-				}
+
+				['x', 'y', 'z', 'r', 'w', 'h'].includes(key) && (val = Number(val));
 
 				if (hasOwn(rest, key) && !valueIsNaN(val)) {
-					if (recordChanged === false) {
-						it[key] = val;
-					} else {
-						this.$emit('change', {
-							type: 'UPDATE',
-							id: id || it.id,
-							changed: {
-								[key]: val
-							}
-						});
-					}
+					changed[key] = val;
 				}
 			}
+
+			this.$emit('change', {
+				type: 'UPDATE',
+				id: id || it.id,
+				changed,
+				// 是否记录历史
+				history
+			});
 		}
 	},
 };

@@ -72,10 +72,12 @@ class Store extends BaseWatcher {
 		/**
 		 * changed 修改的字段
 		 * original 原始字段
+		 * history 为true时记录历史, 默认值true
 		 */
 		UPDATE(states, payload) {
-			let { id, changed, original = {} } = payload;
+			let { id, changed, original = {}, history = true } = payload;
 			let index = states.data.findIndex(i => i.id === id);
+			
 			// 只有original时已经同步修改
 			changed && Object.keys(changed).forEach(key => {
 				original[key] = states.data[index][key];
@@ -83,26 +85,28 @@ class Store extends BaseWatcher {
 			});
 
 			// 同步编辑数据
-			states.pagesEditor 
-				&& states.pagesEditor.id === id
+			states.currentEditor 
+				&& states.currentEditor.id === id
 				&& this.resetCurrentEditor(states.data[index]);
 			
 			// 同步历史数据
-			this.updateHistory('UPDATE', { 
-				...payload, 
-				original, 
-				data: states.data[index],
-				index
-			});
+			if (history) {
+				this.updateHistory('UPDATE', { 
+					...payload, 
+					original, 
+					data: states.data[index],
+					index
+				});
+			}
 		},
 
 		/**
 		 * changed 修改的字段（sorting）
 		 * original 原始字段（sorted）
-		 * history 为true时记录历史
+		 * history 为true时记录历史, 默认值true
 		 */
 		SORT(states, payload) {
-			let { changed, original, history } = payload;
+			let { changed, original, history = true } = payload;
 			// 是否记录历史
 			if (changed && changed[0] !== changed[1]) {
 
@@ -141,8 +145,8 @@ class Store extends BaseWatcher {
 			fn[type] && fn[type]();
 
 			// 同步编辑数据
-			states.pagesEditor 
-				&& states.pagesEditor.id === id
+			states.currentEditor 
+				&& states.currentEditor.id === id
 				&& this.resetCurrentEditor(states.data[index]);
 		},
 		REDO(states, payload) {
@@ -159,8 +163,8 @@ class Store extends BaseWatcher {
 			fn[type] && fn[type]();
 
 			// 同步编辑数据
-			states.pagesEditor 
-				&& states.pagesEditor.id === id
+			states.currentEditor 
+				&& states.currentEditor.id === id
 				&& this.resetCurrentEditor(states.data[index]);
 		}
 	}
