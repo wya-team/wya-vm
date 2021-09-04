@@ -5,7 +5,7 @@ export default {
 		return {
 			states: {
 				currentSnapshot: 0,
-				totalSnapshot: 0,
+				totalSnapshot: 0
 			}
 		};
 	},
@@ -13,17 +13,15 @@ export default {
 		this.historyData = [];
 	},
 	methods: {
-		/**
-		 * TODO: payload 支持数组（组的变化）
-		 */
 		updateHistory(type, payload) {
 			const { currentSnapshot, totalSnapshot } = this.states;
-			const { id, original, index, data } = payload;
+			const { id, original, index, data, selections } = payload;
 			const snapshot = {
 				type,
 				id,
 				original,
 				index,
+				selections,
 				data: cloneDeep(data),
 			};
 

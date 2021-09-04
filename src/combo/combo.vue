@@ -215,10 +215,13 @@ export default {
 		 * 数据变化
 		 */
 		handleChange({ type, ...payload }) {
-			const { id, original, changed } = payload; 
+			const { id, original, changed, selections } = payload; 
 			switch (type) {
 				case 'CREATE':
-				case 'UPDATE':
+					if (selections) {
+						throw new Error('[wya-vm/combo]: selections 传递会影响历史');
+					}
+				case 'UPDATE': // eslint-disable-line
 				case 'DELETE':
 					if (!id) {
 						throw new Error('[wya-vm/combo]: id 必传');
@@ -271,6 +274,9 @@ export default {
 			this.syncData();
 		},
 
+		/**
+		 * 撤回
+		 */
 		undo() {
 			let current = this.current - 1;
 			if (current < 0) {
@@ -280,10 +286,22 @@ export default {
 				});
 				return;
 			}
+
 			this.store.commit('UNDO', { current });
+
+			// 需要连续回滚
+			const { selections } = this.store.historyData[current];
+			if (selections) {
+				selections.forEach(() => {
+					this.store.commit('UNDO', { current: this.current - 1 });
+				});
+			}
 			this.syncData();
 		},
 
+		/**
+		 * 取消撤回
+		 */
 		redo() {
 			let current = this.current + 1;
 			if (current > this.total) {
@@ -293,7 +311,17 @@ export default {
 				});
 				return;
 			}
+
 			this.store.commit('REDO', { current });
+
+			// 需要连续回滚
+			const { selections } = this.store.historyData[current];
+			if (selections) {
+				selections.forEach(() => {
+					this.store.commit('REDO', { current: this.current + 1 });
+				});
+			}
+
 			this.syncData();
 		},
 

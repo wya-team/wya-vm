@@ -54,7 +54,7 @@ class Store extends BaseWatcher {
 			});
 		},
 		DELETE(states, payload) {
-			let { id } = payload;
+			let { id, selections } = payload;
 			let index = states.data.findIndex(i => i.id === id);
 			let data = states.data[index];
 
@@ -65,6 +65,7 @@ class Store extends BaseWatcher {
 			// 同步历史数据
 			this.updateHistory('DELETE', {
 				...payload,
+				selections,
 				data,
 				index
 			});
@@ -72,10 +73,11 @@ class Store extends BaseWatcher {
 		/**
 		 * changed 修改的字段
 		 * original 原始字段
+		 * selections: 表示组合选中的ids
 		 * history 为true时记录历史, 默认值true
 		 */
 		UPDATE(states, payload) {
-			let { id, changed, original = {}, history = true } = payload;
+			let { id, changed, original = {}, history = true, selections } = payload;
 			let index = states.data.findIndex(i => i.id === id);
 			
 			// 只有original时已经同步修改
@@ -93,6 +95,7 @@ class Store extends BaseWatcher {
 			if (history) {
 				this.updateHistory('UPDATE', { 
 					...payload, 
+					selections,
 					original, 
 					data: states.data[index],
 					index
@@ -103,6 +106,7 @@ class Store extends BaseWatcher {
 		/**
 		 * changed 修改的字段（sorting）
 		 * original 原始字段（sorted）
+		 * selections: 表示组合选中的ids
 		 * history 为true时记录历史, 默认值true
 		 */
 		SORT(states, payload) {

@@ -306,12 +306,12 @@ export default {
 			const { dataSource } = this;
 			return dataSource.reduce((pre, cur) => {
 				if (cur.module === SELECTION_MODULE) {
-					cur.modules.forEach((i) => {
-						if (pre[i]) {
+					cur.selections.forEach((id) => {
+						if (pre[id]) {
 							Logger.debug('@wya/vm: 重复选择');
 						}
 						// 可以优化
-						pre[i] = dataSource.find(j => j.id === i);
+						pre[id] = dataSource.find(i => i.id === id);
 					});
 				}
 				return pre;
@@ -420,14 +420,21 @@ export default {
 
 		/**
 		 * 删除
-		 * TODO: action为数组删除，而非逐个删除
 		 */
 		handleDelete(it) {
-			this.$emit('change', { type: 'DELETE', id: it.id });
+			this.$emit('change', { 
+				type: 'DELETE', 
+				id: it.id,
+				selections: it.selections,
+			});
 
 			if (it.module === SELECTION_MODULE) {
-				it.modules.forEach((id) => {
-					this.$emit('change', { type: 'DELETE', id });
+				it.selections.forEach((id) => {
+					this.$emit('change', { 
+						type: 'DELETE', 
+						id,
+						selections: it.selections,
+					});
 				});
 			}
 		},
@@ -623,7 +630,8 @@ export default {
 					disabled: false,
 					active: false,
 
-					modules: unselections.map(i => i.id),
+					// 内部分配字段
+					selections: unselections.map(i => i.id),
 					module: SELECTION_MODULE,
 					id
 				}
@@ -665,7 +673,7 @@ export default {
 				const diffX = it.x - this.dragOriginal[it.id].x;
 				const diffY = it.y - this.dragOriginal[it.id].y;
 
-				(diffX || diffY) && it.modules && it.modules.forEach(id => {
+				(diffX || diffY) && it.selections && it.selections.forEach(id => {
 					let { x, y, module } = this.selections[id];
 					if (!this.dragOriginal[id]) {
 						this.dragOriginal[id] = {
@@ -710,7 +718,7 @@ export default {
 
 		/**
 		 * 目标所有变化行为结束
-		 * TODO: 组合拖拽暂不支持记忆，action要支持数组, 根据original计算有所modules的初始位置
+		 * original 用于回到历史位置
 		 */
 		handleEnd(original, it, index) {
 			Logger.debug('end', it.module);
@@ -718,9 +726,28 @@ export default {
 				type: 'UPDATE',
 				id: it.id,
 				index,
-				original
+				original,
+				selections: it.selections,
 			};
 			this.$emit('change', action);
+
+			if (it.module === SELECTION_MODULE) {
+				const diffX = it.x - original.x;
+				const diffY = it.y - original.y;
+
+				(diffX || diffY) && it.selections && it.selections.forEach(id => {
+					let { x, y, module } = this.selections[id];
+					this.$emit('change', {
+						type: 'UPDATE',
+						id,
+						selections: it.selections,
+						original: {
+							x: x - diffX,
+							y: y - diffY
+						}
+					});
+				});
+			}
 		},
 	},
 };
