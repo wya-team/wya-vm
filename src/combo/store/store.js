@@ -54,7 +54,7 @@ class Store extends BaseWatcher {
 			});
 		},
 		DELETE(states, payload) {
-			let { id, selections } = payload;
+			let { id, revert } = payload;
 			let index = states.data.findIndex(i => i.id === id);
 			let data = states.data[index];
 
@@ -65,7 +65,7 @@ class Store extends BaseWatcher {
 			// 同步历史数据
 			this.updateHistory('DELETE', {
 				...payload,
-				selections,
+				revert,
 				data,
 				index
 			});
@@ -73,11 +73,11 @@ class Store extends BaseWatcher {
 		/**
 		 * changed 修改的字段
 		 * original 原始字段
-		 * selections: 表示组合选中的ids
+		 * revert: 表示撤回时额外回滚次数
 		 * history 为true时记录历史, 默认值true
 		 */
 		UPDATE(states, payload) {
-			let { id, changed, original = {}, history = true, selections } = payload;
+			let { id, changed, original = {}, history = true, revert } = payload;
 			let index = states.data.findIndex(i => i.id === id);
 			
 			// 只有original时已经同步修改
@@ -95,7 +95,7 @@ class Store extends BaseWatcher {
 			if (history) {
 				this.updateHistory('UPDATE', { 
 					...payload, 
-					selections,
+					revert,
 					original, 
 					data: states.data[index],
 					index
@@ -106,11 +106,11 @@ class Store extends BaseWatcher {
 		/**
 		 * changed 修改的字段（sorting）
 		 * original 原始字段（sorted）
-		 * selections: 表示组合选中的ids
+		 * revert: 表示撤回时额外回滚次数
 		 * history 为true时记录历史, 默认值true
 		 */
 		SORT(states, payload) {
-			let { changed, original, history = true } = payload;
+			let { changed, original, history = true, revert } = payload;
 			// 是否记录历史
 			if (changed && changed[0] !== changed[1]) {
 
@@ -131,10 +131,20 @@ class Store extends BaseWatcher {
 
 			// 同步历史数据
 			if (history && (!original || original[0] !== original[1])) {
-				this.updateHistory('SORT', { original: changed || original });
+				this.updateHistory('SORT', { original: changed || original, revert });
 			}
-			
 		},
+
+		/**
+		 * 仿操作
+		 * 仅仅用于记录，记录需要回滚的次数 
+		 * revert: 表示撤回时额外回滚次数
+		 */
+		DUMMY(states, payload) {
+			let { revert } = payload;
+			this.updateHistory('DUMMY', { ...payload, revert });
+		},
+
 		UNDO(states, payload) {
 			let { current } = payload;
 			states.currentSnapshot = current;
@@ -145,6 +155,7 @@ class Store extends BaseWatcher {
 				DELETE: () => states.data.splice(index, 0, data),
 				UPDATE: () => states.data.splice(index, 1, cloneDeep({ ...data, ...original })),
 				SORT: () => this.commit('SORT', { changed: original, history: false }),
+				DUMMY: () => {}
 			};
 			fn[type] && fn[type]();
 
@@ -163,6 +174,7 @@ class Store extends BaseWatcher {
 				DELETE: () => states.data.splice(index, 1),
 				UPDATE: () => states.data.splice(index, 1, data),
 				SORT: () => this.commit('SORT', { changed: original, history: false }),
+				DUMMY: () => {}
 			};
 			fn[type] && fn[type]();
 

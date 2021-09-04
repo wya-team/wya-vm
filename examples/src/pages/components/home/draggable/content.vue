@@ -143,6 +143,18 @@ export default {
 						"bg": "#FDE5E7",
 						"module": "echart",
 						"id": "vm-15724918705192"
+					},
+					{
+						"w": 200,
+						"h": 150,
+						"r": 0,
+						"x": 468,
+						"y": 250,
+						"z": 1,
+						"name": "样式3",
+						"bg": "#FDE5E7",
+						"module": "tpl",
+						"id": "vm-15724918705193"
 					}
 				];
 				Message.destroy();

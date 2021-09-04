@@ -49,7 +49,7 @@
 
 <script>
 import { Store, mapStates } from './store';
-import { cloneDeep, isEqualWith, getUid } from '../utils/helper';
+import { cloneDeep, isEqualWith, getUid, Logger } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
 import './theme-dark.scss';
 
@@ -215,11 +215,11 @@ export default {
 		 * 数据变化
 		 */
 		handleChange({ type, ...payload }) {
-			const { id, original, changed, selections } = payload; 
+			const { id, original, changed, revert } = payload; 
 			switch (type) {
 				case 'CREATE':
-					if (selections) {
-						throw new Error('[wya-vm/combo]: selections 传递会影响历史');
+					if (typeof revert !== 'undefined') {
+						throw new Error('[wya-vm/combo]: revert 传递会影响历史');
 					}
 				case 'UPDATE': // eslint-disable-line
 				case 'DELETE':
@@ -230,6 +230,11 @@ export default {
 				case 'SORT':
 					if (!original && !changed) {
 						throw new Error('[wya-vm/combo]: original/changed 必传');
+					}
+					break;
+				case 'DUMMY':
+					if (typeof revert === 'undefined') {
+						throw new Error('[wya-vm/combo]: revert 不能为undefined');
 					}
 					break;
 				default:
@@ -290,12 +295,15 @@ export default {
 			this.store.commit('UNDO', { current });
 
 			// 需要连续回滚
-			const { selections } = this.store.historyData[current];
-			if (selections) {
-				selections.forEach(() => {
+			const { revert } = this.store.historyData[this.current - 1];
+
+			if (revert) {
+				Array.from({ length: revert }).forEach(() => {
 					this.store.commit('UNDO', { current: this.current - 1 });
 				});
 			}
+
+			Logger.debug(`current: ${this.current}, total: ${this.total}`);
 			this.syncData();
 		},
 
@@ -315,13 +323,15 @@ export default {
 			this.store.commit('REDO', { current });
 
 			// 需要连续回滚
-			const { selections } = this.store.historyData[current];
-			if (selections) {
-				selections.forEach(() => {
+			const { revert } = this.store.historyData[this.current - 1];
+
+			if (revert) {
+				Array.from({ length: revert }).forEach(() => {
 					this.store.commit('REDO', { current: this.current + 1 });
 				});
 			}
 
+			Logger.debug(`current: ${this.current}, total: ${this.total}`);
 			this.syncData();
 		},
 

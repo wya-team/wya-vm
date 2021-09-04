@@ -76,7 +76,7 @@
 							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 							:resizable="it.resizable || typeof it.resizable === 'undefined'"
 							:prevent="false"
-							@delete="handleDelete(it)"
+							@delete="handleDeleteModule(it)"
 							@activated="handleActivated(arguments[0], it)"
 							@deactivated="handleDeactivated(arguments[0], it)"
 							@dragging="handleDragging(it)"
@@ -156,6 +156,8 @@ import RightMenu from './right-menu';
 import Selection from './selection.vue';
 import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn, allowSelection, Logger } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP, SELECTION_MODULE } from '../../../utils/constants';
+
+const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION } = RIGHT_MENU_MAP;
 
 export default {
 	name: 'vm-frame',
@@ -419,13 +421,129 @@ export default {
 		},
 
 		/**
+		 * 显示菜单
+		 */
+		handleShowMenu(event, it) {
+			if (it.module === PAGE_MOULE) return;
+			// init
+			RightMenu.popup({ 
+				event, 
+				onSelect: (type) => {
+					if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
+						const sortActions = [];
+						const selfActionInvoke = () => {
+							let action = this.selectMenu(type, it, false) || { type: 'DUMMY' };
+							this.$emit('change', {
+								...action,
+								revert: it.selections.length
+							});
+						};
+
+						// 自己再置底，元素再置底
+						type === BOTTOM && selfActionInvoke();
+						
+						// 根据z降序，相等则后面的z放在前面
+						let selections = this.dataSource
+							.slice()
+							.filter(v => it.selections.includes(v.id))
+							.reverse()
+							.sort((a, b) => b.z - a.z);
+
+						(type === TOP ? selections.reverse() : selections).forEach(data => {
+							let action = this.selectMenu(type, data, false) || { type: 'DUMMY' };
+							this.$emit('change', {
+								...action,
+								revert: it.selections.length
+							});
+						});
+
+						// 元素先置顶，自己再置顶
+						type === TOP && selfActionInvoke();
+						return;
+					}
+
+					this.selectMenu(type, it);
+				}, 
+				filter: (i) => {
+					if (it.module === SELECTION_MODULE) {
+						return [TOP, BOTTOM, DELETE, SELECTION].includes(i);
+					} else {
+						return i !== SELECTION;
+					}
+				} 
+			});
+		},
+
+		/**
+		 * 右键查单选项
+		 *
+		 * invoke: 表示是否需要emit执行, 否者返回action
+		 */
+		selectMenu(type, it, invoke = true) {
+			let changed;
+			// 根据z降序，相等则后面的z放在前面
+			let data = this.dataSource
+				.slice()
+				.filter(v => v.module !== PAGE_MOULE)
+				.reverse()
+				.sort((a, b) => b.z - a.z);
+			let index = data.findIndex(v => v.id === it.id);
+
+			if (type === DELETE && it.closeable === false) return;
+			let action;
+			switch (type) {
+				case TOP:
+					if (index === 0) return;
+					changed = data[0];
+					break;
+				case BOTTOM:
+					if (index === data.length - 1) return;
+					changed = data[data.length - 1];
+					break;
+				case UP:
+					if (index === 0) return;
+					changed = data[index - 1];
+					break;
+				case DOWN:
+					if (index === data.length - 1) return;
+					changed = data[index + 1];
+					break;
+				// 删除：由其他执行
+				case DELETE:
+					action = { type: 'DELETE', id: it.id };
+					if (!invoke) return action;
+					this.handleDeleteModule(it);
+					return;
+				// 取消选择：直接删除元素
+				case SELECTION:
+					action = { type: 'DELETE', id: it.id };
+					if (!invoke) return action;
+					this.$emit('change', action);
+					return;
+				default:
+					return;
+			}
+			let current = this.dataSource.findIndex(v => v.id === it.id);
+			let target = this.dataSource.findIndex(v => v.id === changed.id);
+
+			action = {
+				type: 'SORT',
+				changed: [current, target],
+				history: true,
+			};
+
+			if (!invoke) return action;
+			this.$emit('change', action);
+		},
+
+		/**
 		 * 删除
 		 */
-		handleDelete(it) {
+		handleDeleteModule(it) {
 			this.$emit('change', { 
 				type: 'DELETE', 
 				id: it.id,
-				selections: it.selections,
+				revert: it.selections && it.selections.length,
 			});
 
 			if (it.module === SELECTION_MODULE) {
@@ -433,82 +551,10 @@ export default {
 					this.$emit('change', { 
 						type: 'DELETE', 
 						id,
-						selections: it.selections,
+						revert: it.selections && it.selections.length,
 					});
 				});
 			}
-		},
-
-		/**
-		 * 显示菜单
-		 */
-		handleShowMenu(event, it) {
-			if (it.module === PAGE_MOULE) return;
-			const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION } = RIGHT_MENU_MAP;
-
-			const onSelect = type => {
-				let changed;
-				// 根据z降序，相等则后面的z放在前面
-				let data = this.dataSource
-					.slice()
-					.filter(v => v.module !== PAGE_MOULE)
-					.reverse()
-					.sort((a, b) => b.z - a.z);
-				let index = data.findIndex(v => v.id === it.id);
-
-
-				if (type === DELETE && it.closeable === false) return;
-				switch (type) {
-					case TOP:
-						if (index === 0) return;
-						changed = data[0];
-						break;
-					case BOTTOM:
-						if (index === data.length - 1) return;
-						changed = data[data.length - 1];
-						break;
-					case UP:
-						if (index === 0) return;
-						changed = data[index - 1];
-						break;
-					case DOWN:
-						if (index === data.length - 1) return;
-						changed = data[index + 1];
-						break;
-					case DELETE:
-						this.handleDelete(it);
-						return;
-					case SELECTION:
-						this.$emit('change', { type: 'DELETE', id: it.id });
-						return;
-					default:
-						return;
-				}
-
-				let current = this.dataSource.findIndex(v => v.id === it.id);
-				let target = this.dataSource.findIndex(v => v.id === changed.id);
-
-				let action = {
-					type: 'SORT',
-					changed: [current, target],
-					history: true
-				};
-
-				this.$emit('change', action);
-			};
-
-			// init
-			RightMenu.popup({ 
-				event, 
-				onSelect, 
-				filter: (i) => {
-					if (it.module === SELECTION_MODULE) {
-						return [DELETE, SELECTION].includes(i);
-					} else {
-						return i !== SELECTION;
-					}
-				} 
-			});
 		},
 
 		/**
@@ -727,7 +773,7 @@ export default {
 				id: it.id,
 				index,
 				original,
-				selections: it.selections,
+				revert: it.selections && it.selections.length,
 			};
 			this.$emit('change', action);
 
@@ -740,7 +786,7 @@ export default {
 					this.$emit('change', {
 						type: 'UPDATE',
 						id,
-						selections: it.selections,
+						revert: it.selections && it.selections.length,
 						original: {
 							x: x - diffX,
 							y: y - diffY

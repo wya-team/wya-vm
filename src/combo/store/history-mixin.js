@@ -15,13 +15,13 @@ export default {
 	methods: {
 		updateHistory(type, payload) {
 			const { currentSnapshot, totalSnapshot } = this.states;
-			const { id, original, index, data, selections } = payload;
+			const { id, original, index, data, revert } = payload;
 			const snapshot = {
 				type,
 				id,
 				original,
 				index,
-				selections,
+				revert,
 				data: cloneDeep(data),
 			};
 
