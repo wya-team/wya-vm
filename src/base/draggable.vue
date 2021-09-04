@@ -392,7 +392,7 @@ export default {
 					this.operateDOMEvents('add');
 
 					this.isActive = true;
-					this.$emit('activated');
+					this.$emit('activated', e);
 				}
 				this.draggable && (this.isDraging = true);
 			}
@@ -625,15 +625,15 @@ export default {
 			}
 			if (this.isRotating) {
 				this.isRotating = false;
-				this.$emit('rotate-end');
+				this.beforeStatus && this.$emit('rotate-end');
 			}
 			if (this.isResizing) {
 				this.isResizing = false;
-				this.$emit('resize-end');
+				this.beforeStatus && this.$emit('resize-end');
 			}
 			if (this.isDraging) {
 				this.isDraging = false;
-				this.$emit('drag-end');
+				this.beforeStatus && this.$emit('drag-end');
 			}
 			if (this.beforeStatus) {
 				this.$emit('end', this.beforeStatus);

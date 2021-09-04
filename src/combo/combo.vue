@@ -195,7 +195,7 @@ export default {
 		/**
 		 * draggable
 		 */
-		handleActivated(it) {
+		handleActivated(e, it) {
 			this.store.resetCurrentEditor(it);
 		},
 
@@ -215,9 +215,7 @@ export default {
 		 * 数据变化
 		 */
 		handleChange({ type, ...payload }) {
-
 			const { id, original, changed } = payload; 
-
 			switch (type) {
 				case 'CREATE':
 				case 'UPDATE':

@@ -15,12 +15,22 @@ export const SORT_IN_FRAME = "@wya/vm";
  */
 export const PAGE_MOULE = 'page';
 
+/**
+ * 组合功能
+ */
+export const SELECTION_MODULE = '@wya/vm/selection';
+
+export const IS_SERVER = typeof window !== 'undefined';
+export const DEBUG = process.env.NODE_ENV === 'development' || (IS_SERVER && window.location.search.includes('_vm_debug_'));
+
 export const RIGHT_MENU_MAP = {
 	TOP: 'TOP',
 	BOTTOM: 'BOTTOM',
 	UP: 'UP',
 	DOWN: 'DOWN',
 	DELETE: 'DELETE',
+	SELECTION: 'SELECTION',
+	// LOCK: 'LOCK'
 };
 
 export const RIGHT_MENU_NAME_MAP = {
@@ -29,4 +39,6 @@ export const RIGHT_MENU_NAME_MAP = {
 	UP: '上移一层',
 	DOWN: '下移一层',
 	DELETE: '删除',
+	SELECTION: '取消组合',
+	// LOCK: '锁定'
 };

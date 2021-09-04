@@ -120,7 +120,7 @@ export default {
 			this.operateDOMEvents('remove');
 
 			let x = this.startX > this.moveX ? this.moveX : this.startX;
-			let y = this.startX > this.moveX ? this.moveY : this.startY;
+			let y = this.startY > this.moveY ? this.moveY : this.startY;
 			let w = Math.abs(this.startX - this.moveX);
 			let h = Math.abs(this.startY - this.moveY);
 			// 初始位置，宽高
@@ -128,7 +128,7 @@ export default {
 				x,
 				y,
 				w,
-				h 
+				h
 			});
 			this.startX = 0;
 			this.startY = 0;

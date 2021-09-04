@@ -26,10 +26,15 @@
 				:style="wrapperStyle"
 				@scroll="handleScroll"
 			>
-				<vm-selection :client-w="clientW" :client-h="clientH" :border-size="borderSize" />
+				<vm-selection 
+					:client-w="clientW" 
+					:client-h="clientH" 
+					:border-size="borderSize"
+					@selection="handleSelection" 
+				/>
 				<div :style="scrollStyle">
 					<!-- 以上仅辅助Frame，所以frameStyle作用在content上 -->
-					<div :style="scaleStyle">
+					<div ref="header" :style="scaleStyle">
 						<slot name="frame-header" />
 					</div>
 					
@@ -56,7 +61,7 @@
 							:r.sync="it.r"
 							:module="it.module"
 							:parent="it.parent"
-							:disabled="it.disabled"
+							:disabled="it.disabled || !!selections[it.id]"
 							:handles="it.handles"
 							:min-w="it.minW"
 							:min-h="it.minH"
@@ -71,26 +76,32 @@
 							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 							:resizable="it.resizable || typeof it.resizable === 'undefined'"
 							:prevent="false"
-							@activated="$emit('activated', it)"
-							@deactivated="$emit('deactivated', arguments[0], it)"
-							@dragging="$emit('dragging', it)"
+							@delete="handleDelete(it)"
+							@activated="handleActivated(arguments[0], it)"
+							@deactivated="handleDeactivated(arguments[0], it)"
+							@dragging="handleDragging(it)"
 							@resizing="$emit('resizing', it)"
 							@rotating="$emit('rotating', it)"
 							@resize-end="$emit('resize-end', it)"
-							@drag-end="$emit('drag-end', it)"
-							@delete="$emit('change', { type: 'DELETE', id: it.id })"
-							@end="handleEnd(arguments[0], it.id, index)"
+							@drag-end="handleDragEnd(it)"
+							@end="handleEnd(arguments[0], it, index)"
 							@contextmenu.prevent.native="handleShowMenu($event, it)"
 						>
-							<!-- vm-type让组件内部处理如何渲染或其他操作 -->
-							<component
-								:is="`vm-${it.module}-viewer`"
-								:index="index"
-								:vm="vm"
-								v-bind="it"
-								:scale="scale"
-								@change="handleAttrChange(arguments[0], it)"
-							/>
+							<template v-if="it.module !== SELECTION_MODULE">
+								<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+								<component
+									:is="`vm-${it.module}-viewer`"
+									:index="index"
+									:vm="vm"
+									v-bind="it"
+									:scale="scale"
+									@change="handleAttrChange(arguments[0], it)"
+								/>
+							</template>
+							<template v-else>
+								<!-- 组合拖拽 -->
+								<div style="width: 100%; height: 100%" />
+							</template>
 						</vm-draggable>
 					</div>
 					<div :style="[scaleStyle, footerStyle]">
@@ -143,8 +154,8 @@ import ZoomBar from './zoom-bar.vue';
 import Thumbnail from './thumbnail.vue';
 import RightMenu from './right-menu';
 import Selection from './selection.vue';
-import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn } from '../../../utils/helper';
-import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP } from '../../../utils/constants';
+import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn, allowSelection, Logger } from '../../../utils/helper';
+import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP, SELECTION_MODULE } from '../../../utils/constants';
 
 export default {
 	name: 'vm-frame',
@@ -189,6 +200,7 @@ export default {
 	},
 	data() {
 		return {
+			SELECTION_MODULE,
 			vm: {
 				type: 'frame'
 			},
@@ -285,8 +297,32 @@ export default {
 			return {
 				'is-dark': this.theme === 'dark'
 			};
+		},
+
+		/**
+		 * 被选择的ids
+		 */
+		selections() {
+			const { dataSource } = this;
+			return dataSource.reduce((pre, cur) => {
+				if (cur.module === SELECTION_MODULE) {
+					cur.modules.forEach((i) => {
+						if (pre[i]) {
+							Logger.debug('@wya/vm: 重复选择');
+						}
+						// 可以优化
+						pre[i] = dataSource.find(j => j.id === i);
+					});
+				}
+				return pre;
+			}, {});
 		}
 	},
+
+	created() {
+		this.dragOriginal = {};
+	},
+
 	methods: {
 		/**
 		 * 1. 自适应布局
@@ -316,8 +352,9 @@ export default {
 		},
 
 		handleDrop(e) {
-			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME)) || {};
-			let result = this.$parent.$options.modules[module];
+			let result;
+			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME) || '') || {};
+			result = this.$parent.$options.modules[module];
 			// 不存在的模块
 			if (!result) return;
 			if (result.max && result.max <= this.dataSource.filter(i => i.module === module).length) {
@@ -366,15 +403,7 @@ export default {
 			// 新元素处于激活状态
 			this.setActived(rowIndex);
 		},
-		handleEnd(original, id, index) {
-			let action = {
-				type: 'UPDATE',
-				id,
-				index,
-				original
-			};
-			this.$emit('change', action);
-		},
+
 		/**
 		 * index因为都是最后一个插入
 		 * 所以不用像sortable/frame.vue一样做判断
@@ -388,8 +417,28 @@ export default {
 				}
 			});
 		},
+
+		/**
+		 * 删除
+		 * TODO: action为数组删除，而非逐个删除
+		 */
+		handleDelete(it) {
+			this.$emit('change', { type: 'DELETE', id: it.id });
+
+			if (it.module === SELECTION_MODULE) {
+				it.modules.forEach((id) => {
+					this.$emit('change', { type: 'DELETE', id });
+				});
+			}
+		},
+
+		/**
+		 * 显示菜单
+		 */
 		handleShowMenu(event, it) {
 			if (it.module === PAGE_MOULE) return;
+			const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION } = RIGHT_MENU_MAP;
+
 			const onSelect = type => {
 				let changed;
 				// 根据z降序，相等则后面的z放在前面
@@ -400,9 +449,8 @@ export default {
 					.sort((a, b) => b.z - a.z);
 				let index = data.findIndex(v => v.id === it.id);
 
-				const { TOP, BOTTOM, UP, DOWN, DELETE } = RIGHT_MENU_MAP;
 
-				if (type === DELETE && !it.closeable) return;
+				if (type === DELETE && it.closeable === false) return;
 				switch (type) {
 					case TOP:
 						if (index === 0) return;
@@ -421,6 +469,9 @@ export default {
 						changed = data[index + 1];
 						break;
 					case DELETE:
+						this.handleDelete(it);
+						return;
+					case SELECTION:
 						this.$emit('change', { type: 'DELETE', id: it.id });
 						return;
 					default:
@@ -440,7 +491,17 @@ export default {
 			};
 
 			// init
-			RightMenu.popup({ event, onSelect });
+			RightMenu.popup({ 
+				event, 
+				onSelect, 
+				filter: (i) => {
+					if (it.module === SELECTION_MODULE) {
+						return [DELETE, SELECTION].includes(i);
+					} else {
+						return i !== SELECTION;
+					}
+				} 
+			});
 		},
 
 		/**
@@ -469,7 +530,198 @@ export default {
 				// 是否记录历史
 				history
 			});
-		}
+		},
+
+		/**
+		 * 多选选中
+		 */
+		handleSelection(rect) {
+			const { dataSource, selections, scale, borderSize } = this;
+			const headerH = this.$refs.header ? this.$refs.header.clientHeight : 0;
+			const $rect = {
+				x: this.scrollLeft + (rect.x - borderSize.left) / scale,
+				y: this.scrollTop + (rect.y - borderSize.top) / scale - headerH,
+				w: rect.w / scale,
+				h: rect.h / scale,
+			};
+
+			const unselections = dataSource.filter(i => (
+				i.module !== PAGE_MOULE 
+					&& i.module !== SELECTION_MODULE
+					&& !i.disabled
+					&& !selections[i.id]
+					&& allowSelection(i, $rect)
+			));
+
+			// 当且只有一个元素未选中或有selectionModules在这个区域内
+			if (unselections.length <= 1) {
+				let rowIndex = 0;
+				const selectionModules = dataSource.filter(i => (
+					i.module === SELECTION_MODULE 
+					&& allowSelection(i, $rect)
+				));
+
+				if (unselections.length) {
+					rowIndex = dataSource.findIndex(i => i.id === unselections[0].id);
+				}
+
+				// 找到最上面一层
+				if (selectionModules.length) {
+					rowIndex = Math.max(
+						rowIndex, 
+						...selectionModules.map(i => dataSource.findIndex(j => j.id === i.id))
+					);
+				}
+
+				// 激活状态
+				rowIndex && this.setActived(rowIndex);
+				return;
+			}
+
+			let id = getUid();
+			let rowIndex = dataSource.length;
+			const info = unselections.reduce((pre, cur) => {
+				pre.xs.push(cur.x);
+				pre.xws.push(cur.x + cur.w);
+				pre.ys.push(cur.y);
+				pre.yhs.push(cur.y + cur.h);
+				pre.zs.push(cur.z);
+				pre.parent && (pre.parent = cur.parent);
+				return pre;
+			}, {
+				xs: [],
+				xws: [],
+				ys: [],
+				yhs: [],
+				zs: [],
+				parent: true
+			});
+			let minX = Math.min(...info.xs);
+			let maxX = Math.max(...info.xws);
+
+			let minY = Math.min(...info.ys);
+			let maxY = Math.max(...info.yhs);
+
+			let action = {
+				type: 'CREATE',
+				index: rowIndex,
+				id,
+				data: {
+					x: minX,
+					y: minY,
+					w: maxX - minX,
+					h: maxY - minY,
+					z: Math.max(...info.zs),
+					r: 0,
+
+					parent: info.parent,
+					rotatable: false,
+					resizable: false,
+					closeable: true,
+
+					// 用于表示锁定
+					disabled: false,
+					active: false,
+
+					modules: unselections.map(i => i.id),
+					module: SELECTION_MODULE,
+					id
+				}
+			};
+
+			this.$emit('change', action);
+			// 新元素处于激活状态
+			this.setActived(rowIndex);
+		},
+
+		/**
+		 * 目标被激活
+		 */
+		handleActivated(e, it) {
+			Logger.debug('activated', it.module);
+			this.$emit('activated', e, it);
+			if (it.module === SELECTION_MODULE) {
+				this.dragOriginal[it.id] = {
+					x: it.x,
+					y: it.y
+				};
+			}
+		},
+
+		/**
+		 * 目标失活
+		 */
+		handleDeactivated(e, it) {
+			Logger.debug('deactivated', it.module);
+			this.$emit('deactivated', e, it);
+		},
+
+		/**
+		 * 目标被拖动
+		 */
+		handleDragging(it) {
+			this.$emit('dragging', it);
+			if (it.module === SELECTION_MODULE) {
+				const diffX = it.x - this.dragOriginal[it.id].x;
+				const diffY = it.y - this.dragOriginal[it.id].y;
+
+				(diffX || diffY) && it.modules && it.modules.forEach(id => {
+					let { x, y, module } = this.selections[id];
+					if (!this.dragOriginal[id]) {
+						this.dragOriginal[id] = {
+							x,
+							y
+						};
+					}
+					x = this.dragOriginal[id].x + diffX;
+					y = this.dragOriginal[id].y + diffY;
+
+					this.$emit('change', {
+						type: 'UPDATE',
+						id,
+						changed: {
+							x,
+							y
+						},
+						// 是否记录历史
+						history: false
+					});
+				});
+			}
+		},
+
+		/**
+		 * 目标拖动结束
+		 */
+		handleDragEnd(it) {
+			Logger.debug('drag-end', it.module);
+			this.$emit('drag-end', it);
+			if (it.module === SELECTION_MODULE) {
+				this.dragOriginal = {};
+
+				// 用于激活状态下再次拖拽
+				this.dragOriginal[it.id] = {
+					x: it.x,
+					y: it.y
+				};
+			}
+		},
+
+
+		/**
+		 * 目标所有变化行为结束
+		 * TODO: 组合拖拽暂不支持记忆，action要支持数组, 根据original计算有所modules的初始位置
+		 */
+		handleEnd(original, it, index) {
+			Logger.debug('end', it.module);
+			let action = {
+				type: 'UPDATE',
+				id: it.id,
+				index,
+				original
+			};
+			this.$emit('change', action);
+		},
 	},
 };
 </script>

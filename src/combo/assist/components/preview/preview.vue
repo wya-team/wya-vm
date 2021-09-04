@@ -15,18 +15,27 @@
 				} : {} "
 				@click.alt.exact="handleClick(it.id)"
 			>
-				<component
-					:is="`vm-${it.module}-viewer`" 
-					v-bind="it"
-					:vm="vm"
-					:index="index"
-				/>
+				<template v-if="it.module !== SELECTION_MODULE">
+					<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+					<component
+						:is="`vm-${it.module}-viewer`" 
+						v-bind="it"
+						:vm="vm"
+						:index="index"
+					/>
+				</template>
+				<template v-else>
+					<!-- 组合拖拽 -->
+					<div />
+				</template>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import { SELECTION_MODULE } from '../../../../utils/constants';
+
 export default {
 	name: 'vm-assist-preview',
 	provide() {
@@ -45,6 +54,7 @@ export default {
 	},
 	data() {
 		return {
+			SELECTION_MODULE,
 			vm: {
 				type: 'preview'
 			}

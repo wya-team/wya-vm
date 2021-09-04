@@ -1,5 +1,6 @@
 export { kebabCase, isEqualWith, cloneDeep, throttle, debounce } from 'lodash';
 export { $ } from '@wya/utils';
+import { DEBUG } from './constants';
 /**
  * 判断浏览器是否支持passive, 默认preventDefault无效
  */
@@ -54,4 +55,36 @@ export const eleInRegExp = (el, exceptions) => {
 		}
 	}
 	return false;
+};
+
+
+const contain = (areaA, areaB) => {
+	let areaAEndX = areaA.x + areaA.w;
+	let areaAEndY = areaA.y + areaA.h;
+
+	let areaBEndX = areaB.x + areaB.w;
+	let areaBEndY = areaB.y + areaB.h;
+
+	// 四个点 有一个点在，就是包含
+	if (
+		(
+			(areaAEndY >= areaB.y && areaAEndY <= areaBEndY) 
+			|| (areaA.y >= areaB.y && areaA.y <= areaBEndY)
+		)
+		&& (
+			(areaA.x >= areaB.x && areaA.x <= areaBEndX) 
+			|| (areaAEndX >= areaB.x && areaAEndX <= areaBEndX)
+		)
+	) {
+		return true;
+	}
+	return false;
+};
+export const allowSelection = (a, b) => contain(a, b) || contain(b, a);
+
+export const Logger = {
+	...console,
+	debug: (...rest) => {
+		DEBUG && console.log(`%c [@wya/vm]`, 'color: red; font-weight: bold', ...rest);
+	}
 };

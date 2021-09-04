@@ -6,19 +6,27 @@
 	>
 		<div class="vm-editor__wrapper">
 			<!-- <div class="vm-editor__arrow" /> -->
-			<component
-				:is="`vm-${currentValue.module}-editor`"
-				ref="target"
-				:key="currentValue.id"
-				v-bind.sync="currentValue"
-				@change="handleChange"
-			/>
+			<template v-if="currentValue.module !== SELECTION_MODULE">
+				<!-- vm-type让组件内部处理如何渲染或其他操作 -->
+				<component
+					:is="`vm-${currentValue.module}-editor`"
+					ref="target"
+					:key="currentValue.id"
+					v-bind.sync="currentValue"
+					@change="handleChange"
+				/>
+			</template>
+			<template v-else>
+				<!-- 组合拖拽 -->
+				<div />
+			</template>
 		</div>
 	</div>
 </template>
 
 <script>
 import { valueIsNaN, hasOwn, getUid, debounce } from "../../utils/helper";
+import { SELECTION_MODULE } from "../../utils/constants";
 
 export default {
 	name: 'vm-editor',
@@ -34,6 +42,7 @@ export default {
 	},
 	data() {
 		return {
+			SELECTION_MODULE,
 			currentValue: this.value,
 		};
 	},

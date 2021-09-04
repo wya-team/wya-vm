@@ -39,6 +39,12 @@ export default {
 	},
 	props: {
 		event: MouseEvent,
+		filter: {
+			type: Function,
+			default() {
+				return () => true;
+			}
+		},
 		onSelect: {
 			type: Function,
 			default() {
@@ -54,6 +60,7 @@ export default {
 					UP: 'p-move-up',
 					DOWN: 'p-move-down',
 					DELETE: 'p-delete2',
+					SELECTION: 'p-line'
 				};
 			}
 		}
@@ -63,7 +70,7 @@ export default {
 			visible: false,
 			wrapHeight: 175,
 			menuName: RIGHT_MENU_NAME_MAP,
-			menu: Object.keys(RIGHT_MENU_MAP).map((key) => RIGHT_MENU_MAP[key])
+			menu: Object.keys(RIGHT_MENU_MAP).map((key) => RIGHT_MENU_MAP[key]).filter(this.filter)
 		};
 	},
 	computed: {

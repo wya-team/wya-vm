@@ -102,6 +102,8 @@ export default {
 		 * page区域
 		 */
 		handleSelectionMouseDown(e) {
+			e.stopPropagation(); // 阻止page被设置为activited
+
 			const el = document.querySelector('.vm-selection');
 			el && el.dispatchEvent(new MouseEvent('mousedown', e));
 		}

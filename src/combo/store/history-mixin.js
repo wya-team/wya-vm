@@ -13,6 +13,9 @@ export default {
 		this.historyData = [];
 	},
 	methods: {
+		/**
+		 * TODO: payload 支持数组（组的变化）
+		 */
 		updateHistory(type, payload) {
 			const { currentSnapshot, totalSnapshot } = this.states;
 			const { id, original, index, data } = payload;
