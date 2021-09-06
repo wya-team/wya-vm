@@ -113,7 +113,6 @@ class Store extends BaseWatcher {
 			let { changed, original, history = true, revert } = payload;
 			// 是否记录历史
 			if (changed && changed[0] !== changed[1]) {
-
 				let current = states.data[changed[0]];
 				let target = states.data[changed[1]];
 
@@ -125,7 +124,9 @@ class Store extends BaseWatcher {
 					current.z = target.z;
 				}
 
+				// 插入, 如果在目标元素之后插入，插入位置+1;
 				states.data.splice(changed[1] + (changed[0] < changed[1]), 0, current);
+				// 删除自身, 如果在之前插入，删除位置+1;
 				states.data.splice(changed[0] + (changed[0] > changed[1]), 1);
 			}
 
@@ -154,7 +155,7 @@ class Store extends BaseWatcher {
 				CREATE: () => states.data.splice(index, 1),
 				DELETE: () => states.data.splice(index, 0, data),
 				UPDATE: () => states.data.splice(index, 1, cloneDeep({ ...data, ...original })),
-				SORT: () => this.commit('SORT', { changed: original, history: false }),
+				SORT: () => this.commit('SORT', { changed: original.slice().reverse(), history: false }),
 				DUMMY: () => {}
 			};
 			fn[type] && fn[type]();
@@ -170,7 +171,7 @@ class Store extends BaseWatcher {
 
 			let { type, id, data, index, original } = this.historyData[current - 1] || {};
 			let fn = {
-				CREATE: () => states.data.splice(index, 1, data),
+				CREATE: () => states.data.splice(index, 0, data),
 				DELETE: () => states.data.splice(index, 1),
 				UPDATE: () => states.data.splice(index, 1, data),
 				SORT: () => this.commit('SORT', { changed: original, history: false }),

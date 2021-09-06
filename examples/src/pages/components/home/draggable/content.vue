@@ -115,7 +115,7 @@ export default {
 			setTimeout(() => {
 				this.list = [
 					{
-						id: `vc-page-15724918705193`,
+						id: `PAGE`,
 						module: 'page',
 						w: window.screen.width,
 						h: window.screen.height,
@@ -130,7 +130,7 @@ export default {
 						"name": "样式1",
 						"bg": "#E6E8FF",
 						"module": "echart",
-						"id": "vm-15724918705191"
+						"id": "A"
 					},
 					{
 						"w": 200,
@@ -142,7 +142,7 @@ export default {
 						"name": "样式2",
 						"bg": "#FDE5E7",
 						"module": "echart",
-						"id": "vm-15724918705192"
+						"id": "B"
 					},
 					{
 						"w": 200,
@@ -154,7 +154,7 @@ export default {
 						"name": "样式3",
 						"bg": "#FDE5E7",
 						"module": "tpl",
-						"id": "vm-15724918705193"
+						"id": "C"
 					}
 				];
 				Message.destroy();

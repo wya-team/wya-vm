@@ -430,7 +430,7 @@ export default {
 				event, 
 				onSelect: (type) => {
 					if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
-						const sortActions = [];
+						const oldSortIds = this.dataSource.map(i => i.id);
 						const selfActionInvoke = () => {
 							let action = this.selectMenu(type, it, false) || { type: 'DUMMY' };
 							this.$emit('change', {
@@ -459,6 +459,18 @@ export default {
 
 						// 元素先置顶，自己再置顶
 						type === TOP && selfActionInvoke();
+
+						// 置顶置底未发生变化
+						if (
+							oldSortIds.every((id, index) => this.dataSource[index].id === id)
+						) {
+							this.$parent.store.removeHistory(it.selections.length + 1);
+
+							this.$emit('error', {
+								type: 'menu',
+								msg: `您已经${type === TOP ? '置顶' : '置底'}, 无需操作`
+							});
+						}
 						return;
 					}
 

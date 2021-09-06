@@ -3,7 +3,7 @@
 		v-if="currentValue"
 		:style="styles" 
 		class="vm-editor vm-hack-editor"
-	>
+	>	
 		<div class="vm-editor__wrapper">
 			<!-- <div class="vm-editor__arrow" /> -->
 			<template v-if="currentValue.module !== SELECTION_MODULE">

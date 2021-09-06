@@ -60,6 +60,21 @@ export default {
 				{
 					id: Math.random(),
 					module: 'page',
+				},
+				{
+					id: 'A',
+					module: 'tpl',
+					name: `名称_A`,
+				},
+				{
+					id: 'B',
+					module: 'tpl',
+					name: `名称_B`,
+				},
+				{
+					id: 'C',
+					module: 'tpl',
+					name: `名称_C`,
 				}
 			],
 			style: {

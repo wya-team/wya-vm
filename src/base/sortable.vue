@@ -131,7 +131,7 @@ export default {
 					this.operateDOMEvents('add');
 
 					this.isActive = true;
-					this.$emit('activated');
+					this.$emit('activated', e);
 				}
 			}
 		},
@@ -156,7 +156,7 @@ export default {
 					this.operateDOMEvents('remove');
 
 					this.isActive = false;
-					this.$emit('deactivated');
+					this.$emit('deactivated', e);
 				}
 			}
 		},

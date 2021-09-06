@@ -292,10 +292,10 @@ export default {
 				return;
 			}
 
-			this.store.commit('UNDO', { current });
-
 			// 需要连续回滚
-			const { revert } = this.store.historyData[this.current - 1];
+			let { revert } = this.store.historyData[current] || {};
+
+			this.store.commit('UNDO', { current });
 
 			if (revert) {
 				Array.from({ length: revert }).forEach(() => {
@@ -320,11 +320,10 @@ export default {
 				return;
 			}
 
-			this.store.commit('REDO', { current });
-
 			// 需要连续回滚
-			const { revert } = this.store.historyData[this.current - 1];
+			let { revert } = this.store.historyData[current] || {};
 
+			this.store.commit('REDO', { current });
 			if (revert) {
 				Array.from({ length: revert }).forEach(() => {
 					this.store.commit('REDO', { current: this.current + 1 });

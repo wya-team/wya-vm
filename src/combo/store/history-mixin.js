@@ -30,9 +30,24 @@ export default {
 				? this.historyData.push(snapshot)
 				: this.historyData.splice(currentSnapshot, totalSnapshot - currentSnapshot, snapshot);
 
+			this.resetHistorySnapshot();
+		},
+
+		/**
+		 * 从末尾删除
+		 */
+		removeHistory(count) {
+			if (!count) return;
+			let { length } = this.historyData;
+
+			this.historyData.splice(length - count - 1, count);
+			this.resetHistorySnapshot();
+		},
+
+		resetHistorySnapshot() {
 			let { length } = this.historyData;
 			this.states.currentSnapshot = length;
 			this.states.totalSnapshot = length;
 		}
-	}
+	},
 };
