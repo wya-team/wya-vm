@@ -21,7 +21,7 @@
 					class="vm-right-menu__icon"
 				/>
 				<span>
-					{{ menuName[item] }}
+					{{ typeof menuName[item] === 'function' ? menuName[item](dataSource) : menuName[item] }}
 				</span>
 			</div>
 		</div>
@@ -39,6 +39,10 @@ export default {
 	},
 	props: {
 		event: MouseEvent,
+		dataSource: {
+			type: Object,
+			default: () => ({})
+		},
 		filter: {
 			type: Function,
 			default() {
@@ -60,7 +64,9 @@ export default {
 					UP: 'p-move-up',
 					DOWN: 'p-move-down',
 					DELETE: 'p-delete2',
-					SELECTION: 'p-line'
+					SELECTION: 'p-line',
+					LOCK: 'p-lock',
+					COPY: 'p-order',
 				};
 			}
 		}

@@ -2,7 +2,7 @@
 	<div 
 		:style="[{ height: `${h ? `${h}px` : 'auto' }`, width: `${w ? `${w}px` : 'auto' }` }]"
 		class="vm-basic-page-viewer"
-		@mousedown="handleSelectionMouseDown"
+		@mousedown.left="handleSelectionMouseDown"
 	>
 		<div 
 			class="vm-basic-page-viewer__bottom" 

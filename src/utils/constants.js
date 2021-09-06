@@ -30,7 +30,8 @@ export const RIGHT_MENU_MAP = {
 	DOWN: 'DOWN',
 	DELETE: 'DELETE',
 	SELECTION: 'SELECTION',
-	// LOCK: 'LOCK'
+	LOCK: 'LOCK',
+	COPY: 'COPY'
 };
 
 export const RIGHT_MENU_NAME_MAP = {
@@ -40,5 +41,6 @@ export const RIGHT_MENU_NAME_MAP = {
 	DOWN: '下移一层',
 	DELETE: '删除',
 	SELECTION: '取消组合',
-	// LOCK: '锁定'
+	LOCK: it => (it.disabled ? '取消锁定' : '锁定'),
+	COPY: '复制'
 };

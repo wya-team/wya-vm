@@ -157,7 +157,7 @@ import Selection from './selection.vue';
 import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn, allowSelection, Logger } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP, SELECTION_MODULE } from '../../../utils/constants';
 
-const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION } = RIGHT_MENU_MAP;
+const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION, LOCK, COPY } = RIGHT_MENU_MAP;
 
 export default {
 	name: 'vm-frame',
@@ -428,6 +428,7 @@ export default {
 			// init
 			RightMenu.popup({ 
 				event, 
+				dataSource: it,
 				onSelect: (type) => {
 					if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
 						const oldSortIds = this.dataSource.map(i => i.id);
@@ -478,7 +479,7 @@ export default {
 				}, 
 				filter: (i) => {
 					if (it.module === SELECTION_MODULE) {
-						return [TOP, BOTTOM, DELETE, SELECTION].includes(i);
+						return [TOP, BOTTOM, DELETE, SELECTION, LOCK].includes(i);
 					} else {
 						return i !== SELECTION;
 					}
@@ -493,6 +494,7 @@ export default {
 		 */
 		selectMenu(type, it, invoke = true) {
 			let changed;
+			let temp;
 			// 根据z降序，相等则后面的z放在前面
 			let data = this.dataSource
 				.slice()
@@ -529,6 +531,24 @@ export default {
 				// 取消选择：直接删除元素
 				case SELECTION:
 					action = { type: 'DELETE', id: it.id };
+					if (!invoke) return action;
+					this.$emit('change', action);
+					return;
+				case LOCK: 
+					action = { type: 'UPDATE', id: it.id, changed: { disabled: !it.disabled } };
+					if (!invoke) return action;
+					this.$emit('change', action);
+					return;
+				case COPY: 
+					temp = getUid();
+					action = { 
+						type: 'CREATE', 
+						id: temp, 
+						data: {
+							...it,
+							id: temp,
+						}
+					};
 					if (!invoke) return action;
 					this.$emit('change', action);
 					return;
