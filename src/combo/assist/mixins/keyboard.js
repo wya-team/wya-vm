@@ -21,11 +21,19 @@ export default {
 		},
 
 		handleKeydown(e) {
-			if ((e.metaKey || e.ctrlKey) && (e.keyCode === 90 || e.key === 'z')) {
-				if (e.shiftKey) {
-					this.redo();
-				} else {
-					this.undo();
+			if ((e.metaKey || e.ctrlKey)) {
+				// z
+				if ((e.keyCode === 90 || e.key === 'z')) {
+					if (e.shiftKey) {
+						this.redo();
+					} else {
+						this.undo();
+					}
+				}
+
+				// 保存
+				if (e.keyCode === 83 || e.key === 's') {
+					e.preventDefault();
 				}
 			}
 		},
