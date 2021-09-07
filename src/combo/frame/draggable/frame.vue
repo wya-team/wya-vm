@@ -635,8 +635,17 @@ export default {
 				h: rect.h / scale,
 			};
 
-			const { selections, selectionModules } = dataSource.reduce((pre, cur) => {
-				if (cur.disabled || !allowSelection(cur, $rect) || cur.module === PAGE_MOULE) return pre;
+			let { selections, selectionModules, disabledIds } = dataSource.reduce((pre, cur) => {
+				if (
+					!allowSelection(cur, $rect) 
+					|| cur.module === PAGE_MOULE
+				) return pre;
+					
+				if (cur.disabled && cur.module === SELECTION_MODULE) {
+					pre.disabledIds.push(...cur.selections);
+				} 
+
+				if (cur.disabled) return pre;
 				if (cur.module === SELECTION_MODULE) {
 					pre.selectionModules.push(cur);
 				} else {
@@ -645,8 +654,12 @@ export default {
 				return pre;
 			}, {
 				selections: [],
+				disabledIds: [],
 				selectionModules: []
 			});
+			// 过滤不能选的ids
+			selections = selections.filter(i => !disabledIds.includes(i.id));
+
 			const selectionIds = selections.map(i => i.id);
 
 			// 如果选区内selectionIds已存在在selectionModules;直接选中
