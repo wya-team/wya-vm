@@ -49,6 +49,7 @@
 
 <script>
 import { Store, mapStates } from './store';
+import { Assist } from './assist';
 import { cloneDeep, isEqualWith, getUid, Logger } from '../utils/helper';
 import { PAGE_MOULE } from '../utils/constants';
 import './theme-dark.scss';
@@ -64,6 +65,7 @@ export default {
 	components: {
 		// 会被注入vm-frame, vm-widget, vm-editor,
 	},
+	mixins: Assist.mixins(['keyboard']),
 	model: {
 		prop: 'data-source',
 		event: 'change'
