@@ -1,5 +1,5 @@
 import BaseWatcher from './base';
-import { cloneDeep, isEqualWith } from '../../utils/helper';
+import { cloneDeep, isEqualWith, hasOwn, Logger } from '../../utils/helper';
 
 class Store extends BaseWatcher {
 	constructor(combo, initialState = {}) {
@@ -83,7 +83,15 @@ class Store extends BaseWatcher {
 			// 只有original时已经同步修改
 			changed && Object.keys(changed).forEach(key => {
 				original[key] = states.data[index][key];
-				states.data[index][key] = changed[key];
+				if (!hasOwn(states.data[index], key)) {
+					Logger.debug(`当前模块不存在字段${key}, 强制替换值以适配响应`);
+					states.data.splice(index, 1, {
+						...states.data[index],
+						[key]: changed[key]
+					});
+				} else {
+					states.data[index][key] = changed[key];
+				}
 			});
 
 			// 同步编辑数据
@@ -206,6 +214,7 @@ class Store extends BaseWatcher {
 
 	/**
 	 * 数据与初始数据合并，避免修改时无响应
+	 * TODO: 移除（UPDATE对为绑定监听做了强制替换, 该方法可以被移除，待验证）
 	 */
 	_makeRebuildData(source) {
 		let { modules } = this.combo.$options;
@@ -215,7 +224,7 @@ class Store extends BaseWatcher {
 			typeof data === 'function' && (data = data());
 			typeof rebuilder === 'function' && (rebuilder = rebuilder());
 
-			// TODO: 深度遍历，目前仅一层
+			// 目前仅一层
 			Object.keys(it).forEach(key => {
 				if (!rebuilder[key]) return;
 				if (it[key] instanceof Array) {
