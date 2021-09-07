@@ -355,8 +355,12 @@ export default {
 
 		handleDrop(e) {
 			let result;
-			let { module, index } = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME) || '') || {};
+			let moduleData;
+			try { moduleData = JSON.parse(e.dataTransfer.getData(WIDGET_TO_FRAME) || ''); } catch {}; // eslint-disable-line
+
+			let { module, index } = moduleData || {};
 			result = this.$parent.$options.modules[module];
+
 			// 不存在的模块
 			if (!result) return;
 			if (result.max && result.max <= this.dataSource.filter(i => i.module === module).length) {
@@ -544,6 +548,7 @@ export default {
 					action = { 
 						type: 'CREATE', 
 						id: temp, 
+						index: this.dataSource.length,
 						data: {
 							...it,
 							id: temp,

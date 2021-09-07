@@ -60,6 +60,16 @@ export const draggableEvents = {
 	end: ['touchend', 'touchcancel', 'mouseup']
 };
 
+let isPressShift = false;
+doc.addEventListener('keydown', (e) => {
+	isPressShift = e.keyCode === 16 || e.key === 'Shift';
+});
+doc.addEventListener('keyup', (e) => {
+	if (isPressShift && (e.keyCode === 16 || e.key === 'Shift')) {
+		isPressShift = false;
+	}
+});
+
 export default {
 	replace: true,
 	name: 'vm-draggable',
@@ -508,6 +518,10 @@ export default {
 						axisX = Math.round(this.parentW);
 					}
 					elmW = axisX - elmX;
+				}
+				// 控制一个方向
+				if (isPressShift) { 
+					elmH = elmW / this.w * this.h;
 				}
 				!this.disabled && this.sync({
 					x: (Math.round(elmX / this.grid[0]) * this.grid[0]),
