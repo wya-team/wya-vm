@@ -680,7 +680,7 @@ export default {
 
 			// 移除之前选区
 			const actions = dataSource.reduce((pre, cur) => {
-				if (cur.module !== SELECTION_MODULE || cur.selections.some(id => selectionIds.includes(id))) return pre;
+				if (cur.module !== SELECTION_MODULE || !selectionIds.some(id => cur.selections.includes(id))) return pre;
 				pre.push({
 					type: 'DELETE',
 					id: cur.id
@@ -688,8 +688,8 @@ export default {
 				return pre;
 			}, []);
 
+
 			let id = getUid();
-			let rowIndex = dataSource.length;
 			const info = selections.reduce((pre, cur) => {
 				pre.xs.push(cur.x);
 				pre.xws.push(cur.x + cur.w);
@@ -712,6 +712,10 @@ export default {
 			let minY = Math.min(...info.ys);
 			let maxY = Math.max(...info.yhs);
 
+			// 删除之前组合的
+			actions.forEach(i => { i.revert = actions.length; this.$emit('change', i); });
+
+			let rowIndex = dataSource.length;
 			let action = {
 				type: 'CREATE',
 				index: rowIndex,
@@ -740,12 +744,6 @@ export default {
 				},
 				revert: actions.length
 			};
-
-			// 删除之前组合的
-			actions.forEach(i => {
-				i.revert = actions.length;
-				this.$emit('change', i);
-			});
 
 			this.$emit('change', action);
 			// 新元素处于激活状态
