@@ -6,21 +6,26 @@
  */
 const doc = document.documentElement;
 export default {
+	data() {
+		return {
+			keyboardEnable: true
+		};
+	},
 	mounted() {
-		this.operateDOMKeyEvents('add');
+		this._kOperateDOMEvents('add');
 	},
 	destroyed() {
-		this.operateDOMKeyEvents('remove');
+		this._kOperateDOMEvents('remove');
 	},
 	methods: {
-		operateDOMKeyEvents(type) {
+		_kOperateDOMEvents(type) {
 			let fn = type === 'add' ? doc.addEventListener : doc.removeEventListener;
 
-			fn('keydown', this.handleKeydown);
-			fn('keyup', this.handleKeyup);
+			fn('keydown', this._kHandleKeydown);
 		},
 
-		handleKeydown(e) {
+		_kHandleKeydown(e) {
+			if (!this.keyboardEnable) return;
 			if ((e.metaKey || e.ctrlKey)) {
 				// z
 				if ((e.keyCode === 90 || e.key === 'z')) {
@@ -38,8 +43,13 @@ export default {
 			}
 		},
 
-		handleKeyup(e) {
-			
+		/**
+		 * 设置键盘状态
+		 */
+		setKeyboardStatus(force) {
+			this.keyboardEnable = typeof force !== 'undefined' 
+				? !!forEach
+				: !this.keyboardEnable;
 		}
 	}
 };
