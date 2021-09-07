@@ -42,7 +42,7 @@ class Store extends BaseWatcher {
 			this.updateCurrentEditor();
 		},
 		CREATE(states, payload) {
-			let { id, index, data } = payload;
+			let { id, index, data, revert } = payload;
 
 			states.data.splice(index, 0, data);
 
@@ -50,7 +50,8 @@ class Store extends BaseWatcher {
 			this.updateHistory('CREATE', {
 				...payload,
 				data,
-				index
+				index,
+				revert
 			});
 		},
 		DELETE(states, payload) {

@@ -309,10 +309,6 @@ export default {
 			return dataSource.reduce((pre, cur) => {
 				if (cur.module === SELECTION_MODULE) {
 					cur.selections.forEach((id) => {
-						if (pre[id]) {
-							Logger.debug('@wya/vm: 重复选择');
-						}
-						// 可以优化
 						pre[id] = dataSource.find(i => i.id === id);
 					});
 				}
@@ -422,6 +418,10 @@ export default {
 					console.error(e);
 				}
 			});
+		},
+
+		setActivedById(id) {
+			this.setActived(this.dataSource.findIndex(i => i.id === id));
 		},
 
 		/**
@@ -626,7 +626,7 @@ export default {
 		 * 多选选中
 		 */
 		handleSelection(rect) {
-			const { dataSource, selections, scale, borderSize } = this;
+			const { dataSource, scale, borderSize } = this;
 			const headerH = this.$refs.header ? this.$refs.header.clientHeight : 0;
 			const $rect = {
 				x: this.scrollLeft + (rect.x - borderSize.left) / scale,
@@ -635,24 +635,34 @@ export default {
 				h: rect.h / scale,
 			};
 
-			const unselections = dataSource.filter(i => (
-				i.module !== PAGE_MOULE 
-					&& i.module !== SELECTION_MODULE
-					&& !i.disabled
-					&& !selections[i.id]
-					&& allowSelection(i, $rect)
-			));
+			const { selections, selectionModules } = dataSource.reduce((pre, cur) => {
+				if (cur.disabled || !allowSelection(cur, $rect) || cur.module === PAGE_MOULE) return pre;
+				if (cur.module === SELECTION_MODULE) {
+					pre.selectionModules.push(cur);
+				} else {
+					pre.selections.push(cur);
+				}
+				return pre;
+			}, {
+				selections: [],
+				selectionModules: []
+			});
+			const selectionIds = selections.map(i => i.id);
+
+			// 如果选区内selectionIds已存在在selectionModules;直接选中
+			for (let i = 0; i < selectionModules.length; i++) {
+				if (selectionIds.every(id => selectionModules[i].selections.includes(id))) {
+					this.setActivedById(selectionModules[i].id);
+					return;
+				}
+			}
 
 			// 当且只有一个元素未选中或有selectionModules在这个区域内
-			if (unselections.length <= 1) {
+			if (selections.length <= 1) {
 				let rowIndex = 0;
-				const selectionModules = dataSource.filter(i => (
-					i.module === SELECTION_MODULE 
-					&& allowSelection(i, $rect)
-				));
 
-				if (unselections.length) {
-					rowIndex = dataSource.findIndex(i => i.id === unselections[0].id);
+				if (selections.length) {
+					rowIndex = dataSource.findIndex(i => i.id === selections[0].id);
 				}
 
 				// 找到最上面一层
@@ -668,9 +678,19 @@ export default {
 				return;
 			}
 
+			// 移除之前选区
+			const actions = dataSource.reduce((pre, cur) => {
+				if (cur.module !== SELECTION_MODULE || cur.selections.some(id => selectionIds.includes(id))) return pre;
+				pre.push({
+					type: 'DELETE',
+					id: cur.id
+				});
+				return pre;
+			}, []);
+
 			let id = getUid();
 			let rowIndex = dataSource.length;
-			const info = unselections.reduce((pre, cur) => {
+			const info = selections.reduce((pre, cur) => {
 				pre.xs.push(cur.x);
 				pre.xws.push(cur.x + cur.w);
 				pre.ys.push(cur.y);
@@ -714,11 +734,18 @@ export default {
 					active: false,
 
 					// 内部分配字段
-					selections: unselections.map(i => i.id),
+					selections: selectionIds,
 					module: SELECTION_MODULE,
 					id
-				}
+				},
+				revert: actions.length
 			};
+
+			// 删除之前组合的
+			actions.forEach(i => {
+				i.revert = actions.length;
+				this.$emit('change', i);
+			});
 
 			this.$emit('change', action);
 			// 新元素处于激活状态

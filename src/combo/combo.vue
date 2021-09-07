@@ -218,9 +218,6 @@ export default {
 			const { id, original, changed, revert } = payload; 
 			switch (type) {
 				case 'CREATE':
-					if (typeof revert !== 'undefined') {
-						throw new Error('[wya-vm/combo]: revert 传递会影响历史');
-					}
 				case 'UPDATE': // eslint-disable-line
 				case 'DELETE':
 					if (!id) {
