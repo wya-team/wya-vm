@@ -58,29 +58,24 @@ export const eleInRegExp = (el, exceptions) => {
 };
 
 
-const contain = (areaA, areaB) => {
-	let areaAEndX = areaA.x + areaA.w;
-	let areaAEndY = areaA.y + areaA.h;
+const rect2position = (rect) => ({
+	left: rect.x,
+	right: rect.x + rect.w,
+	top: rect.y,
+	bottom: rect.y + rect.h
+});
 
-	let areaBEndX = areaB.x + areaB.w;
-	let areaBEndY = areaB.y + areaB.h;
+export const allowSelection = (a, b) => {
+	const R1 = rect2position(a);
+	const R2 = rect2position(b);
 
-	// 四个点 有一个点在，就是包含
-	if (
-		(
-			(areaAEndY >= areaB.y && areaAEndY <= areaBEndY) 
-			|| (areaA.y >= areaB.y && areaA.y <= areaBEndY)
-		)
-		&& (
-			(areaA.x >= areaB.x && areaA.x <= areaBEndX) 
-			|| (areaAEndX >= areaB.x && areaAEndX <= areaBEndX)
-		)
-	) {
-		return true;
-	}
-	return false;
+	return !(
+		(R1.right < R2.left)
+		|| (R1.bottom < R2.top)
+		|| (R2.right < R1.left)
+		|| (R2.bottom < R1.top)
+	);
 };
-export const allowSelection = (a, b) => contain(a, b) || contain(b, a);
 
 export const Logger = {
 	...console,
