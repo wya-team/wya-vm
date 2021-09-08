@@ -12,7 +12,7 @@ export const area = {
 	// 初始数据 data 或者 data 都可以
 	data: {
 		closeable: true,
-		src: 'https://oss.ruishan666.com/image/xcx/180313/942996157518/10053669,2880,1800.jpg',
+		src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2P48OP/fwAJqgPnYfITggAAAABJRU5ErkJggg==',
 		list: []
 		// for content
 	},

@@ -9,9 +9,9 @@
 		@cancel="handleCancel"
 	>
 		<vc-button class="vm-hack-entry">
-			测试：销毁editor
+			测试：销毁editor（这样会导致change无法响应，因为被销毁了）
 		</vc-button>
-		<vc-button class="vm-hack-entry vm-hack-editor">
+		<vc-button class="vm-hack-editor">
 			测试：无法销毁
 		</vc-button>
 		<div>
@@ -37,7 +37,7 @@
 				}"
 			/>
 			<div class="vm-basic-area-paint__content">
-				<div class="vm-basic-area-paint__operation vm-hack-entry">
+				<div class="vm-basic-area-paint__operation">
 					<vm-widget module="paint">
 						<vc-button @click="handleAdd">
 							添加热区
