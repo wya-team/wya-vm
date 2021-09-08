@@ -51,7 +51,7 @@
 import { Store, mapStates } from './store';
 import { Assist } from './assist';
 import { cloneDeep, isEqualWith, getUid, Logger } from '../utils/helper';
-import { PAGE_MOULE } from '../utils/constants';
+import { PAGE_MOULE, SELECTION_MODULE } from '../utils/constants';
 import './theme-dark.scss';
 
 export default {
@@ -276,6 +276,21 @@ export default {
 			}
 			this.handleChange({ type: 'DELETE', id });
 			this.syncData();
+		},
+
+		/**
+		 * 复制一份
+		 */
+		copy() {
+			if (
+				!this.editor 
+				|| this.editor.module === PAGE_MOULE 
+				|| this.editor.module === SELECTION_MODULE
+			) {
+				return;
+			} 
+
+			this.add(this.editor.module, this.dataSource.length);
 		},
 
 		/**

@@ -106,6 +106,7 @@ export default {
 					frameH={606}
 					width={this.style.width}
 					height={this.style.height}
+					keyboardEnabled={true}
 					onSave={this.handleSave}
 					onError={this.handleError}
 					onChange={(list) => this.list = list}

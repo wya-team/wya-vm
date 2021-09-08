@@ -166,12 +166,11 @@ export default {
 					showThumbnail={this.showThumbnail}
 					showRuler={this.showRuler}
 					theme={this.theme}
+					keyboardEnabled={true}
 					onSave={this.handleSave}
 					onError={this.handleError}
 					onChange={(list) => this.list = list}
 					scopedSlots={parent.scopedSlots}
-
-
 				/>	
 			);
 		}

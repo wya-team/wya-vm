@@ -27,6 +27,7 @@
 			:show-assist="false"
 			:width="style.width"
 			:height="style.height"
+			keyboard-enabled
 			@save="handleSave"
 			@error="handleError"
 		>

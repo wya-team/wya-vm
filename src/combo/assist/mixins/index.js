@@ -1,4 +1,4 @@
-import keyboard from './keyboard';
+import keyboard from './keyboard/index';
 
 export const MIXINS_MAP = {
 	keyboard

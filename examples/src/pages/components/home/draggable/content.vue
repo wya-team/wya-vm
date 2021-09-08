@@ -56,6 +56,7 @@
 			:show-thumbnail="showThumbnail"
 			:show-ruler="showRuler"
 			:theme="theme"
+			keyboard-enabled
 			@save="handleSave"
 			@error="handleError"
 		>

@@ -51,7 +51,8 @@
 <script>
 import { isPassiveSupported, eleInRegExp } from '../utils/helper';
 
-const doc = document.documentElement;
+const IS_SERVER = typeof window === 'undefined';
+const doc = !IS_SERVER && document.documentElement;
 const angleArr = [0, 45, 90, 135, 180, 225, 270, 315, 360];
 
 export const draggableEvents = {
@@ -61,14 +62,16 @@ export const draggableEvents = {
 };
 
 let isPressShift = false;
-doc.addEventListener('keydown', (e) => {
-	isPressShift = e.keyCode === 16 || e.key === 'Shift';
-});
-doc.addEventListener('keyup', (e) => {
-	if (isPressShift && (e.keyCode === 16 || e.key === 'Shift')) {
-		isPressShift = false;
-	}
-});
+if (!IS_SERVER) {
+	doc.addEventListener('keydown', (e) => {
+		isPressShift = e.keyCode === 16 || e.key === 'Shift';
+	});
+	doc.addEventListener('keyup', (e) => {
+		if (isPressShift && (e.keyCode === 16 || e.key === 'Shift')) {
+			isPressShift = false;
+		}
+	});
+}
 
 export default {
 	replace: true,
