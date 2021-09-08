@@ -1,5 +1,6 @@
 import { defaultModules } from './modules/root';
 import { cloneDeep, kebabCase } from '../utils/helper';
+import { PAGE_MOULE } from '../utils/constants';
 import Combo from './combo.vue';
 import Frame from './frame';
 import Widget from './widget';
@@ -13,7 +14,7 @@ export default (modules = defaultModules, opts = {}) => {
 	const { mode = "draggable" } = opts;
 	try {
 		Object.keys(modules).forEach(item => {
-			if (modules[item].module === 'page') {
+			if (modules[item].module === PAGE_MOULE) {
 				modules[item].data = {
 					...cloneDeep(
 						typeof modules[item].data === 'function'

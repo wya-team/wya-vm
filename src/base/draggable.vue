@@ -50,6 +50,7 @@
 
 <script>
 import { isPassiveSupported, eleInRegExp } from '../utils/helper';
+import { PAGE_MOULE } from '../utils/constants';
 
 const IS_SERVER = typeof window === 'undefined';
 const doc = !IS_SERVER && document.documentElement;
@@ -241,7 +242,7 @@ export default {
 			return {
 				left: this.x + 'px',
 				top: this.y + 'px',
-				zIndex: this.isActive && this.module !== 'page' ? 999 : this.z
+				zIndex: this.isActive && this.module !== PAGE_MOULE ? 999 : this.z
 			};
 		},
 		style() {
