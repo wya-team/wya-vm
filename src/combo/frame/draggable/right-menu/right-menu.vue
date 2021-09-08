@@ -43,6 +43,7 @@ export default {
 			type: Object,
 			default: () => ({})
 		},
+		// 用于右键过滤显示元素
 		filter: {
 			type: Function,
 			default() {

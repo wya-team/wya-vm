@@ -189,7 +189,6 @@ export default {
 		this.$options.previewManager.destroy();
 	},
 	methods: {
-
 		syncData() {
 			this.$emit('change', this.rebuildData);
 			this.$emit('update:data-source', this.rebuildData);
@@ -265,17 +264,37 @@ export default {
 
 		/**
 		 * 删除
+		 * it: id | data, 可传id或者data
+		 * force: 默认是当前编辑的删除，除非强制删除id
 		 */
-		remove(id, force = false) {
-			id = id || (this.editor || {}).id;
-			if (!id || (this.editor.module === PAGE_MOULE)) {
+		remove(it, force = false) {
+			let isObj = typeof it === 'object';
+			let id = (isObj ? it.id : it) || (this.editor || {}).id;
+			if (!id || (!force && this.editor.module === PAGE_MOULE)) {
 				this.$emit('error', { 
 					type: 'id', 
 					msg: "请先选择操作对象" 
 				});
 				return;
 			}
-			this.handleChange({ type: 'DELETE', id });
+			it = isObj 
+				? it
+				: this.rebuildData.findIndex(i => i.id === id);
+
+			this.store.commit('DELETE', { 
+				id,
+				revert: it.selections && it.selections.length
+			});
+
+			if (it.module === SELECTION_MODULE) {
+				it.selections.forEach(($id) => {
+					this.store.commit('DELETE', { 
+						id: $id,
+						revert: it.selections && it.selections.length,
+					});
+				});
+			}
+
 			this.syncData();
 		},
 

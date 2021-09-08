@@ -18,6 +18,7 @@
 <script>
 import { Clipboard } from '../../../vc';
 import { debounce } from '../../../utils/helper';
+import { SELECTION_MODULE, PAGE_MOULE } from '../../../utils/constants';
 
 export default {
 	name: 'vm-thumbnail',
@@ -161,7 +162,7 @@ export default {
 			ctx.translate(40 / shrink, 40 / shrink);
 			ctx.save();
 			dataSource.forEach(item => {
-				if (item.module === 'page') return;
+				if (item.module === PAGE_MOULE || item.module === SELECTION_MODULE) return;
 
 				let { x, y, w, h, r } = item;
 				ctx.translate(

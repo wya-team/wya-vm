@@ -78,7 +78,7 @@
 							:rotatable="it.rotatable || typeof it.rotatable === 'undefined'"
 							:resizable="it.resizable || typeof it.resizable === 'undefined'"
 							:prevent="false"
-							@delete="handleDeleteModule(it)"
+							@delete="$parent.remove(it, true)"
 							@activated="handleActivated(arguments[0], it)"
 							@deactivated="handleDeactivated(arguments[0], it)"
 							@dragging="handleDragging(it)"
@@ -415,7 +415,8 @@ export default {
 		setActived(index) {
 			this.$nextTick(() => {
 				try {
-					this.$refs.deactivated.dispatchEvent(new Event('mousedown'));
+					// 让当前编辑的元素触发`deactivated`，再选中actived
+					this.$refs.deactivated.dispatchEvent(new Event('mousedown')); 
 					this.$refs.draggable[index].setActived();
 				} catch (e) {
 					console.error(e);
@@ -450,6 +451,7 @@ export default {
 					} 
 				});
 
+				// 置底和置顶要额外处理
 				if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
 					const oldSortIds = this.dataSource.map(i => i.id);
 					const selfActionInvoke = () => {
@@ -503,8 +505,12 @@ export default {
 
 		/**
 		 * 右键查单选项
+		 * e: 使用粘帖时的位置
+		 * type: 要选择的操作
+		 * it: 数据源
+		 * invoke: 表示是否需要emit执行, 否者返回action（目前只有涉及排序的返回action）
 		 *
-		 * invoke: 表示是否需要emit执行, 否者返回action
+		 * TODO: 抽离 or 优化代码
 		 */
 		selectMenu(e, type, it, invoke = true) {
 			let changed;
@@ -540,7 +546,7 @@ export default {
 				case DELETE:
 					action = { type: 'DELETE', id: it.id };
 					if (!invoke) return action;
-					this.handleDeleteModule(it);
+					this.$parent.remove(it, true);
 					return;
 				// 取消选择：直接删除元素
 				case SELECTION:
@@ -584,27 +590,6 @@ export default {
 
 			if (!invoke) return action;
 			this.$emit('change', action);
-		},
-
-		/**
-		 * 删除
-		 */
-		handleDeleteModule(it) {
-			this.$emit('change', { 
-				type: 'DELETE', 
-				id: it.id,
-				revert: it.selections && it.selections.length,
-			});
-
-			if (it.module === SELECTION_MODULE) {
-				it.selections.forEach((id) => {
-					this.$emit('change', { 
-						type: 'DELETE', 
-						id,
-						revert: it.selections && it.selections.length,
-					});
-				});
-			}
 		},
 
 		/**

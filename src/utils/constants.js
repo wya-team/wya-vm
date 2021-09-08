@@ -11,12 +11,12 @@ export const WIDGET_TO_FRAME = "@wya/vm";
 export const SORT_IN_FRAME = "@wya/vm";
 
 /**
- * 页面设置组件
+ * 页面设置组件，由外部实现
  */
 export const PAGE_MOULE = 'page';
 
 /**
- * 组合功能
+ * 组合功能，由内部实现
  */
 export const SELECTION_MODULE = '@wya/vm/selection';
 
