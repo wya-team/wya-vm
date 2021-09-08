@@ -30,7 +30,6 @@ export default {
 				? this.historyData.push(snapshot)
 				: this.historyData.splice(currentSnapshot, totalSnapshot - currentSnapshot, snapshot);
 
-			Logger.debug(`history`, this.historyData);
 			this.resetHistorySnapshot();
 		},
 
