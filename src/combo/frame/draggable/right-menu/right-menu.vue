@@ -29,7 +29,7 @@
 </template>
 <script>
 import { Portal, Icon } from '../../../../vc';
-import { RIGHT_MENU_MAP, RIGHT_MENU_NAME_MAP } from '../../../../utils/constants';
+import { RIGHT_MENU_MAP, RIGHT_MENU_NAME_MAP, RIGHT_MENU_ICON_MAP } from '../../../../utils/constants';
 import { $ } from '../../../../utils/helper';
 
 export default {
@@ -49,25 +49,10 @@ export default {
 				return () => true;
 			}
 		},
-		onSelect: {
-			type: Function,
-			default() {
-				return () => {};
-			}
-		},
 		icons: {
 			type: Object,
 			default: () => {
-				return {
-					TOP: 'p-top',
-					BOTTOM: 'p-bottom',
-					UP: 'p-move-up',
-					DOWN: 'p-move-down',
-					DELETE: 'p-delete2',
-					SELECTION: 'p-line',
-					LOCK: 'p-lock',
-					COPY: 'p-order',
-				};
+				return RIGHT_MENU_ICON_MAP;
 			}
 		}
 	},
@@ -96,9 +81,7 @@ export default {
 	methods: {
 		handleClick(item) {
 			this.visible = false;
-			this.onSelect(item);
-
-			this.$emit('close');
+			this.$emit('sure', item);
 		},
 
 		operateDOMEvents(type) {

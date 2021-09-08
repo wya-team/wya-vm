@@ -179,6 +179,7 @@ export default {
 	},
 	created() {
 		this.VMComboId = getUid('combo');
+		this.clipboardData = null;
 		
 		// 处理历史暴露的API映射
 		this.create = this.add;
@@ -279,9 +280,9 @@ export default {
 		},
 
 		/**
-		 * 复制一份
+		 * 剪切一份
 		 */
-		copy() {
+		cut() {
 			if (
 				!this.editor 
 				|| this.editor.module === PAGE_MOULE 
@@ -290,7 +291,105 @@ export default {
 				return;
 			} 
 
-			this.add(this.editor.module, this.dataSource.length);
+			// 粘帖数据缓存
+			this.clipboardData = {
+				type: 'CUT',
+				data: cloneDeep(this.editor),
+				selections: this.editor.module === SELECTION_MODULE 
+					? cloneDeep(this.rebuildData.filter(i => this.editor.selections.includes(i.id)))
+					: []
+			};
+
+			// 删除剪切数据
+			const revert = this.clipboardData.selections.length;
+			this.store.commit('DELETE', { 
+				id: this.editor.id,
+				revert
+			});
+			this.clipboardData.selections.forEach((id) => {
+				this.store.commit('DELETE', { 
+					id,
+					revert
+				});
+			});
+
+			this.syncData();
+		},
+
+		/**
+		 * 复制一份
+		 */
+		copy(it) {
+			if (
+				!it && (
+					!this.editor 
+					|| this.editor.module === PAGE_MOULE 
+				)
+			) {
+				return;
+			} 
+
+			it = it || this.editor;
+			this.clipboardData = {
+				type: 'COPY',
+				data: cloneDeep(it),
+				selections: this.editor.module === SELECTION_MODULE 
+					? cloneDeep(this.rebuildData.filter(i => it.selections.includes(i.id)))
+					: []
+			};
+		},
+
+		/**
+		 * 粘帖一份
+		 * 这里兼容了组合，其中包含x,y的偏移值
+		 */
+		paste(override = {}) {
+			if (!this.clipboardData) return;
+			let { type, data, selections = [] } = this.clipboardData;
+			const rowIndex = this.rebuildData.length;
+			const revert = selections.length;
+			const id = getUid();
+
+			let changed = cloneDeep(data);
+			changed.x && (changed.x += 10);
+			changed.y && (changed.y += 10);
+			Object.keys(override).forEach(key => (changed[key] = override[key]));
+
+			changed.id = id;
+			if (changed.module === SELECTION_MODULE) {
+				selections = selections.map(i => {
+					i.id = getUid();
+					return i;
+				});
+				changed.selections = selections.map(i => i.id);
+
+				const diffX = changed.x - data.x;
+				const diffY = changed.y - data.y;
+
+				selections.forEach((it, index) => {
+					this.store.commit('CREATE', { 
+						index: rowIndex + index,
+						id: it.id,
+						revert,
+						data: {
+							...it,
+							x: it.x + diffX,
+							y: it.y + diffY
+						}
+					});
+				});
+			}
+
+			this.store.commit('CREATE', {
+				index: rowIndex + revert,
+				id,
+				data: changed,
+				revert
+			});
+			this.syncData();
+
+			// 激活
+			this.$refs.frame.setActivedById(id);
 		},
 
 		/**

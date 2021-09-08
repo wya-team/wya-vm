@@ -26,6 +26,8 @@
 				:style="wrapperStyle"
 				@scroll="handleScroll"
 			>
+				<!-- 用于失焦用 -->
+				<div ref="deactivated" />
 				<vm-selection 
 					:client-w="clientW" 
 					:client-h="clientH" 
@@ -157,7 +159,7 @@ import Selection from './selection.vue';
 import { getUid, cloneDeep, throttle, valueIsNaN, hasOwn, allowSelection, Logger } from '../../../utils/helper';
 import { WIDGET_TO_FRAME, PAGE_MOULE, RIGHT_MENU_MAP, SELECTION_MODULE } from '../../../utils/constants';
 
-const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION, LOCK, COPY } = RIGHT_MENU_MAP;
+const { TOP, BOTTOM, UP, DOWN, DELETE, SELECTION, LOCK, COPY, PASTE } = RIGHT_MENU_MAP;
 
 export default {
 	name: 'vm-frame',
@@ -413,6 +415,7 @@ export default {
 		setActived(index) {
 			this.$nextTick(() => {
 				try {
+					this.$refs.deactivated.dispatchEvent(new Event('mousedown'));
 					this.$refs.draggable[index].setActived();
 				} catch (e) {
 					console.error(e);
@@ -427,68 +430,75 @@ export default {
 		/**
 		 * 显示菜单
 		 */
-		handleShowMenu(event, it) {
-			if (it.module === PAGE_MOULE) return;
-			// init
-			RightMenu.popup({ 
-				event, 
-				dataSource: it,
-				onSelect: (type) => {
-					if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
-						const oldSortIds = this.dataSource.map(i => i.id);
-						const selfActionInvoke = () => {
-							let action = this.selectMenu(type, it, false) || { type: 'DUMMY' };
-							this.$emit('change', {
-								...action,
-								revert: it.selections.length
-							});
-						};
+		async handleShowMenu(e, it) { 
+			 const { clipboardData } = this.$parent;
+			if (!clipboardData && it.module === PAGE_MOULE) return;
 
-						// 自己再置底，元素再置底
-						type === BOTTOM && selfActionInvoke();
-						
-						// 根据z降序，相等则后面的z放在前面
-						let selections = this.dataSource
-							.slice()
-							.filter(v => it.selections.includes(v.id))
-							.reverse()
-							.sort((a, b) => b.z - a.z);
-
-						(type === TOP ? selections.reverse() : selections).forEach(data => {
-							let action = this.selectMenu(type, data, false) || { type: 'DUMMY' };
-							this.$emit('change', {
-								...action,
-								revert: it.selections.length
-							});
-						});
-
-						// 元素先置顶，自己再置顶
-						type === TOP && selfActionInvoke();
-
-						// 置顶置底未发生变化
-						if (
-							oldSortIds.every((id, index) => this.dataSource[index].id === id)
-						) {
-							this.$parent.store.removeHistory(it.selections.length + 1);
-
-							this.$emit('error', {
-								type: 'menu',
-								msg: `您已经${type === TOP ? '置顶' : '置底'}, 无需操作`
-							});
+			try {
+				const type = await RightMenu.popup({ 
+					event: e, 
+					dataSource: it, 
+					filter: (i) => {
+						if (it.module === PAGE_MOULE) {
+							return [PASTE].includes(i);
 						}
-						return;
-					}
+						if (it.module === SELECTION_MODULE) {
+							return [TOP, BOTTOM, DELETE, SELECTION, LOCK, COPY, PASTE].includes(i);
+						} else {
+							return i !== SELECTION && (i !== PASTE || clipboardData);
+						}
+					} 
+				});
 
-					this.selectMenu(type, it);
-				}, 
-				filter: (i) => {
-					if (it.module === SELECTION_MODULE) {
-						return [TOP, BOTTOM, DELETE, SELECTION, LOCK].includes(i);
-					} else {
-						return i !== SELECTION;
+				if (it.module === SELECTION_MODULE && (type === TOP || type === BOTTOM)) {
+					const oldSortIds = this.dataSource.map(i => i.id);
+					const selfActionInvoke = () => {
+						let action = this.selectMenu(type, it, false) || { type: 'DUMMY' };
+						this.$emit('change', {
+							...action,
+							revert: it.selections.length
+						});
+					};
+
+					// 自己再置底，元素再置底
+					type === BOTTOM && selfActionInvoke();
+					
+					// 根据z降序，相等则后面的z放在前面
+					let selections = this.dataSource
+						.slice()
+						.filter(v => it.selections.includes(v.id))
+						.reverse()
+						.sort((a, b) => b.z - a.z);
+
+					(type === TOP ? selections.reverse() : selections).forEach(data => {
+						let action = this.selectMenu(e, type, data, false) || { type: 'DUMMY' };
+						this.$emit('change', {
+							...action,
+							revert: it.selections.length
+						});
+					});
+
+					// 元素先置顶，自己再置顶
+					type === TOP && selfActionInvoke();
+
+					// 置顶置底未发生变化
+					if (
+						oldSortIds.every((id, index) => this.dataSource[index].id === id)
+					) {
+						this.$parent.store.removeHistory(it.selections.length + 1);
+
+						this.$emit('error', {
+							type: 'menu',
+							msg: `您已经${type === TOP ? '置顶' : '置底'}, 无需操作`
+						});
 					}
-				} 
-			});
+					return;
+				}
+
+				this.selectMenu(e, type, it);
+			} catch (e) {
+				e && e.message && console.log(e);
+			}
 		},
 
 		/**
@@ -496,7 +506,7 @@ export default {
 		 *
 		 * invoke: 表示是否需要emit执行, 否者返回action
 		 */
-		selectMenu(type, it, invoke = true) {
+		selectMenu(e, type, it, invoke = true) {
 			let changed;
 			let temp;
 			// 根据z降序，相等则后面的z放在前面
@@ -544,19 +554,22 @@ export default {
 					this.$emit('change', action);
 					return;
 				case COPY: 
-					temp = getUid();
-					action = { 
-						type: 'CREATE', 
-						id: temp, 
-						index: this.dataSource.length,
-						data: {
-							...it,
-							id: temp,
-						}
-					};
-					if (!invoke) return action;
-					this.$emit('change', action);
+					this.$parent.copy(it);
 					return;
+				case PASTE: {
+					let { x, y } = this.$refs.content.getBoundingClientRect();
+
+					let mouseX = e.pageX || e.clientX + document.documentElement.scrollLeft || 0;
+					let mouseY = e.pageY || e.clientY + document.documentElement.scrollTop || 0;
+
+					x = Math.round((mouseX - x) / this.scale);
+					y = Math.round((mouseY - y) / this.scale);
+					this.$parent.paste({
+						x,
+						y
+					});
+					return;
+				}
 				default:
 					return;
 			}

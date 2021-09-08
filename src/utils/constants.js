@@ -31,7 +31,8 @@ export const RIGHT_MENU_MAP = {
 	DELETE: 'DELETE',
 	SELECTION: 'SELECTION',
 	LOCK: 'LOCK',
-	COPY: 'COPY'
+	COPY: 'COPY',
+	PASTE: 'PASTE'
 };
 
 export const RIGHT_MENU_NAME_MAP = {
@@ -42,5 +43,19 @@ export const RIGHT_MENU_NAME_MAP = {
 	DELETE: '删除',
 	SELECTION: '取消组合',
 	LOCK: it => (it.disabled ? '取消锁定' : '锁定'),
-	COPY: '复制'
+	COPY: '复制',
+	PASTE: '粘帖',
+};
+
+// TODO: 集成图标
+export const RIGHT_MENU_ICON_MAP = {
+	TOP: 'p-top',
+	BOTTOM: 'p-bottom',
+	UP: 'p-move-up',
+	DOWN: 'p-move-down',
+	DELETE: 'p-delete2',
+	SELECTION: 'p-line',
+	LOCK: 'p-lock',
+	COPY: 'p-order',
+	PASTE: 'p-rotate-left',
 };

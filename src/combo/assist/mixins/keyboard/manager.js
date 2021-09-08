@@ -59,6 +59,18 @@ class Keyboard {
 				return;
 			}
 
+			// ctrl/command + x
+			if ((e.keyCode === 88 || e.key === 'x')) {
+				this.combo.cut();
+				return;
+			}
+
+			// ctrl/command + v
+			if ((e.keyCode === 86 || e.key === 'v')) {
+				this.combo.paste();
+				return;
+			}
+
 			// ctrl/command + s
 			if (
 				(e.keyCode === 68 || e.key === 'd')

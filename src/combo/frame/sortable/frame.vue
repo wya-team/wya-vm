@@ -221,6 +221,10 @@ export default {
 			});
 		},
 
+		setActivedById(id) {
+			this.setActived(this.dataSource.findIndex(i => i.id === id));
+		},
+
 		/**
 		 * 交换位置
 		 */

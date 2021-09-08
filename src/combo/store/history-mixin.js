@@ -1,4 +1,4 @@
-import { cloneDeep } from '../../utils/helper';
+import { cloneDeep, Logger } from '../../utils/helper';
 
 export default {
 	data() {
@@ -30,6 +30,7 @@ export default {
 				? this.historyData.push(snapshot)
 				: this.historyData.splice(currentSnapshot, totalSnapshot - currentSnapshot, snapshot);
 
+			Logger.debug(`history`, this.historyData);
 			this.resetHistorySnapshot();
 		},
 
