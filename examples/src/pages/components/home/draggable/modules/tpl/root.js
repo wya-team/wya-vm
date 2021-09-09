@@ -12,7 +12,7 @@ export const tpl = {
 	data: {
 		// for draggable
 		w: 200,
-		h: 150,
+		h: 200,
 		r: 0,
 		x: 0, // 动态分配
 		y: 0, // 动态分配

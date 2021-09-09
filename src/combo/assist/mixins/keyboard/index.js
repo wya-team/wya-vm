@@ -16,6 +16,9 @@ export default {
 			this.keyboard.enable(v);
 		}
 	},
+	mounted() {
+		this.keyboard.init();
+	},
 	destroyed() {
 		this.keyboard.destroy();
 	}

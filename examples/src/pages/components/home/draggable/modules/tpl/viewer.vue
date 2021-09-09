@@ -8,6 +8,9 @@
 		Height: {{ h ? h : 'auto' }} <br>
 		Rotate: {{ r }} <br>
 		Name: {{ name }} <br>
+		<input style="background: red;" type="text">
+		<br>
+		<input style="background: yellow; pointer-events: none;" type="text">
 	</div>
 </template>
 
