@@ -1,13 +1,12 @@
 console.log(`NODE_ENV : ${process.env.NODE_ENV}`);
 const ENV_IS_DEV = process.env.NODE_ENV === 'development';
 // Rollup plugins
-import buble from '@rollup/plugin-buble';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import vue from 'rollup-plugin-vue';
 
@@ -25,13 +24,13 @@ const external = filename => {
 		'^lodash$',
 		'^@babel/runtime',
 		'^@wya/vc',
-		// 用于测试用例?
+		// 用于测试用例
 		'^@wya/utils$',
 		'^@wya/http$',
 		'^@wya/ps$'
-		// ...Object.keys(pkg.devDependencies || {}),
-		// ...Object.keys(pkg.peerDependencies || {}),
-		// ...Object.keys(pkg.dependencies || {})
+		// 目前以下编译工具里需要用到的，让其打包进来（babel需要编译它们，已防兼容问题）
+		// '^vue-runtime-helpers/'
+
 	].join('|');
 
 	return new RegExp(`(${regex})`).test(filename);
@@ -78,7 +77,8 @@ const mainConfig = {
 		replace({
 			'__DEV__': 'false',
 			'ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+			'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+			preventAssignment: false
 		}),
 		vue({
 			css: true, // css in js
@@ -94,15 +94,18 @@ const mainConfig = {
 			],
 			extensions: ['.css', '.scss'],
 		}),
-		// 使用babel，结合.babelrc
+		/**
+		 * 使用babel，结合.babelrc
+		 * node_modules/vue-runtime-helpers需要重新编译, 不设置 exclude: 'node_modules/**',
+		 *
+		 * .vue新增extensions, 否者无法编译
+		 */
 		babel({ 
-			exclude: 'node_modules/**',
+			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'], 
 			babelHelpers: 'runtime'
 		}),
-		// 使用buble
-		buble(),
 		// 是否压缩代码
-		(!ENV_IS_DEV && uglify())
+		(!ENV_IS_DEV && terser())
 	]
 };
 export default [mainConfig];
