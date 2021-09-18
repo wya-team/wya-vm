@@ -227,6 +227,10 @@ export default {
 			}
 		},
 
+		// autoOnTop: {
+		// 	type: Boolean,
+		// 	default: false
+		// }
 	},
 	data() {
 		return {
@@ -242,7 +246,7 @@ export default {
 			return {
 				left: this.x + 'px',
 				top: this.y + 'px',
-				zIndex: this.isActive && this.module !== PAGE_MOULE ? 999 : this.z
+				zIndex: this.z
 			};
 		},
 		style() {
