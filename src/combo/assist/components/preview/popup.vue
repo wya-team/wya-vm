@@ -10,9 +10,13 @@
 		</transition>
 		<transition :name="animate">
 			<div v-show="isActive" class="vm-assist-preview-popup__content">
-				<component :is="componentType" ref="htmlImg">
+				<component 
+					:is="componentType" 
+					ref="htmlImg" 
+					:style="styles" 
+					:options="htmlImgOpts"
+				>
 					<vm-preview 
-						:style="styles"
 						:data-source="dataSource" 
 						:mode="mode"
 					/>
@@ -84,6 +88,11 @@ export default {
 				};
 			}
 			return {};
+		},
+		htmlImgOpts() {
+			const { filename, getFile, ...rest } = this.imageOpts || {};
+
+			return rest;
 		}
 	},
 	watch: {

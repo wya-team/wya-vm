@@ -176,7 +176,9 @@ export default {
 		},
 
 		async handleClick() {
-			const res = await this.$refs.combo.getImage();
+			const res = await this.$refs.combo.getImage({
+				scale: 2
+			});
 			console.log(res);
 		}
 	},
