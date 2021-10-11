@@ -28,7 +28,7 @@
 			<div
 				v-show="showGuideX"
 				ref="guideX"
-				:style="{ left: `${mouseX * scale + placeholderW}px`}"
+				:style="{ left: `${mouseX * scale + placeholderX}px`}"
 				class="vm-ruler__guide-x"
 				@click.stop="handleAddLineX"
 			>
@@ -42,7 +42,7 @@
 					v-for="(item, index) in linesX"
 					:key="index"
 					:style="{
-						left: `${item * scale + placeholderW}px`,
+						left: `${item * scale + placeholderY}px`,
 					}"
 					title="双击删除参考线"
 					class="vm-ruler__guide-x is-solid"
@@ -78,7 +78,7 @@
 					<div
 						v-show="showGuideY"
 						:style="{
-							left: `${mouseY * scale + placeholderW}px`,
+							left: `${mouseY * scale + placeholderY}px`,
 						}"
 						class="vm-ruler__guide-y"
 						@click.stop="handleAddLineY"
@@ -94,7 +94,7 @@
 							v-for="(item, index) in linesY"
 							:key="index"
 							:style="{
-								left: `${item * scale + placeholderW}px`,
+								left: `${item * scale + placeholderY}px`,
 							}"
 							class="vm-ruler__guide-y is-solid"
 							title="双击删除参考线"
@@ -218,8 +218,12 @@ export default {
 			return scrollerSize + width;
 		},
 		// 0刻度距离轴容器左边的距离
-		placeholderW() {
+		placeholderX() {
 			return this.borderSize.left + this.guideSize;
+		},
+
+		placeholderY() {
+			return this.borderSize.top + this.guideSize;
 		},
 
 		// 10刻度间隔(缩放后)
@@ -289,15 +293,15 @@ export default {
 
 	methods: {
 		refreshCanvas() {
-			this.canvas && this.canvas.forEach(canvas => this.repaint(canvas));
+			this.canvas && this.canvas.forEach((canvas, i) => this.repaint(canvas, i));
 		},
 
 		/**
 		 * 轴距离容器左边有20px的间距和辅助线开关区域的宽度
 		 */
-		repaint(canvas) {
+		repaint(canvas, index) {
 			if (!this._isMounted || !canvas) return;
-			let { canvasW, guideSize, placeholderW, interval, isDark } = this;
+			let { canvasW, guideSize, placeholderX, placeholderY, interval, isDark } = this;
 			let ctx = canvas.getContext('2d');
 			// 重置画布
 			canvas.height = canvas.height; // eslint-disable-line
@@ -305,7 +309,7 @@ export default {
 			ctx.beginPath();
 			ctx.fillStyle = isDark ? '#474747' : '#FAFAFA';
 			ctx.fillRect(0, 0, canvasW, guideSize);
-			ctx.translate(placeholderW, 0); // (20, 0)坐标开始画10刻度线
+			ctx.translate(index ? placeholderY : placeholderX, 0); // (20, 0)坐标开始画10刻度线
 			ctx.fillStyle = isDark ? "#615E5B" : '#000';
 			ctx.save();
 			for (let i = 0; i < canvasW / interval; i++) {
@@ -340,13 +344,13 @@ export default {
 		 * 参考X虚线显示
 		 */
 		handleShowGuideX(e) {
-			const { offsetX, placeholderW, scrollLeft, scale } = this;
+			const { offsetX, placeholderX, scrollLeft, scale } = this;
 			if (
 				this.$refs.x.contains(e.target)
 				&& !$(e.target).hasClass('is-solid')
 			) {
 				this.showGuideX = true;
-				this.mouseX = Math.floor((e.clientX - offsetX - placeholderW + scrollLeft) / scale);
+				this.mouseX = Math.floor((e.clientX - offsetX - placeholderX + scrollLeft) / scale);
 			} else {
 				this.showGuideX = false;
 			}
@@ -356,13 +360,13 @@ export default {
 		 * 参考Y虚线显示
 		 */
 		handleShowGuideY(e) {
-			const { offsetY, placeholderW, scrollTop, scale } = this;
+			const { offsetY, placeholderY, scrollTop, scale } = this;
 			if (
 				this.$refs.y.contains(e.target)
 				&& !$(e.target).hasClass('is-solid')
 			) {
 				this.showGuideY = true;
-				this.mouseY = Math.floor((e.clientY - offsetY - placeholderW + scrollTop) / scale);
+				this.mouseY = Math.floor((e.clientY - offsetY - placeholderY + scrollTop) / scale);
 			} else {
 				this.showGuideY = false;
 			}
@@ -402,12 +406,12 @@ export default {
 		},
 
 		handleMouseMove(e) {
-			const { offsetX, offsetY, placeholderW, scrollLeft, scrollTop, scale } = this;
+			const { offsetX, offsetY, placeholderX, placeholderY, scrollLeft, scrollTop, scale } = this;
 			if (this.movingAxias === 'x') {
 				this.$set(
 					this.linesX,
 					this.movingIndex,
-					Math.floor((e.clientX - offsetX - placeholderW + scrollLeft) / scale),
+					Math.floor((e.clientX - offsetX - placeholderX + scrollLeft) / scale),
 				);
 				return;
 			}
@@ -416,7 +420,7 @@ export default {
 				this.$set(
 					this.linesY,
 					this.movingIndex,
-					Math.floor((e.clientY - offsetY - placeholderW + scrollTop) / scale),
+					Math.floor((e.clientY - offsetY - placeholderY + scrollTop) / scale),
 				);
 				return;
 			}
