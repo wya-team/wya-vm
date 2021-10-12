@@ -184,6 +184,7 @@ export default {
 		dataSource: Array,
 		editor: Object,
 		frameStyle: Object,
+		framePadding: [Object, Array, Number],
 		showLines: {
 			type: Boolean,
 			default: true
@@ -228,12 +229,14 @@ export default {
 	computed: {
 		// 四周留白
 		borderSize() {
-			let size = this.showRuler ? 20 : 0;
+			const { framePadding } = this;
+			const baseSize = this.showRuler ? (typeof framePadding === 'number' ? framePadding : 20) : 0;
+			const padding = framePadding || [];
 			return {
-				top: size,
-				left: size,
-				bottom: size,
-				right: size
+				top: padding.top || padding[0] || baseSize,
+				left: padding.left || padding[1] || baseSize,
+				bottom: padding.bottom || padding[2] || baseSize,
+				right: padding.right || padding[3] || baseSize
 			};
 		},
 
@@ -320,7 +323,11 @@ export default {
 	},
 
 	created() {
+		// 拖拽时原始数据
 		this.dragOriginal = {};
+
+		// 点按选择
+		this.dragClicked = [];
 	},
 
 	methods: {
@@ -773,14 +780,26 @@ export default {
 					y: it.y
 				};
 			}
+
+			if (e.metaKey || e.ctrlKey) {
+				// TODO
+			} else {
+				this.dragClicked = [];
+			}
 		},
 
 		/**
 		 * 目标失活
 		 */
 		handleDeactivated(e, it) {
-			Logger.debug('deactivated', it.module);
+			Logger.debug('deactivated', it.module, e.metaKey);
 			this.$emit('deactivated', e, it);
+
+			if (e.metaKey || e.ctrlKey) {
+				// TODO
+			} else {
+				this.dragClicked = [];
+			}
 		},
 
 		/**

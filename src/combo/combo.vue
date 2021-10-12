@@ -11,6 +11,7 @@
 		<vm-frame 
 			ref="frame"
 			:frame-style="frameStyle" 
+			:frame-padding="framePadding" 
 			:width="rebuildFrameW" 
 			:height="rebuildFrameH" 
 			:data-source="rebuildData" 
@@ -81,6 +82,7 @@ export default {
 		 * frame
 		 */
 		frameStyle: Object,
+		framePadding: [Object, Array, Number],
 		frameW: Number,
 		frameH: Number,
 		frameOpts: Object,

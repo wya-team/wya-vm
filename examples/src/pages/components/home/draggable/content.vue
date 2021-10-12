@@ -49,6 +49,7 @@
 			:frame-style="{ background: 'white' }"
 			:frame-w="1920"
 			:frame-h="1080"
+			:frame-padding="[20, 20, 20, 20]"
 			:width="style.width"
 			:height="style.height"
 			:show-lines="showLines"

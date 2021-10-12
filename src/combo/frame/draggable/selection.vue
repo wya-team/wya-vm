@@ -78,8 +78,10 @@ export default {
 		}
 	},
 	mounted() { 
-		this.offsetX = this.$el.getBoundingClientRect().x;
-		this.offsetY = this.$el.getBoundingClientRect().y;
+		const { x, y } = this.$el.getBoundingClientRect();
+		
+		this.offsetX = x;
+		this.offsetY = y;
 	},
 	methods: {
 		operateDOMEvents(type) {
