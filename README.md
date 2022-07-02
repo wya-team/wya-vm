@@ -1,3 +1,5 @@
+> 基于`Vue@3.x`的组件库移步[\@wya/vm.next](https://github.com/wya-team/wya-vm.next)
+
 ## DEMO
 
 > 历史原因保持: closeable(vm中使用), closable(vc中使用)
